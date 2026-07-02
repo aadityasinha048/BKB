@@ -1,8 +1,28 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { readCollection, updateOne, deleteOne } from '@/lib/db';
+import { readCollection, writeCollection, updateOne, deleteOne, findOne } from '@/lib/db';
 
-// GET — List all sellers with optional filtering/searching
+// Helper to log administrative actions
+async function logAction(action, details) {
+  try {
+    const logs = await readCollection('logs');
+    logs.push({
+      id: `LOG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+      timestamp: new Date().toISOString(),
+      action,
+      details,
+    });
+    // Keep logs cap to last 200 entries
+    if (logs.length > 200) {
+      logs.splice(0, logs.length - 200);
+    }
+    await writeCollection('logs', logs);
+  } catch (err) {
+    console.error('Failed to log admin action:', err);
+  }
+}
+
+// GET — List all sellers with filters, search, sort, and aggregation stats
 export async function GET(request) {
   try {
     const authError = await requireAdmin(request);
@@ -23,19 +43,20 @@ export async function GET(request) {
 
     let sellers = await readCollection('sellers');
 
-    // Search filter (name, mobile, email, district, id)
+    // Search filter (name, mobile, email, district, id, businessName)
     if (search) {
       sellers = sellers.filter(s =>
         (s.fullName || '').toLowerCase().includes(search) ||
         (s.mobile || '').includes(search) ||
         (s.email || '').toLowerCase().includes(search) ||
         (s.district || '').toLowerCase().includes(search) ||
+        (s.businessName || '').toLowerCase().includes(search) ||
         (s.id || '').toLowerCase().includes(search)
       );
     }
 
     // Status filter
-    if (status) {
+    if (status && status !== 'All') {
       sellers = sellers.filter(s => s.status === status);
     }
 
@@ -126,7 +147,7 @@ export async function GET(request) {
   }
 }
 
-// PATCH — Update seller status/notes (approve, reject, flag)
+// PATCH — Update seller details (Supports single ID updates, bulk updates, and verification checklists)
 export async function PATCH(request) {
   try {
     const authError = await requireAdmin(request);
@@ -137,11 +158,48 @@ export async function PATCH(request) {
       );
     }
 
-    const { sellerId, status, adminNotes } = await request.json();
+    const body = await request.json();
+    const { sellerId, sellerIds, status, adminNotes, verificationChecklist } = body;
 
+    // Handle Bulk Update
+    if (sellerIds && Array.isArray(sellerIds)) {
+      if (!status) {
+        return NextResponse.json(
+          { success: false, error: 'Status is required for bulk updates.' },
+          { status: 400 }
+        );
+      }
+
+      const sellers = await readCollection('sellers');
+      let updatedCount = 0;
+
+      const updatedSellers = sellers.map(s => {
+        if (sellerIds.includes(s.id)) {
+          updatedCount++;
+          return {
+            ...s,
+            status,
+            lastUpdatedByAdmin: new Date().toISOString(),
+          };
+        }
+        return s;
+      });
+
+      await writeCollection('sellers', updatedSellers);
+
+      // Log bulk action
+      await logAction(
+        'BULK_STATUS_UPDATE',
+        `Updated status to '${status}' for ${updatedCount} sellers.`
+      );
+
+      return NextResponse.json({ success: true, updatedCount });
+    }
+
+    // Handle Single Update
     if (!sellerId) {
       return NextResponse.json(
-        { success: false, error: 'Seller ID is required.' },
+        { success: false, error: 'Seller ID or Seller IDs list is required.' },
         { status: 400 }
       );
     }
@@ -149,15 +207,26 @@ export async function PATCH(request) {
     const updates = {};
     if (status) updates.status = status;
     if (adminNotes !== undefined) updates.adminNotes = adminNotes;
+    if (verificationChecklist !== undefined) updates.verificationChecklist = verificationChecklist;
     updates.lastUpdatedByAdmin = new Date().toISOString();
 
-    const updated = await updateOne('sellers', 'id', sellerId, updates);
-
-    if (!updated) {
+    const previousSeller = await findOne('sellers', 'id', sellerId);
+    if (!previousSeller) {
       return NextResponse.json(
         { success: false, error: 'Seller not found.' },
         { status: 404 }
       );
+    }
+
+    const updated = await updateOne('sellers', 'id', sellerId, updates);
+
+    // Create log message based on changes
+    if (status && previousSeller.status !== status) {
+      await logAction('SELLER_STATUS_CHANGE', `${previousSeller.fullName} (${sellerId}) status updated from '${previousSeller.status}' to '${status}'.`);
+    } else if (adminNotes !== undefined && previousSeller.adminNotes !== adminNotes) {
+      await logAction('SELLER_NOTE_UPDATED', `Notes updated for seller ${previousSeller.fullName} (${sellerId}).`);
+    } else if (verificationChecklist !== undefined) {
+      await logAction('SELLER_CHECKLIST_UPDATED', `Verification checklist updated for seller ${previousSeller.fullName} (${sellerId}).`);
     }
 
     return NextResponse.json({ success: true, seller: updated });
@@ -170,7 +239,7 @@ export async function PATCH(request) {
   }
 }
 
-// DELETE — Remove a seller
+// DELETE — Remove a seller or bulk delete sellers
 export async function DELETE(request) {
   try {
     const authError = await requireAdmin(request);
@@ -183,7 +252,22 @@ export async function DELETE(request) {
 
     const { searchParams } = new URL(request.url);
     const sellerId = searchParams.get('sellerId');
+    const sellerIdsStr = searchParams.get('sellerIds');
 
+    // Bulk Delete
+    if (sellerIdsStr) {
+      const ids = sellerIdsStr.split(',');
+      const sellers = await readCollection('sellers');
+      const filtered = sellers.filter(s => !ids.includes(s.id));
+      const deletedCount = sellers.length - filtered.length;
+
+      await writeCollection('sellers', filtered);
+      await logAction('BULK_DELETE', `Deleted ${deletedCount} sellers from database.`);
+
+      return NextResponse.json({ success: true, deletedCount });
+    }
+
+    // Single Delete
     if (!sellerId) {
       return NextResponse.json(
         { success: false, error: 'Seller ID is required.' },
@@ -191,13 +275,18 @@ export async function DELETE(request) {
       );
     }
 
-    const deleted = await deleteOne('sellers', 'id', sellerId);
-
-    if (!deleted) {
+    const seller = await findOne('sellers', 'id', sellerId);
+    if (!seller) {
       return NextResponse.json(
         { success: false, error: 'Seller not found.' },
         { status: 404 }
       );
+    }
+
+    const deleted = await deleteOne('sellers', 'id', sellerId);
+
+    if (deleted) {
+      await logAction('SELLER_DELETED', `Deleted seller ${seller.fullName} (${sellerId}) from database.`);
     }
 
     return NextResponse.json({ success: true, message: 'Seller deleted.' });
