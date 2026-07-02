@@ -1,7 +1,6 @@
 import './globals.css';
 import { Playfair_Display, Outfit } from 'next/font/google';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
+import LayoutShell from './components/LayoutShell';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -28,9 +27,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${playfair.variable} ${outfit.variable}`}>
       <body>
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );
