@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
-import { readCollection, insertOne, deleteOne } from '@/lib/db';
+import { readCollection, mutateCollection, deleteOne } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
+import { cleanString, cleanStringArray, isEmail, isIndianMobile } from '@/lib/validation';
 
 // POST — Public: Register a new pre-launch subscriber
 export async function POST(request) {
   try {
-    const { name, email, phone, city, interests } = await request.json();
+    const body = await request.json();
+    const name = cleanString(body.name, 120);
+    const email = cleanString(body.email, 254).toLowerCase();
+    const phone = cleanString(body.phone, 10);
+    const city = cleanString(body.city, 80);
+    const interests = cleanStringArray(body.interests);
 
     // Validate required fields
     if (!name || !email) {
@@ -16,39 +22,51 @@ export async function POST(request) {
     }
 
     // Validate email format
-    if (!/^[\w.-]+@[\w.-]+\.\w+$/.test(email.trim())) {
+    if (!isEmail(email)) {
       return NextResponse.json(
         { success: false, error: 'Please enter a valid email address.' },
         { status: 400 }
       );
     }
 
-    // Check for duplicate email
-    const existing = await readCollection('prelaunch');
-    if (existing.find(s => s.email.toLowerCase() === email.trim().toLowerCase())) {
+    if (phone && !isIndianMobile(phone)) {
+      return NextResponse.json(
+        { success: false, error: 'Please enter a valid 10-digit Indian mobile number.' },
+        { status: 400 }
+      );
+    }
+
+    const result = await mutateCollection('prelaunch', async subscribers => {
+      if (subscribers.find(s => (s.email || '').toLowerCase() === email)) {
+        return { duplicate: true };
+      }
+
+      const subscriber = {
+        id: `BKB-PL-${Date.now()}`,
+        registeredAt: new Date().toISOString(),
+        name,
+        email,
+        phone,
+        city,
+        interests,
+      };
+
+      subscribers.push(subscriber);
+      return { duplicate: false, subscriber, totalSignups: subscribers.length };
+    });
+
+    if (result.duplicate) {
       return NextResponse.json(
         { success: false, error: 'This email is already registered for early access!' },
         { status: 400 }
       );
     }
 
-    const subscriber = {
-      id: `BKB-PL-${Date.now()}`,
-      registeredAt: new Date().toISOString(),
-      name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone?.trim() || '',
-      city: city?.trim() || '',
-      interests: interests || [],
-    };
-
-    await insertOne('prelaunch', subscriber);
-
     return NextResponse.json({
       success: true,
       message: 'Welcome aboard! You\'re now on the early access list.',
-      subscriberId: subscriber.id,
-      totalSignups: existing.length + 1,
+      subscriberId: result.subscriber.id,
+      totalSignups: result.totalSignups,
     });
   } catch (error) {
     console.error('Pre-launch POST Error:', error);

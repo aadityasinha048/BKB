@@ -86,17 +86,24 @@ export default function AdminLoginPage() {
         {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 40 }}>
           <div style={{
-            width: 64,
-            height: 64,
-            borderRadius: 18,
-            background: 'linear-gradient(135deg, #C85A08, #F09819)',
+            width: 72,
+            height: 72,
+            borderRadius: 20,
+            background: '#fff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 30,
             margin: '0 auto 16px',
-            boxShadow: '0 8px 32px rgba(200,90,8,0.25)',
-          }}>🌾</div>
+            boxShadow: '0 8px 32px rgba(27,107,58,0.25)',
+            border: '2px solid #1B6B3A',
+            overflow: 'hidden',
+          }}>
+            <img
+              src="/images/bkb_logo.png"
+              alt="BKB Logo"
+              style={{ width: '80%', height: '80%', objectFit: 'contain' }}
+            />
+          </div>
           <h1 style={{
             fontSize: 26,
             fontWeight: 800,

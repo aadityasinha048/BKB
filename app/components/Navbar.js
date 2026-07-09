@@ -37,9 +37,68 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const searchRef = useRef(null);
 
+  const [userRole, setUserRole] = useState(null); // 'buyer', 'seller', or null
+  const [cartCount, setCartCount] = useState(0);
+
   useEffect(() => {
     if (searchOpen && searchRef.current) searchRef.current.focus();
   }, [searchOpen]);
+
+  useEffect(() => {
+    const sellerId = localStorage.getItem('bkb_seller_id');
+    const userLoggedIn = localStorage.getItem('bkb_user_logged_in');
+    
+    if (sellerId) {
+      setUserRole('seller');
+    } else if (userLoggedIn === 'true') {
+      setUserRole('buyer');
+    } else {
+      setUserRole(null);
+    }
+
+    const updateCartCount = () => {
+      const stored = localStorage.getItem('bkb_cart');
+      if (stored) {
+        try {
+          const items = JSON.parse(stored);
+          const count = items.reduce((sum, item) => sum + item.qty, 0);
+          setCartCount(count);
+        } catch {
+          setCartCount(0);
+        }
+      } else {
+        setCartCount(0);
+      }
+    };
+
+    updateCartCount();
+    window.addEventListener('storage', updateCartCount);
+    const interval = setInterval(updateCartCount, 1000);
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      clearInterval(interval);
+    };
+  }, [pathname]);
+
+  const linksToShow = [
+    { href: '/', label: 'Home' },
+    {
+      label: 'Shop',
+      children: [
+        { href: '/shop', label: '🛍️ All Products' },
+        { href: '/gi-products', label: '🏅 GI Tag Products' },
+        { href: '/shop?cat=Food & Agri', label: '🌾 Food & Agri' },
+        { href: '/shop?cat=Handicrafts', label: '🎨 Handicrafts' },
+        { href: '/shop?cat=Textiles', label: '🧵 Textiles & Silk' },
+        { href: '/shop?cat=Fruits', label: '🍈 Fresh Fruits' },
+      ]
+    },
+    ...(userRole !== 'seller' ? [{ href: '/sellers', label: 'Sell on BKB' }] : []),
+    ...(userRole === 'seller' ? [{ href: '/dashboard', label: 'Seller Console' }] : []),
+    ...(userRole === 'buyer' ? [{ href: '/profile', label: 'My Profile' }] : []),
+    ...(userRole === null ? [{ href: '/login', label: 'Login' }] : []),
+    { href: '/about', label: 'About' },
+  ];
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -54,7 +113,7 @@ export default function Navbar() {
     <>
       <nav style={{
         background: '#fff',
-        borderBottom: '1.5px solid #E8DDD4',
+        borderBottom: '1px solid #E5E1DC',
         height: 68,
         display: 'flex',
         alignItems: 'center',
@@ -63,22 +122,34 @@ export default function Navbar() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        boxShadow: '0 1px 12px rgba(100,60,20,0.06)',
+        boxShadow: '0 1px 8px rgba(0,0,0,0.04)',
+        transition: 'box-shadow 0.3s',
       }}>
 
         {/* Logo */}
-        <Link href="/" style={{ textDecoration: 'none', flexShrink: 0, marginRight: 36 }}>
-          <div style={{ fontSize: 20, fontWeight: 700, color: '#C85A08', lineHeight: 1, fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
-            बिहार का बाज़ार
-          </div>
-          <div style={{ fontSize: 9, fontWeight: 600, letterSpacing: 2.5, textTransform: 'uppercase', color: '#8C7B6E', marginTop: 1 }}>
-            Bihar Ka Bazaar
+        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', flexShrink: 0, marginRight: 36 }}>
+          <img
+            src="/images/bkb_logo.png"
+            alt="BKB Logo"
+            style={{
+              height: 40,
+              width: 'auto',
+              objectFit: 'contain',
+            }}
+          />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#1B6B3A', lineHeight: 1.1, fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
+              बिहार का बाज़ार
+            </div>
+            <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7A7067', marginTop: 2 }}>
+              Bihar Ka Bazaar
+            </div>
           </div>
         </Link>
 
         {/* Nav Links */}
         <div style={{ display: 'flex', gap: 2, flex: 1, alignItems: 'center' }}>
-          {navLinks.map((link) => (
+          {linksToShow.map((link) => (
             link.children ? (
               <div key={link.label}
                 style={{ position: 'relative' }}
@@ -90,8 +161,8 @@ export default function Navbar() {
                   borderRadius: 8,
                   fontSize: 13,
                   fontWeight: 500,
-                  color: '#4A3F35',
-                  background: activeDropdown === link.label ? '#FFF4EC' : 'transparent',
+                  color: activeDropdown === link.label ? '#1B6B3A' : '#3D3730',
+                  background: activeDropdown === link.label ? '#E8F5EC' : 'transparent',
                   border: 'none',
                   cursor: 'pointer',
                   fontFamily: 'inherit',
@@ -110,11 +181,11 @@ export default function Navbar() {
                     top: '100%',
                     left: 0,
                     background: '#fff',
-                    border: '1.5px solid #E8DDD4',
+                    border: '1px solid #E5E1DC',
                     borderRadius: 14,
                     padding: '8px',
                     minWidth: 210,
-                    boxShadow: '0 8px 32px rgba(100,60,20,0.12)',
+                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
                     zIndex: 200,
                     marginTop: 4,
                   }}>
@@ -125,12 +196,12 @@ export default function Navbar() {
                           borderRadius: 8,
                           fontSize: 13,
                           fontWeight: 500,
-                          color: '#4A3F35',
+                          color: '#3D3730',
                           cursor: 'pointer',
                           transition: 'all 0.15s',
                         }}
-                          onMouseEnter={e => { e.currentTarget.style.background = '#FFF4EC'; e.currentTarget.style.color = '#C85A08'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#4A3F35'; }}
+                          onMouseEnter={e => { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}
+                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#3D3730'; }}
                         >
                           {child.label}
                         </div>
@@ -146,13 +217,13 @@ export default function Navbar() {
                   borderRadius: 8,
                   fontSize: 13,
                   fontWeight: 500,
-                  color: pathname === link.href ? '#C85A08' : '#4A3F35',
-                  background: pathname === link.href ? '#FFF4EC' : 'transparent',
+                  color: pathname === link.href ? '#1B6B3A' : '#3D3730',
+                  background: pathname === link.href ? '#E8F5EC' : 'transparent',
                   transition: 'all 0.18s',
                   cursor: 'pointer',
                 }}
-                  onMouseEnter={e => { if (pathname !== link.href) { e.currentTarget.style.background = '#FFF4EC'; e.currentTarget.style.color = '#C85A08'; }}}
-                  onMouseLeave={e => { if (pathname !== link.href) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#4A3F35'; }}}
+                  onMouseEnter={e => { if (pathname !== link.href) { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}}
+                  onMouseLeave={e => { if (pathname !== link.href) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#3D3730'; }}}
                 >
                   {link.label}
                 </div>
@@ -165,40 +236,40 @@ export default function Navbar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
 
           {/* Search */}
-          <button onClick={() => setSearchOpen(true)} style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E8DDD4', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#C85A08'; e.currentTarget.style.background = '#FFF4EC'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD4'; e.currentTarget.style.background = 'none'; }}
+          <button onClick={() => setSearchOpen(true)} style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
           >
-            <Search size={16} color="#4A3F35" />
+            <Search size={16} color="#3D3730" />
           </button>
 
           {/* Wishlist */}
           <Link href="/wishlist">
-            <button style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E8DDD4', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#C85A08'; e.currentTarget.style.background = '#FFF4EC'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD4'; e.currentTarget.style.background = 'none'; }}
+            <button style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
             >
-              <Heart size={16} color="#4A3F35" />
+              <Heart size={16} color="#3D3730" />
             </button>
           </Link>
 
           {/* Profile */}
-          <Link href="/profile">
-            <button style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E8DDD4', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#C85A08'; e.currentTarget.style.background = '#FFF4EC'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD4'; e.currentTarget.style.background = 'none'; }}
+          <Link href={userRole === 'seller' ? '/dashboard' : (userRole === 'buyer' ? '/profile' : '/login')}>
+            <button style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
             >
-              <User size={16} color="#4A3F35" />
+              <User size={16} color="#3D3730" />
             </button>
           </Link>
 
-          <div style={{ width: 1, height: 28, background: '#E8DDD4', margin: '0 4px' }} />
+          <div style={{ width: 1, height: 28, background: '#E5E1DC', margin: '0 4px' }} />
 
           {/* Sell Button */}
           <Link href="/sellers" style={{ textDecoration: 'none' }}>
-            <button style={{ padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: '1.5px solid #E8DDD4', color: '#4A3F35', background: 'none', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#C85A08'; e.currentTarget.style.color = '#C85A08'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD4'; e.currentTarget.style.color = '#4A3F35'; }}
+            <button style={{ padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: '1.5px solid #1B6B3A', color: '#1B6B3A', background: '#E8F5EC', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#1B6B3A'; e.currentTarget.style.color = '#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}
             >
               Sell
             </button>
@@ -206,13 +277,13 @@ export default function Navbar() {
 
           {/* Cart */}
           <Link href="/cart" style={{ textDecoration: 'none' }}>
-            <div style={{ position: 'relative', width: 42, height: 38, borderRadius: 8, background: '#FFF4EC', border: '1.5px solid #FFE8D4', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#C85A08'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#FFF4EC'; }}
+            <div style={{ position: 'relative', width: 42, height: 38, borderRadius: 8, background: '#E8F5EC', border: '1.5px solid #D0EBDA', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
+              onMouseEnter={e => { e.currentTarget.style.background = '#1B6B3A'; const icon = e.currentTarget.querySelector('svg'); if (icon) icon.style.color = '#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.background = '#E8F5EC'; const icon = e.currentTarget.querySelector('svg'); if (icon) icon.style.color = '#1B6B3A'; }}
             >
-              <ShoppingCart size={17} color="#C85A08" />
-              <span style={{ position: 'absolute', top: -6, right: -6, background: '#C85A08', color: '#fff', borderRadius: '50%', width: 18, height: 18, fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #FFFCF8', fontFamily: 'inherit' }}>
-                0
+              <ShoppingCart size={17} color="#1B6B3A" />
+              <span style={{ position: 'absolute', top: -6, right: -6, background: '#E87B24', color: '#fff', borderRadius: '50%', width: 18, height: 18, fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff', fontFamily: 'inherit' }}>
+                {cartCount}
               </span>
             </div>
           </Link>
@@ -222,13 +293,13 @@ export default function Navbar() {
       {/* ── SEARCH OVERLAY ── */}
       {searchOpen && (
         <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(26,20,16,0.6)', zIndex: 300, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 80 }}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', zIndex: 300, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 80 }}
           onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false); }}
         >
           <div style={{ background: '#fff', borderRadius: 20, padding: '28px', width: '100%', maxWidth: 640, boxShadow: '0 20px 60px rgba(0,0,0,0.2)', margin: '0 24px' }}>
             <form onSubmit={handleSearch}>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 20 }}>
-                <Search size={20} color="#8C7B6E" style={{ flexShrink: 0 }} />
+                <Search size={20} color="#7A7067" style={{ flexShrink: 0 }} />
                 <input
                   ref={searchRef}
                   value={searchQuery}
@@ -237,12 +308,12 @@ export default function Navbar() {
                   style={{ flex: 1, border: 'none', fontSize: 16, fontFamily: 'inherit', outline: 'none', color: '#1A1410', background: 'transparent' }}
                 />
                 <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                  <X size={20} color="#8C7B6E" />
+                  <X size={20} color="#7A7067" />
                 </button>
               </div>
             </form>
-            <div style={{ borderTop: '1px solid #E8DDD4', paddingTop: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#8C7B6E', marginBottom: 12 }}>
+            <div style={{ borderTop: '1px solid #E5E1DC', paddingTop: 16 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7A7067', marginBottom: 12 }}>
                 Popular Searches
               </div>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
@@ -250,9 +321,9 @@ export default function Navbar() {
                   <Link key={s} href={`/search?q=${encodeURIComponent(s)}`} style={{ textDecoration: 'none' }}>
                     <span
                       onClick={() => setSearchOpen(false)}
-                      style={{ background: '#FFF4EC', color: '#C85A08', fontSize: 13, fontWeight: 600, padding: '7px 14px', borderRadius: 40, border: '1px solid #FFE8D4', cursor: 'pointer', display: 'inline-block', transition: 'all 0.18s' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#C85A08'; e.currentTarget.style.color = '#fff'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = '#FFF4EC'; e.currentTarget.style.color = '#C85A08'; }}
+                      style={{ background: '#E8F5EC', color: '#1B6B3A', fontSize: 13, fontWeight: 600, padding: '7px 14px', borderRadius: 40, border: '1px solid #D0EBDA', cursor: 'pointer', display: 'inline-block', transition: 'all 0.18s' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = '#1B6B3A'; e.currentTarget.style.color = '#fff'; }}
+                      onMouseLeave={e => { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}
                     >
                       {s}
                     </span>

@@ -40,26 +40,30 @@ export default function WishlistPage() {
             <p style={{ fontSize: 14, color: '#8C7B6E', marginBottom: 28 }}>{items.length} saved products</p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
               {items.map(p => (
-                <div key={p.id} style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.25s' }}
-                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#F5A06A'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(200,90,8,0.13)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD4'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
+                <div key={p.id} style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.25s' }}
+                  onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(27,107,58,0.13)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
-                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 170, background: p.bg, fontSize: 64 }}>
-                    {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#9A720A', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5 }}>🏅 GI Tag</span>}
-                    <button onClick={() => remove(p.id)} style={{ position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E8DDD4', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>❤️</button>
-                    {p.em}
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 170, background: p.bg, overflow: 'hidden' }}>
+                    {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#B8860B', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>🏅 GI Tag</span>}
+                    <button onClick={() => remove(p.id)} style={{ position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E5E1DC', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>❤️</button>
+                    <img 
+                      src={p.imgSrc || `/images/products/prod_${p.id}.png`} 
+                      alt={p.name} 
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                    />
                   </div>
                   <div style={{ padding: '15px 16px 14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
                     <div style={{ fontSize: 11, color: '#8C7B6E', marginBottom: 4 }}>📍 {p.dist} &nbsp;·&nbsp; ★ {p.rat}</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1410', lineHeight: 1.3, marginBottom: 3 }}>{p.name}</div>
                     <div style={{ fontSize: 11, color: '#8C7B6E', marginBottom: 14 }}>by {p.seller}</div>
                     <div style={{ marginTop: 'auto' }}>
-                      <div style={{ fontSize: 19, fontWeight: 800, color: '#C85A08', marginBottom: 10 }}>₹{p.price.toLocaleString()} <span style={{ fontSize: 10, color: '#C0B0A0', fontWeight: 400 }}>/{p.unit}</span></div>
+                      <div style={{ fontSize: 19, fontWeight: 800, color: '#1A1410', marginBottom: 10 }}>₹{p.price.toLocaleString()} <span style={{ fontSize: 10, color: '#B0A598', fontWeight: 400 }}>/{p.unit}</span></div>
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
                         <Link href={`/shop/${p.id}`} style={{ textDecoration: 'none' }}>
-                          <button style={{ width: '100%', padding: '9px', background: '#FFF4EC', color: '#C85A08', border: '1.5px solid #FFE8D4', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>View</button>
+                          <button style={{ width: '100%', padding: '9px', background: '#E8F5EC', color: '#1B6B3A', border: '1px solid #D0EBDA', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>View</button>
                         </Link>
-                        <button style={{ padding: '9px', background: '#C85A08', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Add to Cart</button>
+                        <button style={{ padding: '9px', background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Add to Cart</button>
                       </div>
                     </div>
                   </div>

@@ -10,12 +10,10 @@ const STATS = [
 ];
 
 const TEAM = [
-  { em: "👨‍💼", bg: "#FFF4EC", title: "Founder & CEO", role: "Bindisa Agritech" },
-  { em: "👩‍💻", bg: "#EAF5F0", title: "Head of Technology", role: "Platform & Engineering" },
-  { em: "👨‍🌾", bg: "#FEF8E0", title: "Seller Relations", role: "Farmer & Artisan Support" },
-  { em: "👩‍📦", bg: "#F0F4FF", title: "Operations Lead", role: "Logistics & Delivery" },
-  { em: "👨‍🎨", bg: "#FFF0F5", title: "Creative Director", role: "Brand & Design" },
-  { em: "👩‍💼", bg: "#EAF5F0", title: "Marketing Head", role: "Growth & Outreach" },
+  { name: "Aditya Prakash", role: "President", img: "/images/team/aditya_prakash.jpg", bg: "#E8F5EC" },
+  { name: "Aaditya Kumar Sinha", role: "Director", img: "/images/team/aaditya_sinha.jpg", bg: "#EAF5F0" },
+  { name: "Hardik Yadav", role: "Co-founder", img: "/images/team/hardik_yadav.jpg", bg: "#FEF8E0" },
+  { name: "Rajeev Kumar", role: "Managing Director", img: "/images/team/rajeev_kumar.jpg", bg: "#F0F4FF" },
 ];
 
 const VALUES = [
@@ -31,25 +29,28 @@ export default function AboutPage() {
 
       {/* ── HERO ── */}
       <div style={{
-        background: 'linear-gradient(135deg, #FAF0E4 0%, #FFF4EC 50%, #FEF8E0 100%)',
+        background: 'linear-gradient(135deg, #FAF0E4 0%, #E8F5EC 50%, #FEF8E0 100%)',
         padding: '88px 60px',
         textAlign: 'center',
-        borderBottom: '1px solid #E8DDD4',
+        borderBottom: '1px solid #E5E1DC',
         position: 'relative',
         overflow: 'hidden',
       }}>
-        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(#E8DDD4 1px, transparent 1px)', backgroundSize: '28px 28px', opacity: 0.3 }} />
+        <div style={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(#E5E1DC 1px, transparent 1px)', backgroundSize: '28px 28px', opacity: 0.3 }} />
         <div style={{ position: 'relative', zIndex: 1 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 16 }}>About Us</div>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 16 }}>About Us</div>
           <h1 style={{ fontSize: 52, color: '#1A1410', marginBottom: 16, fontFamily: "'Playfair Display', serif", lineHeight: 1.1 }}>
             The Story Behind<br />
-            <em style={{ color: '#C85A08' }}>Bihar Ka Bazaar</em>
+            <em style={{ color: '#1B6B3A' }}>Bihar Ka Bazaar</em>
           </h1>
           <p style={{ fontSize: 18, color: '#4A3F35', maxWidth: 620, margin: '0 auto 32px', lineHeight: 1.75 }}>
             A Bindisa Agritech initiative to bring Bihar's finest products — and the people who make them — directly to the rest of India.
           </p>
           <Link href="/shop">
-            <button style={{ padding: '14px 30px', borderRadius: 12, fontSize: 15, fontWeight: 700, background: '#C85A08', color: '#fff', border: '2px solid #C85A08', cursor: 'pointer', fontFamily: 'inherit' }}>
+            <button style={{ padding: '14px 30px', borderRadius: 12, fontSize: 15, fontWeight: 700, background: '#1B6B3A', color: '#fff', border: '2px solid #1B6B3A', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}
+              onMouseEnter={e => e.currentTarget.style.background = '#0D3B1E'}
+              onMouseLeave={e => e.currentTarget.style.background = '#1B6B3A'}
+            >
               Explore Products →
             </button>
           </Link>
@@ -60,9 +61,9 @@ export default function AboutPage() {
       <div style={{ padding: '0 60px', transform: 'translateY(-32px)' }}>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 18, maxWidth: 860, margin: '0 auto' }}>
           {STATS.map(s => (
-            <div key={s.l} style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, padding: '24px', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
-              <div style={{ fontSize: 36, fontWeight: 800, color: '#C85A08', fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>{s.n}</div>
-              <div style={{ fontSize: 13, color: '#8C7B6E' }}>{s.l}</div>
+            <div key={s.l} style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 16, padding: '24px', textAlign: 'center', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
+              <div style={{ fontSize: 36, fontWeight: 800, color: '#1B6B3A', fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>{s.n}</div>
+              <div style={{ fontSize: 13, color: '#7A7067' }}>{s.l}</div>
             </div>
           ))}
         </div>
@@ -70,8 +71,8 @@ export default function AboutPage() {
 
       {/* ── MISSION ── */}
       <div style={{ padding: '20px 60px 60px', maxWidth: 920, margin: '0 auto' }}>
-        <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 22, padding: '48px 52px', marginBottom: 24 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 12 }}>Our Mission</div>
+        <div style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 22, padding: '48px 52px', marginBottom: 24 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 12 }}>Our Mission</div>
           <h2 style={{ fontSize: 32, color: '#1A1410', marginBottom: 20, fontFamily: "'Playfair Display', serif" }}>Why We Built Bihar Ka Bazaar</h2>
           <p style={{ fontSize: 15, color: '#4A3F35', lineHeight: 1.85, marginBottom: 16 }}>
             Bihar Ka Bazaar was born from a single, powerful belief: the farmers, weavers, and artisans of Bihar deserve direct access to India's markets — without intermediaries eroding their earnings.
@@ -85,10 +86,10 @@ export default function AboutPage() {
         </div>
 
         {/* ── BINDISA AGRITECH ── */}
-        <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 22, padding: '48px 52px', marginBottom: 24 }}>
+        <div style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 22, padding: '48px 52px', marginBottom: 24 }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
             <div>
-              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 12 }}>The Company</div>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 12 }}>The Company</div>
               <h2 style={{ fontSize: 32, color: '#1A1410', marginBottom: 20, fontFamily: "'Playfair Display', serif" }}>Bindisa Agritech</h2>
               <p style={{ fontSize: 15, color: '#4A3F35', lineHeight: 1.85, marginBottom: 16 }}>
                 Bindisa Agritech is a Bihar-based agriculture technology company focused on empowering rural communities through technology, market linkages, and sustainable supply chains.
@@ -105,7 +106,7 @@ export default function AboutPage() {
                 ["💸", "₹2Cr+ paid directly to sellers so far"],
                 ["🚚", "Pan-India delivery to 500+ cities"],
               ].map(([em, text]) => (
-                <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#FFFCF8', border: '1px solid #E8DDD4', borderRadius: 10 }}>
+                <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 16px', background: '#FFFCF8', border: '1px solid #E5E1DC', borderRadius: 10 }}>
                   <span style={{ fontSize: 20, flexShrink: 0 }}>{em}</span>
                   <span style={{ fontSize: 13, color: '#4A3F35', fontWeight: 500 }}>{text}</span>
                 </div>
@@ -115,43 +116,42 @@ export default function AboutPage() {
         </div>
 
         {/* ── VALUES ── */}
-        <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 22, padding: '48px 52px', marginBottom: 24 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 12 }}>What We Stand For</div>
+        <div style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 22, padding: '48px 52px', marginBottom: 24 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 12 }}>What We Stand For</div>
           <h2 style={{ fontSize: 32, color: '#1A1410', marginBottom: 36, fontFamily: "'Playfair Display', serif" }}>Our Values</h2>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
             {VALUES.map(v => (
-              <div key={v.title} style={{ padding: '24px', background: '#FFFCF8', border: '1.5px solid #E8DDD4', borderRadius: 16 }}>
+              <div key={v.title} style={{ padding: '24px', background: '#FFFCF8', border: '1.5px solid #E5E1DC', borderRadius: 16 }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>{v.em}</div>
                 <h3 style={{ fontSize: 18, color: '#1A1410', marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>{v.title}</h3>
-                <p style={{ fontSize: 13, color: '#8C7B6E', lineHeight: 1.7 }}>{v.desc}</p>
+                <p style={{ fontSize: 13, color: '#7A7067', lineHeight: 1.7 }}>{v.desc}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* ── TEAM ── */}
-        <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 22, padding: '48px 52px', marginBottom: 24 }}>
-          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 12 }}>The People</div>
+        <div style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 22, padding: '48px 52px', marginBottom: 24 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 12 }}>The People</div>
           <h2 style={{ fontSize: 32, color: '#1A1410', marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>Our Team</h2>
-          <p style={{ fontSize: 15, color: '#8C7B6E', marginBottom: 36, lineHeight: 1.6 }}>
+          <p style={{ fontSize: 15, color: '#7A7067', marginBottom: 36, lineHeight: 1.6 }}>
             A small, passionate team that deeply believes in Bihar's potential — many of us from Bihar ourselves.
           </p>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 18 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20 }}>
             {TEAM.map(t => (
-              <div key={t.title} style={{ background: '#FFFCF8', border: '1.5px solid #E8DDD4', borderRadius: 16, padding: '28px 20px', textAlign: 'center', transition: 'all 0.22s' }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#C85A08'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD4'; e.currentTarget.style.transform = 'none'; }}
-              >
-                <div style={{ width: 68, height: 68, borderRadius: '50%', background: t.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 32, margin: '0 auto 14px' }}>{t.em}</div>
-                <h4 style={{ fontSize: 15, fontWeight: 700, color: '#1A1410', marginBottom: 4 }}>{t.title}</h4>
-                <p style={{ fontSize: 12, color: '#8C7B6E' }}>{t.role}</p>
+              <div key={t.name} className="interactive-card" style={{ background: '#fff', borderRadius: 16, padding: '28px 16px', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                <div style={{ width: 90, height: 90, borderRadius: '50%', overflow: 'hidden', border: '3px solid #EAF5ED', marginBottom: 16, background: '#F8F6F3' }}>
+                  <img src={t.img} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </div>
+                <h4 style={{ fontSize: 15, fontWeight: 700, color: '#1A1410', marginBottom: 4 }}>{t.name}</h4>
+                <p style={{ fontSize: 12, fontWeight: 700, color: '#1B6B3A' }}>{t.role}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* ── CONTACT ── */}
-        <div style={{ background: '#1A5C38', border: '1.5px solid #1A5C38', borderRadius: 22, padding: '48px 52px' }}>
+        <div style={{ background: '#0D3B1E', border: '1.5px solid #0D3B1E', borderRadius: 22, padding: '48px 52px' }}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, alignItems: 'center' }}>
             <div>
               <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: 12 }}>Get In Touch</div>
@@ -190,14 +190,13 @@ export default function AboutPage() {
                 <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.7)', marginBottom: 5 }}>Message</label>
                 <textarea placeholder="Write your message here..." rows={4} style={{ width: '100%', padding: '11px 13px', border: '1.5px solid rgba(255,255,255,0.2)', borderRadius: 8, fontSize: 13, fontFamily: 'inherit', background: 'rgba(255,255,255,0.1)', outline: 'none', color: '#fff', resize: 'vertical', lineHeight: 1.6 }} />
               </div>
-              <button style={{ width: '100%', padding: 13, borderRadius: 10, fontSize: 14, fontWeight: 700, background: '#fff', color: '#1A5C38', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
+              <button style={{ width: '100%', padding: 13, borderRadius: 10, fontSize: 14, fontWeight: 700, background: '#fff', color: '#0D3B1E', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}>
                 Send Message →
               </button>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   );
 }

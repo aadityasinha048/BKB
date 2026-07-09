@@ -1,22 +1,33 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { readCollection, writeCollection, updateOne, deleteOne, findOne } from '@/lib/db';
+import { readCollection, mutateCollection, updateOne, deleteOne, findOne } from '@/lib/db';
+import { cleanString, cleanStringArray, cleanText } from '@/lib/validation';
+
+const VALID_STATUSES = new Set([
+  'Account Created',
+  'Details Added',
+  'Products Added',
+  'Completed',
+  'Approved',
+  'Rejected',
+  'Flagged',
+]);
 
 // Helper to log administrative actions
 async function logAction(action, details) {
   try {
-    const logs = await readCollection('logs');
-    logs.push({
-      id: `LOG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-      timestamp: new Date().toISOString(),
-      action,
-      details,
+    await mutateCollection('logs', async logs => {
+      logs.push({
+        id: `LOG-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        timestamp: new Date().toISOString(),
+        action,
+        details,
+      });
+      // Keep logs cap to last 200 entries
+      if (logs.length > 200) {
+        logs.splice(0, logs.length - 200);
+      }
     });
-    // Keep logs cap to last 200 entries
-    if (logs.length > 200) {
-      logs.splice(0, logs.length - 200);
-    }
-    await writeCollection('logs', logs);
   } catch (err) {
     console.error('Failed to log admin action:', err);
   }
@@ -159,7 +170,22 @@ export async function PATCH(request) {
     }
 
     const body = await request.json();
-    const { sellerId, sellerIds, status, adminNotes, verificationChecklist } = body;
+    const sellerId = cleanString(body.sellerId, 80);
+    const sellerIds = Array.isArray(body.sellerIds)
+      ? body.sellerIds.map(id => cleanString(id, 80)).filter(Boolean).slice(0, 100)
+      : null;
+    const status = cleanString(body.status, 40);
+    const adminNotes = body.adminNotes === undefined ? undefined : cleanText(body.adminNotes);
+    const verificationChecklist = body.verificationChecklist === undefined
+      ? undefined
+      : cleanStringArray(body.verificationChecklist, 30);
+
+    if (status && !VALID_STATUSES.has(status)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid seller status.' },
+        { status: 400 }
+      );
+    }
 
     // Handle Bulk Update
     if (sellerIds && Array.isArray(sellerIds)) {
@@ -170,12 +196,11 @@ export async function PATCH(request) {
         );
       }
 
-      const sellers = await readCollection('sellers');
-      let updatedCount = 0;
-
-      const updatedSellers = sellers.map(s => {
+      const updatedCount = await mutateCollection('sellers', async sellers => {
+        let count = 0;
+        const updatedSellers = sellers.map(s => {
         if (sellerIds.includes(s.id)) {
-          updatedCount++;
+          count++;
           return {
             ...s,
             status,
@@ -183,9 +208,11 @@ export async function PATCH(request) {
           };
         }
         return s;
-      });
+        });
 
-      await writeCollection('sellers', updatedSellers);
+        sellers.splice(0, sellers.length, ...updatedSellers);
+        return count;
+      });
 
       // Log bulk action
       await logAction(
@@ -251,17 +278,18 @@ export async function DELETE(request) {
     }
 
     const { searchParams } = new URL(request.url);
-    const sellerId = searchParams.get('sellerId');
+    const sellerId = cleanString(searchParams.get('sellerId'), 80);
     const sellerIdsStr = searchParams.get('sellerIds');
 
     // Bulk Delete
     if (sellerIdsStr) {
-      const ids = sellerIdsStr.split(',');
-      const sellers = await readCollection('sellers');
-      const filtered = sellers.filter(s => !ids.includes(s.id));
-      const deletedCount = sellers.length - filtered.length;
-
-      await writeCollection('sellers', filtered);
+      const ids = sellerIdsStr.split(',').map(id => cleanString(id, 80)).filter(Boolean).slice(0, 100);
+      const deletedCount = await mutateCollection('sellers', async sellers => {
+        const filtered = sellers.filter(s => !ids.includes(s.id));
+        const count = sellers.length - filtered.length;
+        sellers.splice(0, sellers.length, ...filtered);
+        return count;
+      });
       await logAction('BULK_DELETE', `Deleted ${deletedCount} sellers from database.`);
 
       return NextResponse.json({ success: true, deletedCount });

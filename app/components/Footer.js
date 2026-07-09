@@ -25,59 +25,78 @@ const footerLinks = {
     { label: 'Privacy Policy', href: '#' },
   ],
 };
+
 export default function Footer() {
   return (
-    <footer style={{ background: '#18120D', color: '#B0A090' }}>
+    <footer style={{ background: '#0D3B1E', color: '#A8C9B4' }}>
 
       {/* Main Footer */}
       <div style={{
-        padding: '52px 60px 36px',
+        padding: '56px 60px 40px',
         display: 'grid',
         gridTemplateColumns: '2.2fr 1fr 1fr 1fr',
-        gap: 44,
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        gap: 48,
+        borderBottom: '1px solid rgba(255,255,255,0.08)',
       }}>
 
         {/* Brand */}
-        <div>
-          <div style={{ fontSize: 22, fontWeight: 700, color: '#E06A1A', marginBottom: 4 }}>
-            बिहार का बाज़ार
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+            <img
+              src="/images/bkb_logo.png"
+              alt="BKB Logo"
+              style={{
+                height: 44,
+                width: 'auto',
+                objectFit: 'contain',
+                borderRadius: 8,
+                background: '#fff',
+                padding: '4px',
+              }}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', lineHeight: 1.1, fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
+                बिहार का बाज़ार
+              </div>
+              <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.5)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>
+                Bihar Ka Bazaar
+              </div>
+            </div>
           </div>
-          <div style={{ fontSize: 9, color: '#5A4A3A', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 14 }}>
-            Bihar Ka Bazaar
-          </div>
-          <p style={{ fontSize: 12, lineHeight: 1.8, color: '#705A45', maxWidth: 260, marginBottom: 16 }}>
+          <p style={{ fontSize: 13, lineHeight: 1.8, color: 'rgba(255,255,255,0.5)', maxWidth: 280, marginBottom: 20 }}>
             An initiative by Bindisa Agritech to connect Bihar's farmers and artisans directly to buyers across India. Authentic. Transparent. Empowering.
           </p>
-          <div style={{ fontSize: 12, color: '#705A45', marginBottom: 5 }}>📍 Patna, Bihar, India — 800001</div>
-          <div style={{ fontSize: 12, color: '#705A45', marginBottom: 5 }}>✉️ contact@biharkazaar.in</div>
-          <div style={{ fontSize: 12, color: '#705A45' }}>📞 +91 612-XXX-XXXX</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>📍 Patna, Bihar, India — 800001</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>✉️ contact@biharkabazaar.in</div>
+            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>📞 +91 612-XXX-XXXX</div>
+          </div>
         </div>
 
         {/* Link Columns */}
         {Object.entries(footerLinks).map(([title, links]) => (
           <div key={title}>
             <div style={{
-              fontSize: 10,
+              fontSize: 11,
               fontWeight: 700,
               letterSpacing: 2,
               textTransform: 'uppercase',
-              color: '#C0B0A0',
-              marginBottom: 14,
+              color: 'rgba(255,255,255,0.6)',
+              marginBottom: 16,
             }}>
               {title}
             </div>
             {links.map((link) => (
               <Link key={link.label} href={link.href} style={{ textDecoration: 'none' }}>
                 <div style={{
-                  fontSize: 12,
-                  color: '#705A45',
-                  marginBottom: 8,
+                  fontSize: 13,
+                  color: 'rgba(255,255,255,0.4)',
+                  marginBottom: 10,
                   cursor: 'pointer',
                   transition: 'color 0.18s',
                 }}
-                  onMouseEnter={e => e.target.style.color = '#E06A1A'}
-                  onMouseLeave={e => e.target.style.color = '#705A45'}
+                  onMouseEnter={e => e.target.style.color = '#E87B24'}
+                  onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}
                 >
                   {link.label}
                 </div>
@@ -89,16 +108,16 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div style={{
-        padding: '17px 60px',
+        padding: '18px 60px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
-        <span style={{ fontSize: 11, color: '#4A3A2A' }}>
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
           © 2025 Bihar Ka Bazaar. All rights reserved.
         </span>
-        <span style={{ fontSize: 11, color: '#4A3A2A' }}>
-          An initiative by <strong style={{ color: '#E06A1A' }}>Bindisa Agritech</strong>
+        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
+          An initiative by <strong style={{ color: '#E87B24' }}>Bindisa Agritech</strong>
         </span>
       </div>
 

@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "LOG-1782985120356-251",
+    "timestamp": "2026-07-02T09:38:40.356Z",
+    "action": "BULK_STATUS_UPDATE",
+    "details": "Updated status to 'Approved' for 6 sellers."
+  },
+  {
+    "id": "LOG-1782985129326-227",
+    "timestamp": "2026-07-02T09:38:49.326Z",
+    "action": "BULK_STATUS_UPDATE",
+    "details": "Updated status to 'Approved' for 6 sellers."
+  },
+  {
+    "id": "LOG-1783353455257-129",
+    "timestamp": "2026-07-06T15:57:35.257Z",
+    "action": "BULK_STATUS_UPDATE",
+    "details": "Updated status to 'Approved' for 1 sellers."
+  }
+]

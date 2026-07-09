@@ -1,16 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { Tag, Truck, CreditCard, LayoutDashboard, Award, MessageSquare, Camera, Globe } from 'lucide-react';
 
 const FEATURES = [
-  { em: "🆓", title: "Free Registration", desc: "No charges to join. No monthly fees. List your products and start selling completely free." },
-  { em: "🚚", title: "Logistics Support", desc: "We partner with couriers and guide you on packaging. You just prepare the order — we handle the rest." },
-  { em: "💸", title: "Fast Payments", desc: "Get paid directly to your bank account within 3–5 working days after successful delivery." },
-  { em: "📊", title: "Seller Dashboard", desc: "Track your orders, sales, revenue and customers — all in one easy-to-use dashboard." },
-  { em: "🏅", title: "GI Tag Help", desc: "Don't have a GI certificate? We help you apply and get your products officially certified." },
-  { em: "📱", title: "WhatsApp Support", desc: "Dedicated seller support team on WhatsApp. Get help in Hindi or English, anytime." },
-  { em: "📸", title: "Photography Help", desc: "Need better product photos? Our team assists with photography tips and guidance — completely free." },
-  { em: "🌍", title: "Pan-India Reach", desc: "Sell from your village in Bihar and reach customers in Mumbai, Delhi, Bengaluru and beyond." },
+  { icon: Tag, title: "Free Registration", desc: "No charges to join. No monthly fees. List your products and start selling completely free.", color: '#1A5C38' },
+  { icon: Truck, title: "Logistics Support", desc: "We partner with couriers and guide you on packaging. You just prepare the order — we handle the rest.", color: '#C85A08' },
+  { icon: CreditCard, title: "Fast Payments", desc: "Get paid directly to your bank account within 3–5 working days after successful delivery.", color: '#2B6CB0' },
+  { icon: LayoutDashboard, title: "Seller Dashboard", desc: "Track your orders, sales, revenue and customers — all in one easy-to-use dashboard.", color: '#C53030' },
+  { icon: Award, title: "GI Tag Help", desc: "Don't have a GI certificate? We help you apply and get your products officially certified.", color: '#D69E2E' },
+  { icon: MessageSquare, title: "WhatsApp Support", desc: "Dedicated seller support team on WhatsApp. Get help in Hindi or English, anytime.", color: '#319795' },
+  { icon: Camera, title: "Photography Help", desc: "Need better product photos? Our team assists with photography tips and guidance — completely free.", color: '#805AD5' },
+  { icon: Globe, title: "Pan-India Reach", desc: "Sell from your village in Bihar and reach customers in Mumbai, Delhi, Bengaluru and beyond.", color: '#E53E3E' },
 ];
 
 const STEPS = [
@@ -76,7 +77,8 @@ function FormInput({ label, placeholder, type = 'text', required = false, value,
           background: '#FFFCF8',
           outline: 'none',
           color: '#1A1410',
-          transition: 'border-color 0.2s'
+          transition: 'border-color 0.2s',
+          boxSizing: 'border-box'
         }}
         onFocus={e => e.target.style.borderColor = error ? '#D32F2F' : '#C85A08'}
         onBlur={e => e.target.style.borderColor = error ? '#D32F2F' : '#E8DDD4'}
@@ -106,7 +108,8 @@ function FormSelect({ label, options, required = false, value, onChange, error }
           outline: 'none',
           color: '#1A1410',
           cursor: 'pointer',
-          transition: 'border-color 0.2s'
+          transition: 'border-color 0.2s',
+          boxSizing: 'border-box'
         }}
         onFocus={e => e.target.style.borderColor = error ? '#D32F2F' : '#C85A08'}
         onBlur={e => e.target.style.borderColor = error ? '#D32F2F' : '#E8DDD4'}
@@ -141,7 +144,8 @@ function FormTextarea({ label, placeholder, required = false, rows = 3, value, o
           color: '#1A1410',
           resize: 'vertical',
           lineHeight: 1.6,
-          transition: 'border-color 0.2s'
+          transition: 'border-color 0.2s',
+          boxSizing: 'border-box'
         }}
         onFocus={e => e.target.style.borderColor = error ? '#D32F2F' : '#C85A08'}
         onBlur={e => e.target.style.borderColor = error ? '#D32F2F' : '#E8DDD4'}
@@ -176,10 +180,13 @@ export default function SellersPage() {
     bankAccountNumber: '',
     bankIfsc: '',
     aadhaarNumber: '',
+    photoSrc: '/images/farmers/farmer_1.png',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(true);
+  const [copiedId, setCopiedId] = useState(false);
 
   // OTP states
   const [sellerId, setSellerId] = useState('');
@@ -187,6 +194,11 @@ export default function SellersPage() {
   const [otpSent, setOtpSent] = useState(false);
   const [otpCountdown, setOtpCountdown] = useState(0);
   const [otpVerified, setOtpVerified] = useState(false);
+
+  // UPI verification states
+  const [upiVerifying, setUpiVerifying] = useState(false);
+  const [upiVerified, setUpiVerified] = useState(false);
+  const [upiVerifiedName, setUpiVerifiedName] = useState('');
 
   // Resume states
   const [showResumePanel, setShowResumePanel] = useState(false);
@@ -275,12 +287,54 @@ export default function SellersPage() {
       ...prev,
       [field]: e.target.value
     }));
+    if (field === 'upiId') {
+      setUpiVerified(false);
+      setUpiVerifiedName('');
+    }
     if (errors[field] || errors.submit) {
       setErrors(prev => ({
         ...prev,
         [field]: null,
         submit: null
       }));
+    }
+  };
+
+  const handleVerifyUpi = async () => {
+    if (!formData.upiId.trim()) {
+      setErrors(prev => ({ ...prev, upiId: "UPI ID is required to verify." }));
+      return;
+    }
+    if (!/^[\w.-]+@[\w.-]+$/.test(formData.upiId.trim())) {
+      setErrors(prev => ({ ...prev, upiId: "Please enter a valid UPI ID (e.g. name@bank)." }));
+      return;
+    }
+
+    setUpiVerifying(true);
+    setErrors(prev => ({ ...prev, upiId: null }));
+    setUpiVerified(false);
+    setUpiVerifiedName('');
+
+    try {
+      const response = await fetch('/api/verify-upi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ upiId: formData.upiId.trim() })
+      });
+      const result = await response.json();
+
+      if (result.success && result.verified) {
+        setUpiVerified(true);
+        setUpiVerifiedName(result.accountHolderName);
+        setFormData(prev => ({ ...prev, bankHolderName: result.accountHolderName }));
+      } else {
+        setErrors(prev => ({ ...prev, upiId: result.error || "UPI ID not found. Verify & try again." }));
+      }
+    } catch (err) {
+      console.error("UPI Verification Error:", err);
+      setErrors(prev => ({ ...prev, upiId: "Verification server is offline. Please try again." }));
+    } finally {
+      setUpiVerifying(false);
     }
   };
 
@@ -366,6 +420,8 @@ export default function SellersPage() {
           newErrors.upiId = "UPI ID is required";
         } else if (!/^[\w.-]+@[\w.-]+$/.test(formData.upiId.trim())) {
           newErrors.upiId = "Please enter a valid UPI ID (e.g. mobile@upi)";
+        } else if (!upiVerified) {
+          newErrors.upiId = "Please click 'Verify' and successfully verify your UPI ID first.";
         }
       } else if (formData.payoutMethod === "bank") {
         if (!formData.bankHolderName.trim()) {
@@ -385,6 +441,10 @@ export default function SellersPage() {
 
       if (formData.aadhaarNumber.trim() && !/^\d{12}$/.test(formData.aadhaarNumber.trim())) {
         newErrors.aadhaarNumber = "Aadhaar number must be exactly 12 digits";
+      }
+
+      if (!termsAccepted) {
+        newErrors.terms = "You must accept the terms and conditions to proceed";
       }
     }
 
@@ -429,6 +489,9 @@ export default function SellersPage() {
       return;
     }
 
+    // Re-validate Step 1 fields in case user changed them after sending OTP
+    if (!validateStep(1)) return;
+
     setLoading(true);
     setErrors({});
     try {
@@ -442,7 +505,8 @@ export default function SellersPage() {
           mobile: formData.mobile,
           email: formData.email,
           language: formData.language,
-          otp: otp.trim()
+          otp: otp.trim(),
+          photoSrc: formData.photoSrc
         }),
       });
 
@@ -452,6 +516,8 @@ export default function SellersPage() {
         setSellerId(result.sellerId);
         setOtpVerified(true);
         setStep(2); // Progress directly to step 2 after account creation
+        // Scroll to form section on step change
+        setTimeout(() => document.getElementById('register-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
       } else {
         setErrors({ submit: result.error || 'Account registration failed. Please try again.' });
       }
@@ -502,6 +568,8 @@ export default function SellersPage() {
       const result = await response.json();
       if (result.success) {
         setStep(nextStep);
+        // Scroll to form section on step change
+        setTimeout(() => document.getElementById('register-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
       } else {
         setErrors({ submit: result.error || 'Failed to update details. Please try again.' });
       }
@@ -525,6 +593,8 @@ export default function SellersPage() {
 
   const handleBack = () => {
     setStep(prev => prev - 1);
+    // Scroll to form section on step change
+    setTimeout(() => document.getElementById('register-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
   const handleSubmit = async (e) => {
@@ -567,9 +637,28 @@ export default function SellersPage() {
 
   return (
     <div style={{ background: '#FFFCF8' }}>
+      {/* Responsive styles */}
+      <style>{`
+        @media (max-width: 768px) {
+          .bkb-hero { grid-template-columns: 1fr !important; padding: 40px 20px !important; gap: 36px !important; }
+          .bkb-features-grid { grid-template-columns: 1fr 1fr !important; }
+          .bkb-steps-grid { grid-template-columns: 1fr 1fr !important; }
+          .bkb-register-section { grid-template-columns: 1fr !important; padding: 40px 20px !important; gap: 36px !important; }
+          .bkb-testimonials-grid { grid-template-columns: 1fr !important; }
+          .bkb-section-padding { padding: 48px 20px !important; }
+          .bkb-hero-title { font-size: 32px !important; }
+          .bkb-form-2col { grid-template-columns: 1fr !important; }
+        }
+        @media (max-width: 480px) {
+          .bkb-features-grid { grid-template-columns: 1fr !important; }
+          .bkb-steps-grid { grid-template-columns: 1fr !important; }
+          .bkb-stats-grid { grid-template-columns: 1fr !important; }
+          .bkb-hero-title { font-size: 28px !important; }
+        }
+      `}</style>
 
       {/* ── HERO ── */}
-      <div style={{
+      <div className="bkb-hero" style={{
         background: 'linear-gradient(140deg, #EAF5F0 0%, #FFFCF8 60%, #FFF4EC 100%)',
         padding: '72px 60px',
         display: 'grid',
@@ -582,7 +671,7 @@ export default function SellersPage() {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#EAF5F0', border: '1px solid rgba(26,92,56,0.2)', borderRadius: 40, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: '#1A5C38', marginBottom: 20 }}>
             🌾 For Farmers & Artisans of Bihar
           </div>
-          <h1 style={{ fontSize: 46, color: '#1A1410', lineHeight: 1.1, marginBottom: 16, fontFamily: "'Playfair Display', serif" }}>
+          <h1 className="bkb-hero-title" style={{ fontSize: 46, color: '#1A1410', lineHeight: 1.1, marginBottom: 16, fontFamily: "'Playfair Display', serif" }}>
             Sell Your <em style={{ color: '#1A5C38', fontStyle: 'italic' }}>Bihar Products</em> to All of India
           </h1>
           <p style={{ fontSize: 16, color: '#4A3F35', lineHeight: 1.75, marginBottom: 28 }}>
@@ -596,7 +685,7 @@ export default function SellersPage() {
           </button>
 
           {/* Stats */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginTop: 36 }}>
+          <div className="bkb-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, marginTop: 36 }}>
             {[["800+", "Active Sellers"], ["₹0", "Registration Fee"], ["3–5", "Days to First Payment"]].map(([n, l]) => (
               <div key={l} style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 12, padding: '16px', textAlign: 'center' }}>
                 <div style={{ fontSize: 24, fontWeight: 800, color: '#1A5C38', fontFamily: "'Playfair Display', serif" }}>{n}</div>
@@ -628,32 +717,37 @@ export default function SellersPage() {
       </div>
 
       {/* ── FEATURES ── */}
-      <div style={{ padding: '72px 60px', background: '#fff' }}>
+      <div className="bkb-section-padding" style={{ padding: '72px 60px', background: '#fff' }}>
         <div style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 44px' }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 8 }}>Benefits</div>
           <h2 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>Everything You Need to Sell</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 18 }}>
-          {FEATURES.map(f => (
-            <div key={f.title} style={{ background: '#FFFCF8', border: '1.5px solid #E8DDD4', borderRadius: 16, padding: '24px 18px', textAlign: 'center', transition: 'all 0.22s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#C85A08'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD4'; e.currentTarget.style.transform = 'none'; }}
-            >
-              <span style={{ fontSize: 38, display: 'block', marginBottom: 12 }}>{f.em}</span>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1A1410', marginBottom: 8 }}>{f.title}</h3>
-              <p style={{ fontSize: 12, color: '#8C7B6E', lineHeight: 1.65 }}>{f.desc}</p>
-            </div>
-          ))}
+        <div className="bkb-features-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 18 }}>
+          {FEATURES.map(f => {
+            const Icon = f.icon;
+            return (
+              <div key={f.title} style={{ background: '#FFFCF8', border: '1.5px solid #E8DDD4', borderRadius: 16, padding: '24px 18px', textAlign: 'center', transition: 'all 0.22s', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#C85A08'; e.currentTarget.style.transform = 'translateY(-3px)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E8DDD4'; e.currentTarget.style.transform = 'none'; }}
+              >
+                <div style={{ background: `${f.color}12`, borderRadius: '50%', padding: 12, display: 'inline-flex', marginBottom: 16 }}>
+                  <Icon size={26} color={f.color} strokeWidth={2} />
+                </div>
+                <h3 style={{ fontSize: 14, fontWeight: 700, color: '#1A1410', marginBottom: 8 }}>{f.title}</h3>
+                <p style={{ fontSize: 12, color: '#8C7B6E', lineHeight: 1.65 }}>{f.desc}</p>
+              </div>
+            );
+          })}
         </div>
       </div>
 
       {/* ── HOW IT WORKS ── */}
-      <div style={{ padding: '72px 60px', background: '#FFF8F2', borderTop: '1px solid #E8DDD4', borderBottom: '1px solid #E8DDD4' }}>
+      <div className="bkb-section-padding" style={{ padding: '72px 60px', background: '#FFF8F2', borderTop: '1px solid #E8DDD4', borderBottom: '1px solid #E8DDD4' }}>
         <div style={{ textAlign: 'center', maxWidth: 560, margin: '0 auto 44px' }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 8 }}>Process</div>
           <h2 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>How It Works</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, maxWidth: 900, margin: '0 auto' }}>
+        <div className="bkb-steps-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 24, maxWidth: 900, margin: '0 auto' }}>
           {STEPS.map((s, i) => (
             <div key={s.n} style={{ textAlign: 'center', position: 'relative' }}>
               {i < STEPS.length - 1 && (
@@ -670,7 +764,7 @@ export default function SellersPage() {
       </div>
 
       {/* ── REGISTRATION FORM ── */}
-      <div id="register-section" style={{ background: '#1A5C38', padding: '72px 60px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
+      <div id="register-section" className="bkb-register-section" style={{ background: '#1A5C38', padding: '72px 60px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }}>
 
         {/* Left text */}
         <div>
@@ -709,6 +803,36 @@ export default function SellersPage() {
               <p style={{ fontSize: 14, color: '#4A3F35', lineHeight: 1.7, marginBottom: 20 }}>
                 Dhanyavaad, <strong>{formData.fullName}</strong>! Our verification team will review your application for <strong>{formData.category}</strong> and contact you in <strong>{formData.language}</strong> at <strong>{formData.mobile}</strong> within 24 hours.
               </p>
+
+              {/* Seller ID Display */}
+              <div style={{ background: '#EAF5F0', border: '2px solid #1A5C38', borderRadius: 12, padding: '16px 20px', marginBottom: 20, textAlign: 'center' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#1A5C38', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Your Seller ID</div>
+                <div style={{ fontSize: 20, fontWeight: 800, color: '#1A1410', fontFamily: "'Playfair Display', serif", marginBottom: 10 }}>{sellerId}</div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    navigator.clipboard.writeText(sellerId);
+                    setCopiedId(true);
+                    setTimeout(() => setCopiedId(false), 2000);
+                  }}
+                  style={{
+                    padding: '8px 20px',
+                    borderRadius: 8,
+                    fontSize: 12,
+                    fontWeight: 700,
+                    background: copiedId ? '#1A5C38' : '#fff',
+                    color: copiedId ? '#fff' : '#1A5C38',
+                    border: '1.5px solid #1A5C38',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit',
+                    transition: 'all 0.2s'
+                  }}
+                >
+                  {copiedId ? '✓ Copied!' : '📋 Copy Seller ID'}
+                </button>
+                <div style={{ fontSize: 11, color: '#8C7B6E', marginTop: 8 }}>Save this ID — you can use it to resume or track your registration.</div>
+              </div>
+
               <div style={{ background: '#F5EEE6', borderRadius: 12, padding: '16px', fontSize: 13, color: '#4A3F35', textAlign: 'left', lineHeight: 1.6 }}>
                 <strong style={{ color: '#1A1410', display: 'block', marginBottom: 8 }}>Application Details Summary:</strong>
                 <ul style={{ paddingLeft: 20, margin: 0 }}>
@@ -910,6 +1034,97 @@ export default function SellersPage() {
                     error={errors.language}
                     required
                   />
+
+                  {/* Farmer Portrait Selection */}
+                  <div style={{ marginTop: 18, borderTop: '1px solid #E8DDD4', paddingTop: 16, marginBottom: 14 }}>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 8 }}>
+                      Farmer / Artisan Photograph <span style={{ color: '#C85A08' }}> *</span>
+                    </label>
+                    <p style={{ fontSize: 11, color: '#8C7B6E', marginBottom: 10 }}>
+                      This photo shows beside your products to give buyers a local, genuine feel of who produced it.
+                    </p>
+                    
+                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                      {[
+                        { url: '/images/farmers/farmer_1.png', label: 'Farmer Portrait 1' },
+                        { url: '/images/farmers/farmer_2.png', label: 'Farmer Portrait 2' },
+                        { url: '/images/farmers/farmer_3.png', label: 'Farmer Portrait 3' }
+                      ].map((p, idx) => (
+                        <div 
+                          key={p.url} 
+                          onClick={() => setFormData(prev => ({ ...prev, photoSrc: p.url }))}
+                          style={{
+                            border: `2.5px solid ${formData.photoSrc === p.url ? '#1A5C38' : '#E8DDD4'}`,
+                            borderRadius: 12,
+                            overflow: 'hidden',
+                            cursor: 'pointer',
+                            width: 72,
+                            height: 72,
+                            background: '#FFFCF8',
+                            position: 'relative'
+                          }}
+                        >
+                          <img src={p.url} alt={p.label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          {formData.photoSrc === p.url && (
+                            <div style={{ position: 'absolute', bottom: 0, insetInline: 0, background: '#1A5C38', color: '#fff', fontSize: 9, fontWeight: 800, textAlign: 'center', padding: '2px 0' }}>
+                              SELECTED
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      
+                      {/* Upload option */}
+                      <div 
+                        onClick={() => document.getElementById('farmer-computer-photo').click()}
+                        style={{
+                          border: `2px dashed ${(!formData.photoSrc.startsWith('/images/farmers/')) ? '#1A5C38' : '#E8DDD4'}`,
+                          borderRadius: 12,
+                          width: 72,
+                          height: 72,
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          cursor: 'pointer',
+                          background: '#FFFCF8',
+                          position: 'relative',
+                          textAlign: 'center',
+                          padding: 4,
+                          boxSizing: 'border-box'
+                        }}
+                      >
+                        {(!formData.photoSrc.startsWith('/images/farmers/')) ? (
+                          <>
+                            <img src={formData.photoSrc} alt="Custom Portrait" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 10 }} />
+                            <div style={{ position: 'absolute', bottom: 0, insetInline: 0, background: '#1A5C38', color: '#fff', fontSize: 9, fontWeight: 800, textAlign: 'center', padding: '2px 0' }}>
+                              UPLOADED
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <span style={{ fontSize: 16 }}>📁</span>
+                            <span style={{ fontSize: 9, fontWeight: 700, color: '#8C7B6E', marginTop: 3 }}>Upload Own</span>
+                          </>
+                        )}
+                        <input 
+                          type="file" 
+                          id="farmer-computer-photo" 
+                          accept="image/*" 
+                          onChange={(e) => {
+                            const file = e.target.files[0];
+                            if (file) {
+                              const reader = new FileReader();
+                              reader.onload = (event) => {
+                                setFormData(prev => ({ ...prev, photoSrc: event.target.result }));
+                              };
+                              reader.readAsDataURL(file);
+                            }
+                          }}
+                          style={{ display: 'none' }} 
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
 
@@ -924,7 +1139,7 @@ export default function SellersPage() {
                     </div>
                   )}
                   
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div className="bkb-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <FormSelect
                       label="Seller Type"
                       options={SELLER_TYPES}
@@ -941,7 +1156,7 @@ export default function SellersPage() {
                       error={errors.businessName}
                     />
                   </div>
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div className="bkb-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                     <FormSelect
                       label="District"
                       options={DISTRICTS}
@@ -1082,14 +1297,59 @@ export default function SellersPage() {
                   </div>
 
                   {formData.payoutMethod === 'upi' ? (
-                    <FormInput
-                      label="UPI ID for Payments"
-                      placeholder="e.g. mobile@upi, name@okaxis"
-                      value={formData.upiId}
-                      onChange={handleInputChange('upiId')}
-                      error={errors.upiId}
-                      required
-                    />
+                    <div style={{ marginBottom: 14 }}>
+                      <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 5 }}>
+                        UPI ID for Payments<span style={{ color: '#C85A08' }}> *</span>
+                      </label>
+                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, alignItems: 'end' }}>
+                        <input
+                          type="text"
+                          placeholder="e.g. mobile@upi, name@okaxis"
+                          value={formData.upiId}
+                          onChange={handleInputChange('upiId')}
+                          style={{
+                            width: '100%',
+                            padding: '11px 13px',
+                            border: `1.5px solid ${errors.upiId ? '#D32F2F' : '#E8DDD4'}`,
+                            borderRadius: 8,
+                            fontSize: 13,
+                            fontFamily: 'inherit',
+                            background: upiVerified ? '#EAF5F0' : '#FFFCF8',
+                            outline: 'none',
+                            color: '#1A1410',
+                            transition: 'border-color 0.2s',
+                            boxSizing: 'border-box'
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyUpi}
+                          disabled={upiVerifying || upiVerified || !formData.upiId.trim()}
+                          style={{
+                            padding: '12px 8px',
+                            borderRadius: 8,
+                            fontSize: 12,
+                            fontWeight: 700,
+                            background: (upiVerified || !formData.upiId.trim()) ? '#E8DDD4' : '#C85A08',
+                            color: upiVerified ? '#1A5C38' : (upiVerifying || !formData.upiId.trim() ? '#8C7B6E' : '#fff'),
+                            border: 'none',
+                            cursor: (upiVerifying || upiVerified || !formData.upiId.trim()) ? 'not-allowed' : 'pointer',
+                            fontFamily: 'inherit',
+                            transition: 'all 0.2s',
+                            height: '42px',
+                            whiteSpace: 'nowrap'
+                          }}
+                        >
+                          {upiVerifying ? 'Verifying...' : (upiVerified ? 'Verified ✓' : 'Verify')}
+                        </button>
+                      </div>
+                      {errors.upiId && <span style={{ display: 'block', fontSize: 11, color: '#D32F2F', marginTop: 4 }}>{errors.upiId}</span>}
+                      {upiVerified && upiVerifiedName && (
+                        <span style={{ display: 'block', fontSize: 12, color: '#1A5C38', marginTop: 6, fontWeight: 600 }}>
+                          ✓ Account Holder: {upiVerifiedName}
+                        </span>
+                      )}
+                    </div>
                   ) : (
                     <div>
                       <FormInput
@@ -1100,7 +1360,7 @@ export default function SellersPage() {
                         error={errors.bankHolderName}
                         required
                       />
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <div className="bkb-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                         <FormInput
                           label="Bank Account Number"
                           placeholder="e.g. 10023456789"
@@ -1128,12 +1388,22 @@ export default function SellersPage() {
                     onChange={handleInputChange('aadhaarNumber')}
                     error={errors.aadhaarNumber}
                   />
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 8, marginBottom: 14 }}>
-                    <input type="checkbox" id="terms" required style={{ marginTop: 3, cursor: 'pointer' }} defaultChecked />
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 8, marginBottom: errors.terms ? 4 : 14 }}>
+                    <input
+                      type="checkbox"
+                      id="terms"
+                      checked={termsAccepted}
+                      onChange={(e) => {
+                        setTermsAccepted(e.target.checked);
+                        if (errors.terms) setErrors(prev => ({ ...prev, terms: null }));
+                      }}
+                      style={{ marginTop: 3, cursor: 'pointer' }}
+                    />
                     <label htmlFor="terms" style={{ fontSize: 11, color: '#8C7B6E', lineHeight: 1.4, cursor: 'pointer' }}>
                       I agree to the Bihar Ka Bazaar seller terms and verify that the information supplied above is accurate.
                     </label>
                   </div>
+                  {errors.terms && <span style={{ display: 'block', fontSize: 11, color: '#D32F2F', marginBottom: 14 }}>{errors.terms}</span>}
                 </div>
               )}
 
@@ -1170,54 +1440,29 @@ export default function SellersPage() {
                   </button>
                 )}
                 {step === 1 ? (
-                  !otpSent ? (
-                    <button
-                      type="button"
-                      onClick={handleSendOtp}
-                      style={{
-                        flex: 2,
-                        padding: 13,
-                        borderRadius: 10,
-                        fontSize: 14,
-                        fontWeight: 700,
-                        background: '#C85A08',
-                        color: '#fff',
-                        border: 'none',
-                        cursor: 'pointer',
-                        fontFamily: 'inherit',
-                        transition: 'all 0.2s',
-                        textAlign: 'center'
-                      }}
-                      onMouseEnter={e => e.target.style.background = '#A04806'}
-                      onMouseLeave={e => e.target.style.background = '#C85A08'}
-                    >
-                      Send Verification OTP
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleRegisterAccount}
-                      disabled={loading}
-                      style={{
-                        flex: 2,
-                        padding: 13,
-                        borderRadius: 10,
-                        fontSize: 14,
-                        fontWeight: 700,
-                        background: loading ? '#8C7B6E' : '#1A5C38',
-                        color: '#fff',
-                        border: 'none',
-                        cursor: loading ? 'not-allowed' : 'pointer',
-                        fontFamily: 'inherit',
-                        transition: 'all 0.2s',
-                        textAlign: 'center'
-                      }}
-                      onMouseEnter={e => !loading && (e.target.style.background = '#124328')}
-                      onMouseLeave={e => !loading && (e.target.style.background = '#1A5C38')}
-                    >
-                      {loading ? 'Registering...' : 'Verify OTP & Register Account'}
-                    </button>
-                  )
+                  <button
+                    type="button"
+                    onClick={!otpSent ? handleSendOtp : handleRegisterAccount}
+                    disabled={loading}
+                    style={{
+                      flex: 2,
+                      padding: 13,
+                      borderRadius: 10,
+                      fontSize: 14,
+                      fontWeight: 700,
+                      background: loading ? '#8C7B6E' : (!otpSent ? '#C85A08' : '#1A5C38'),
+                      color: '#fff',
+                      border: 'none',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s',
+                      textAlign: 'center'
+                    }}
+                    onMouseEnter={e => !loading && (e.target.style.background = !otpSent ? '#A04806' : '#124328')}
+                    onMouseLeave={e => !loading && (e.target.style.background = !otpSent ? '#C85A08' : '#1A5C38')}
+                  >
+                    {loading ? 'Please wait...' : (!otpSent ? 'Send OTP & Continue' : 'Verify OTP & Register →')}
+                  </button>
                 ) : step < 4 ? (
                   <button
                     type="button"
@@ -1275,12 +1520,12 @@ export default function SellersPage() {
       </div>
 
       {/* ── TESTIMONIALS FROM SELLERS ── */}
-      <div style={{ padding: '72px 60px', background: '#fff' }}>
+      <div className="bkb-section-padding" style={{ padding: '72px 60px', background: '#fff' }}>
         <div style={{ textAlign: 'center', maxWidth: 520, margin: '0 auto 44px' }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 8 }}>Seller Stories</div>
           <h2 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>What Our Sellers Say</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
+        <div className="bkb-testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
           {[
             { em: "👩‍🌾", bg: "#EAF5F0", name: "Kamla Devi", role: "Madhubani Artist · Madhubani", text: "Before BKB I could only sell locally. Now my paintings go to Bangalore, Mumbai, even overseas. I earn 4x more than before." },
             { em: "👨‍🌾", bg: "#FFF4EC", name: "Ram Prasad", role: "Makhana Farmer · Darbhanga", text: "I used to sell to middlemen at very low prices. Now I get the full market price directly. My family's life has completely changed." },

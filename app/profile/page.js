@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const TABS = ['Profile', 'My Orders', 'Addresses', 'Settings'];
 
@@ -24,8 +25,56 @@ function StatusPill({ status }) {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState('Profile');
   const [editing, setEditing] = useState(false);
+  const [checkedAuth, setCheckedAuth] = useState(false);
+  const [buyerProfile, setBuyerProfile] = useState({
+    name: 'Rajan Kumar',
+    email: 'rajan@example.com',
+    mobile: '9876543210',
+    district: 'Patna',
+    address: 'Boring Road, Patna'
+  });
+
+  const [isSeller, setIsSeller] = useState(false);
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('bkb_user_logged_in');
+    if (!isLoggedIn) {
+      router.replace('/login?role=buyer');
+    } else {
+      setIsSeller(!!localStorage.getItem('bkb_seller_id'));
+      const storedMobile = localStorage.getItem('bkb_user_mobile');
+      if (storedMobile) {
+        const storedProfile = localStorage.getItem(`bkb_buyer_profile_${storedMobile}`);
+        if (storedProfile) {
+          try {
+            setBuyerProfile(JSON.parse(storedProfile));
+          } catch {
+            // Keep default
+          }
+        } else {
+          setBuyerProfile(prev => ({ ...prev, mobile: storedMobile }));
+        }
+      }
+      setCheckedAuth(true);
+    }
+  }, [router]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('bkb_user_logged_in');
+    localStorage.removeItem('bkb_user_mobile');
+    router.push('/login?role=buyer&logout=true');
+  };
+
+  if (!checkedAuth) {
+    return (
+      <div style={{ background: '#FFFCF8', minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <p style={{ fontSize: 16, color: '#8C7B6E', fontWeight: 600 }}>Loading profile console...</p>
+      </div>
+    );
+  }
 
   return (
     <div style={{ background: '#FFFCF8', minHeight: '80vh' }}>
@@ -42,8 +91,8 @@ export default function ProfilePage() {
           {/* Avatar */}
           <div style={{ padding: '28px 24px', textAlign: 'center', borderBottom: '1px solid #E8DDD4', background: 'linear-gradient(135deg, #FFF4EC, #FFFCF8)' }}>
             <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#FFF4EC', border: '3px solid #FFE8D4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, margin: '0 auto 12px' }}>👤</div>
-            <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1410', marginBottom: 3 }}>Rajan Kumar</div>
-            <div style={{ fontSize: 12, color: '#8C7B6E' }}>rajan@example.com</div>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1410', marginBottom: 3 }}>{buyerProfile.name}</div>
+            <div style={{ fontSize: 12, color: '#8C7B6E' }}>{buyerProfile.email}</div>
             <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 5, background: '#EAF5F0', color: '#1A5C38', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 20 }}>✓ Verified Account</div>
           </div>
           {/* Nav */}
@@ -55,12 +104,20 @@ export default function ProfilePage() {
               </button>
             ))}
             <div style={{ margin: '8px 0', height: 1, background: '#E8DDD4' }} />
-            <Link href="/dashboard">
-              <button style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#4A3F35' }}>
-                🌾 Seller Dashboard
-              </button>
-            </Link>
-            <button style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#C0392B' }}>
+            {isSeller ? (
+              <Link href="/dashboard">
+                <button style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#4A3F35' }}>
+                  🌾 Seller Dashboard
+                </button>
+              </Link>
+            ) : (
+              <Link href="/sellers">
+                <button style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#1A5C38' }}>
+                  🌾 Sell on BKB
+                </button>
+              </Link>
+            )}
+            <button onClick={handleLogout} style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#C0392B' }}>
               🚪 Log Out
             </button>
           </div>
@@ -79,12 +136,15 @@ export default function ProfilePage() {
               </div>
               <div style={{ padding: 26 }}>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 18 }}>
-                  {[['Full Name', 'Rajan Kumar'], ['Phone Number', '+91 98765 43210'], ['Email Address', 'rajan@example.com'], ['Date of Birth', '15 March 1992']].map(([label, value]) => (
+                  {[
+                    ['Full Name', buyerProfile.name],
+                    ['Phone Number', `+91 ${buyerProfile.mobile}`],
+                    ['Email Address', buyerProfile.email],
+                    ['District / Region', buyerProfile.district]
+                  ].map(([label, value]) => (
                     <div key={label}>
                       <div style={{ fontSize: 11, fontWeight: 700, color: '#8C7B6E', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</div>
-                      {editing
-                        ? <input defaultValue={value} style={{ width: '100%', padding: '10px 13px', border: '1.5px solid #E8DDD4', borderRadius: 8, fontSize: 14, fontFamily: 'inherit', background: '#FFFCF8', outline: 'none', color: '#1A1410' }} />
-                        : <div style={{ fontSize: 15, fontWeight: 500, color: '#1A1410' }}>{value}</div>}
+                      <div style={{ fontSize: 15, fontWeight: 500, color: '#1A1410' }}>{value}</div>
                     </div>
                   ))}
                 </div>
@@ -128,9 +188,11 @@ export default function ProfilePage() {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
                   <div>
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: '#EAF5F0', color: '#1A5C38', fontSize: 11, fontWeight: 700, padding: '3px 9px', borderRadius: 20, marginBottom: 10 }}>✓ Default Address</div>
-                    <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1410', marginBottom: 4 }}>Rajan Kumar</div>
+                    <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1410', marginBottom: 4 }}>{buyerProfile.name}</div>
                     <div style={{ fontSize: 14, color: '#4A3F35', lineHeight: 1.7 }}>
-                      House No. 42, Rajendra Nagar<br />Near Central School, Boring Road<br />Patna, Bihar — 800001<br />+91 98765 43210
+                      {buyerProfile.address}<br />
+                      District: {buyerProfile.district}, Bihar<br />
+                      Mobile: +91 {buyerProfile.mobile}
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: 8 }}>

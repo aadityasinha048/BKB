@@ -123,13 +123,20 @@ export default function AdminLayout({ children }) {
             width: 36,
             height: 36,
             borderRadius: 10,
-            background: 'linear-gradient(135deg, #C85A08, #F09819)',
+            background: '#fff',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontSize: 18,
             flexShrink: 0,
-          }}>🌾</div>
+            overflow: 'hidden',
+            border: '1.5px solid #1B6B3A',
+          }}>
+            <img
+              src="/images/bkb_logo.png"
+              alt="BKB"
+              style={{ width: '85%', height: '85%', objectFit: 'contain' }}
+            />
+          </div>
           {!sidebarCollapsed && (
             <div>
               <div style={{ fontSize: 14, fontWeight: 800, color: '#F5F0EB', letterSpacing: 0.3 }}>BKB Admin</div>

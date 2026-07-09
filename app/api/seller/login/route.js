@@ -1,9 +1,14 @@
 import { NextResponse } from 'next/server';
 import { findOne } from '@/lib/db';
+import { cleanString, isIndianMobile, isOtp, publicSeller } from '@/lib/validation';
+
+const DEMO_OTP = process.env.BKB_DEMO_OTP || '123456';
 
 export async function POST(request) {
   try {
-    const { mobile, otp } = await request.json();
+    const body = await request.json();
+    const mobile = cleanString(body.mobile, 10);
+    const otp = body.otp === undefined ? undefined : cleanString(body.otp, 6);
 
     if (!mobile) {
       return NextResponse.json(
@@ -12,11 +17,15 @@ export async function POST(request) {
       );
     }
 
-    // Clean up mobile input
-    const cleanMobile = mobile.trim();
+    if (!isIndianMobile(mobile)) {
+      return NextResponse.json(
+        { success: false, error: 'Please enter a valid 10-digit Indian mobile number.' },
+        { status: 400 }
+      );
+    }
 
     // Check if seller exists with this mobile number
-    const seller = await findOne('sellers', 'mobile', cleanMobile);
+    const seller = await findOne('sellers', 'mobile', mobile);
 
     if (!seller) {
       return NextResponse.json(
@@ -34,9 +43,9 @@ export async function POST(request) {
     }
 
     // If OTP is provided, verify it
-    if (otp !== '123456') {
+    if (!isOtp(otp) || otp !== DEMO_OTP) {
       return NextResponse.json(
-        { success: false, error: 'Invalid OTP code. Please enter 123456.' },
+        { success: false, error: 'Invalid OTP code.' },
         { status: 400 }
       );
     }
@@ -44,7 +53,7 @@ export async function POST(request) {
     // Success login
     return NextResponse.json({
       success: true,
-      seller,
+      seller: publicSeller(seller),
     });
   } catch (error) {
     console.error('Seller Login API Error:', error);
