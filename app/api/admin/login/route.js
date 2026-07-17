@@ -1,34 +1,27 @@
 import { NextResponse } from 'next/server';
-import { validateAdminLogin } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 
-// POST — Admin Login
+// POST — Admin Login Token Verification
 export async function POST(request) {
   try {
-    const { username, password } = await request.json();
-
-    if (!username || !password) {
+    const authError = await requireAdmin(request);
+    
+    if (authError) {
       return NextResponse.json(
-        { success: false, error: 'Username and password are required.' },
-        { status: 400 }
+        { success: false, error: 'Incorrect email or password' },
+        { status: authError.status }
       );
     }
 
-    const result = await validateAdminLogin(username, password);
-
-    if (!result.success) {
-      return NextResponse.json(
-        { success: false, error: result.error },
-        { status: 401 }
-      );
-    }
-
+    // Success! Return user details verified from Firebase ID Token
     return NextResponse.json({
       success: true,
-      token: result.token,
-      message: 'Login successful.',
+      message: 'Authentication successful via Firebase Auth.',
+      uid: request.user?.uid,
+      email: request.user?.email,
     });
   } catch (error) {
-    console.error('Admin Login Error:', error);
+    console.error('Admin Firebase Token Verify Error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal server error.' },
       { status: 500 }

@@ -4,20 +4,7 @@ import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
-const ALL_PRODUCTS = [
-  { id: 1, name: "Premium Makhana (Fox Nuts)", seller: "Ram Prasad", dist: "Darbhanga", cat: "Food & Agri", price: 480, unit: "500g", em: "🌰", gi: true, rat: "4.8", rev: 96, bg: "#FFF8E8" },
-  { id: 2, name: "Madhubani Painting — Fish Motif", seller: "Sunita Devi", dist: "Madhubani", cat: "Handicrafts", price: 1200, unit: "piece", em: "🎨", gi: true, rat: "5.0", rev: 48, bg: "#FFF0F5" },
-  { id: 3, name: "Bhagalpuri Silk Saree", seller: "Md. Arshad", dist: "Bhagalpur", cat: "Textiles", price: 3800, unit: "piece", em: "🧣", gi: true, rat: "4.9", rev: 62, bg: "#F0F4FF" },
-  { id: 4, name: "Shahi Litchi — Fresh", seller: "Vijay Kumar", dist: "Muzaffarpur", cat: "Fruits", price: 380, unit: "1kg", em: "🍈", gi: true, rat: "4.7", rev: 184, bg: "#F0FFF4" },
-  { id: 5, name: "Silao Khaja", seller: "Deepak Halwai", dist: "Nalanda", cat: "Sweets", price: 250, unit: "500g", em: "🍭", gi: true, rat: "4.6", rev: 77, bg: "#FFF8E8" },
-  { id: 6, name: "Katarni Rice", seller: "Manoj Sharma", dist: "Bhojpur", cat: "Food & Agri", price: 160, unit: "1kg", em: "🍚", gi: true, rat: "4.8", rev: 113, bg: "#FAFFF4" },
-  { id: 7, name: "Jardalu Mango", seller: "Ramesh Yadav", dist: "Bhagalpur", cat: "Fruits", price: 420, unit: "1kg", em: "🥭", gi: true, rat: "4.9", rev: 91, bg: "#FFF8E8" },
-  { id: 8, name: "Madhubani Hand-Painted Dupatta", seller: "Rekha Devi", dist: "Madhubani", cat: "Textiles", price: 950, unit: "piece", em: "🎀", gi: false, rat: "4.7", rev: 34, bg: "#FFF0F5" },
-  { id: 9, name: "Bhagalpur Mango Pickle", seller: "Meena Devi", dist: "Bhagalpur", cat: "Food & Agri", price: 220, unit: "500g", em: "🫙", gi: false, rat: "4.5", rev: 58, bg: "#FFF8E8" },
-  { id: 10, name: "Tikuli Art Wall Piece", seller: "Arvind Kumar", dist: "Patna", cat: "Handicrafts", price: 680, unit: "piece", em: "🖼️", gi: false, rat: "4.6", rev: 29, bg: "#FFF4E8" },
-  { id: 11, name: "Shahi Litchi Juice", seller: "Vijay Kumar", dist: "Muzaffarpur", cat: "Sweets", price: 180, unit: "1L", em: "🧃", gi: false, rat: "4.4", rev: 43, bg: "#F0FFF4" },
-  { id: 12, name: "Sikki Grass Basket", seller: "Champa Devi", dist: "Sitamarhi", cat: "Handicrafts", price: 450, unit: "piece", em: "🧺", gi: false, rat: "4.8", rev: 67, bg: "#FAFFF4" },
-];
+
 
 function SearchContent() {
   const searchParams = useSearchParams();

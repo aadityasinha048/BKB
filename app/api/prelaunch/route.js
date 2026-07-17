@@ -1,11 +1,21 @@
 import { NextResponse } from 'next/server';
 import { readCollection, mutateCollection, deleteOne } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
+import { rateLimit } from '@/lib/rateLimit';
 import { cleanString, cleanStringArray, isEmail, isIndianMobile } from '@/lib/validation';
 
 // POST — Public: Register a new pre-launch subscriber
 export async function POST(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+    const limitCheck = await rateLimit(ip, 'prelaunch', 5, 60 * 1000);
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many early access requests. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const name = cleanString(body.name, 120);
     const email = cleanString(body.email, 254).toLowerCase();
@@ -56,10 +66,10 @@ export async function POST(request) {
     });
 
     if (result.duplicate) {
-      return NextResponse.json(
-        { success: false, error: 'This email is already registered for early access!' },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        success: true,
+        message: 'Welcome aboard! You\'re now on the early access list.',
+      });
     }
 
     return NextResponse.json({
@@ -91,7 +101,8 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search')?.toLowerCase() || '';
 
-    let subscribers = await readCollection('prelaunch');
+    const allSubscribers = await readCollection('prelaunch');
+    let subscribers = [...allSubscribers];
 
     // Search filter
     if (search) {
@@ -107,7 +118,6 @@ export async function GET(request) {
     subscribers.sort((a, b) => new Date(b.registeredAt) - new Date(a.registeredAt));
 
     // Stats
-    const allSubscribers = await readCollection('prelaunch');
     const interestBreakdown = {};
     allSubscribers.forEach(s => {
       (s.interests || []).forEach(interest => {
@@ -165,7 +175,7 @@ export async function DELETE(request) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams = new URL(request.url).searchParams } = request;
     const subscriberId = searchParams.get('id');
 
     if (!subscriberId) {

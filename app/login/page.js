@@ -1,5 +1,7 @@
 'use client';
 
+const IS_DEV = process.env.NODE_ENV === 'development';
+
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -190,6 +192,7 @@ function LoginForm() {
       const data = await res.json();
 
       if (data.success) {
+        localStorage.setItem('bkb_admin_token', data.token);
         setSuccess('Admin login successful! Redirecting...');
         setTimeout(() => router.push('/admin'), 1500);
       } else {
@@ -634,7 +637,7 @@ function LoginForm() {
                 <div style={{ marginBottom: 18, animation: 'fadeInUp 0.3s ease' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                     <label style={{ fontSize: 12, fontWeight: 700, color: '#4A3F35' }}>Enter 6-digit OTP *</label>
-                    <span style={{ fontSize: 11, color: '#7A7067', fontWeight: 600 }}>Demo code: 123456</span>
+                    {IS_DEV && <span style={{ fontSize: 11, color: '#7A7067', fontWeight: 600 }}>Demo code: 123456</span>}
                   </div>
                   <div style={{ position: 'relative' }}>
                     <span style={{ position: 'absolute', left: 14, top: 13, color: '#7A7067', fontSize: 13 }}><Key size={15} /></span>
@@ -732,7 +735,7 @@ function LoginForm() {
               <div style={{ marginBottom: 24 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <label style={{ fontSize: 12, fontWeight: 700, color: '#4A3F35' }}>Password *</label>
-                  <span style={{ fontSize: 11, color: '#7A7067', fontWeight: 600 }}>Demo code: bkb2026</span>
+                  {IS_DEV && <span style={{ fontSize: 11, color: '#7A7067', fontWeight: 600 }}>Demo: bkb2026</span>}
                 </div>
                 <input
                   className="login-input"
@@ -795,14 +798,7 @@ function LoginForm() {
               </div>
             ) : activeTab === 'buyer' ? (
               <div style={{ color: '#7A7067' }}>
-                Don't have a buyer account?{' '}
-                <span onClick={() => {
-                  localStorage.setItem('bkb_user_logged_in', 'true');
-                  localStorage.setItem('bkb_user_mobile', '9876543210');
-                  router.push('/profile');
-                }} style={{ color: '#1B6B3A', fontWeight: 700, cursor: 'pointer' }}>
-                  Simulate Sign Up
-                </span>
+                New here? Enter your mobile number above to get started.
               </div>
             ) : (
               <div style={{ color: '#7A7067' }}>

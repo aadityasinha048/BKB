@@ -5,23 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ShoppingCart, Search, Heart, User, Menu, X, ChevronDown } from 'lucide-react';
 
-const navLinks = [
-  { href: '/', label: 'Home' },
-  {
-    label: 'Shop',
-    children: [
-      { href: '/shop', label: '🛍️ All Products' },
-      { href: '/gi-products', label: '🏅 GI Tag Products' },
-      { href: '/shop?cat=Food & Agri', label: '🌾 Food & Agri' },
-      { href: '/shop?cat=Handicrafts', label: '🎨 Handicrafts' },
-      { href: '/shop?cat=Textiles', label: '🧵 Textiles & Silk' },
-      { href: '/shop?cat=Fruits', label: '🍈 Fresh Fruits' },
-    ]
-  },
-  { href: '/sellers', label: 'Sell on BKB' },
-  { href: '/dashboard', label: 'Dashboard' },
-  { href: '/about', label: 'About' },
-];
+
 
 const SEARCH_SUGGESTIONS = [
   "Premium Makhana", "Madhubani Painting", "Bhagalpuri Silk",
@@ -73,7 +57,7 @@ export default function Navbar() {
 
     updateCartCount();
     window.addEventListener('storage', updateCartCount);
-    const interval = setInterval(updateCartCount, 1000);
+    const interval = setInterval(updateCartCount, 5000);
     return () => {
       window.removeEventListener('storage', updateCartCount);
       clearInterval(interval);
@@ -111,7 +95,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav style={{
+      <nav className="bkb-navbar" style={{
         background: '#fff',
         borderBottom: '1px solid #E5E1DC',
         height: 68,
@@ -148,7 +132,7 @@ export default function Navbar() {
         </Link>
 
         {/* Nav Links */}
-        <div style={{ display: 'flex', gap: 2, flex: 1, alignItems: 'center' }}>
+        <div className="desktop-nav" style={{ display: 'flex', gap: 2, flex: 1, alignItems: 'center' }}>
           {linksToShow.map((link) => (
             link.children ? (
               <div key={link.label}
@@ -236,7 +220,7 @@ export default function Navbar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
 
           {/* Search */}
-          <button onClick={() => setSearchOpen(true)} style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
+          <button onClick={() => setSearchOpen(true)} aria-label="Search products" style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
           >
@@ -244,8 +228,8 @@ export default function Navbar() {
           </button>
 
           {/* Wishlist */}
-          <Link href="/wishlist">
-            <button style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
+          <Link href="/wishlist" className="desktop-nav">
+            <button aria-label="View saved items" style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
             >
@@ -254,8 +238,8 @@ export default function Navbar() {
           </Link>
 
           {/* Profile */}
-          <Link href={userRole === 'seller' ? '/dashboard' : (userRole === 'buyer' ? '/profile' : '/login')}>
-            <button style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
+          <Link href={userRole === 'seller' ? '/dashboard' : (userRole === 'buyer' ? '/profile' : '/login')} className="desktop-nav">
+            <button aria-label="My account profile" style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
             >
@@ -263,10 +247,10 @@ export default function Navbar() {
             </button>
           </Link>
 
-          <div style={{ width: 1, height: 28, background: '#E5E1DC', margin: '0 4px' }} />
+          <div className="desktop-nav" style={{ width: 1, height: 28, background: '#E5E1DC', margin: '0 4px' }} />
 
           {/* Sell Button */}
-          <Link href="/sellers" style={{ textDecoration: 'none' }}>
+          <Link href="/sellers" className="desktop-nav" style={{ textDecoration: 'none' }}>
             <button style={{ padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: '1.5px solid #1B6B3A', color: '#1B6B3A', background: '#E8F5EC', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s' }}
               onMouseEnter={e => { e.currentTarget.style.background = '#1B6B3A'; e.currentTarget.style.color = '#fff'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}
@@ -277,7 +261,7 @@ export default function Navbar() {
 
           {/* Cart */}
           <Link href="/cart" style={{ textDecoration: 'none' }}>
-            <div style={{ position: 'relative', width: 42, height: 38, borderRadius: 8, background: '#E8F5EC', border: '1.5px solid #D0EBDA', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
+            <div aria-label="Shopping Cart" style={{ position: 'relative', width: 42, height: 38, borderRadius: 8, background: '#E8F5EC', border: '1.5px solid #D0EBDA', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
               onMouseEnter={e => { e.currentTarget.style.background = '#1B6B3A'; const icon = e.currentTarget.querySelector('svg'); if (icon) icon.style.color = '#fff'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#E8F5EC'; const icon = e.currentTarget.querySelector('svg'); if (icon) icon.style.color = '#1B6B3A'; }}
             >
@@ -287,6 +271,28 @@ export default function Navbar() {
               </span>
             </div>
           </Link>
+
+          {/* Mobile Hamburger menu toggle */}
+          <button
+            className="mobile-nav-toggle"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            style={{
+              display: 'none',
+              width: 38,
+              height: 38,
+              borderRadius: 8,
+              background: 'none',
+              border: '1.5px solid #E5E1DC',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              marginLeft: 4,
+            }}
+            aria-label="Toggle navigation menu"
+          >
+            {mobileOpen ? <X size={18} color="#3D3730" /> : <Menu size={18} color="#3D3730" />}
+          </button>
+
         </div>
       </nav>
 
@@ -331,6 +337,53 @@ export default function Navbar() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      )}
+      {/* ── MOBILE MENU DRAWER ── */}
+      {mobileOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 68,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: '#fff',
+          zIndex: 99,
+          padding: '24px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 16,
+          borderTop: '1px solid #E5E1DC',
+          overflowY: 'auto',
+        }}>
+          {linksToShow.map((link) => (
+            link.children ? (
+              <div key={link.label} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#7A7067', textTransform: 'uppercase', letterSpacing: 1 }}>{link.label}</div>
+                {link.children.map(child => (
+                  <Link key={child.href} href={child.href} onClick={() => setMobileOpen(false)} style={{ textDecoration: 'none', paddingLeft: 12, fontSize: 14, fontWeight: 500, color: '#3D3730' }}>
+                    {child.label}
+                  </Link>
+                ))}
+              </div>
+            ) : (
+              <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} style={{ textDecoration: 'none', fontSize: 15, fontWeight: 600, color: pathname === link.href ? '#1B6B3A' : '#3D3730', padding: '6px 0' }}>
+                {link.label}
+              </Link>
+            )
+          ))}
+          <div style={{ borderTop: '1px solid #E5E1DC', paddingTop: 16, marginTop: 'auto', display: 'flex', gap: 10 }}>
+            <Link href={userRole === 'seller' ? '/dashboard' : (userRole === 'buyer' ? '/profile' : '/login')} onClick={() => setMobileOpen(false)} style={{ flex: 1, textDecoration: 'none' }}>
+              <button style={{ width: '100%', padding: '10px', borderRadius: 8, background: '#F8F6F3', border: '1.5px solid #E5E1DC', color: '#3D3730', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                Account Profile
+              </button>
+            </Link>
+            <Link href="/sellers" onClick={() => setMobileOpen(false)} style={{ flex: 1, textDecoration: 'none' }}>
+              <button style={{ width: '100%', padding: '10px', borderRadius: 8, background: '#1B6B3A', border: 'none', color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                Sell on BKB
+              </button>
+            </Link>
           </div>
         </div>
       )}

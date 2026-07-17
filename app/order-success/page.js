@@ -21,7 +21,7 @@ export default function OrderSuccessPage() {
       <div style={{ background: '#EAF5F0', border: '1.5px solid rgba(26,92,56,0.25)', borderRadius: 12, padding: '12px 32px', fontSize: 18, fontWeight: 800, color: '#1A5C38', marginBottom: 36, display: 'inline-block' }}>#{orderId}</div>
       <div style={{ display: 'flex', gap: 14 }}>
         <Link href="/shop"><button style={{ padding: '13px 28px', background: '#1A5C38', color: '#fff', border: 'none', borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Continue Shopping</button></Link>
-        <Link href="/dashboard"><button style={{ padding: '13px 28px', background: '#fff', color: '#1A1410', border: '2px solid #E8DDD4', borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Track My Order</button></Link>
+        <Link href="/order-tracking"><button style={{ padding: '13px 28px', background: '#fff', color: '#1A1410', border: '2px solid #E8DDD4', borderRadius: 12, fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Track My Order</button></Link>
       </div>
     </div>
   );

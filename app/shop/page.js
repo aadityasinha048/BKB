@@ -3,20 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const ALL_PRODUCTS = [
-  { id: 1, name: "Premium Makhana (Fox Nuts)", seller: "Ram Prasad", dist: "Darbhanga", cat: "Food & Agri", price: 480, unit: "500g", em: "🌰", gi: true, rat: "4.8", rev: 96, bg: "#FFF8E8", desc: "Hand-picked lotus seeds from the pristine wetlands of Darbhanga. Sun-dried, roasted and packed fresh." },
-  { id: 2, name: "Madhubani Painting — Fish Motif", seller: "Sunita Devi", dist: "Madhubani", cat: "Handicrafts", price: 1200, unit: "piece", em: "🎨", gi: true, rat: "5.0", rev: 48, bg: "#FFF0F5", desc: "Authentic Madhubani painting depicting the sacred fish motif. Natural vegetable colors on handmade paper." },
-  { id: 3, name: "Bhagalpuri Silk Saree", seller: "Md. Arshad", dist: "Bhagalpur", cat: "Textiles", price: 3800, unit: "piece", em: "🧣", gi: true, rat: "4.9", rev: 62, bg: "#F0F4FF", desc: "Authentic Tussar silk saree from Bhagalpur, handwoven on traditional pit-looms by fourth-generation weavers." },
-  { id: 4, name: "Shahi Litchi — Fresh", seller: "Vijay Kumar", dist: "Muzaffarpur", cat: "Fruits", price: 380, unit: "1kg", em: "🍈", gi: true, rat: "4.7", rev: 184, bg: "#F0FFF4", desc: "The world-famous GI-tagged Shahi Litchi from Muzaffarpur. Dispatched within 12 hours of harvest." },
-  { id: 5, name: "Silao Khaja", seller: "Deepak Halwai", dist: "Nalanda", cat: "Sweets", price: 250, unit: "500g", em: "🍭", gi: true, rat: "4.6", rev: 77, bg: "#FFF8E8", desc: "The legendary flaky sweet from Silao, made from refined flour, sugar and pure ghee using a century-old recipe." },
-  { id: 6, name: "Katarni Rice", seller: "Manoj Sharma", dist: "Bhojpur", cat: "Food & Agri", price: 160, unit: "1kg", em: "🍚", gi: true, rat: "4.8", rev: 113, bg: "#FAFFF4", desc: "The aromatic GI-tagged Katarni rice — known for its distinct fragrance, slim grain and soft texture." },
-  { id: 7, name: "Jardalu Mango", seller: "Ramesh Yadav", dist: "Bhagalpur", cat: "Fruits", price: 420, unit: "1kg", em: "🥭", gi: true, rat: "4.9", rev: 91, bg: "#FFF8E8", desc: "The royal GI-tagged Jardalu mango of Bhagalpur — celebrated for its distinct sweet taste and creamy texture." },
-  { id: 8, name: "Madhubani Hand-Painted Dupatta", seller: "Rekha Devi", dist: "Madhubani", cat: "Textiles", price: 950, unit: "piece", em: "🎀", gi: false, rat: "4.7", rev: 34, bg: "#FFF0F5", desc: "Cotton dupatta hand-painted with traditional Madhubani motifs using eco-friendly natural colors." },
-  { id: 9, name: "Bhagalpur Mango Pickle", seller: "Meena Devi", dist: "Bhagalpur", cat: "Food & Agri", price: 220, unit: "500g", em: "🫙", gi: false, rat: "4.5", rev: 58, bg: "#FFF8E8", desc: "Traditional mango pickle made from Jardalu mangoes, hand-crafted using a generations-old recipe." },
-  { id: 10, name: "Tikuli Art Wall Piece", seller: "Arvind Kumar", dist: "Patna", cat: "Handicrafts", price: 680, unit: "piece", em: "🖼️", gi: false, rat: "4.6", rev: 29, bg: "#FFF4E8", desc: "Traditional Bihari Tikuli art wall piece with intricate geometric patterns and floral motifs." },
-  { id: 11, name: "Shahi Litchi Juice", seller: "Vijay Kumar", dist: "Muzaffarpur", cat: "Sweets", price: 180, unit: "1L", em: "🧃", gi: false, rat: "4.4", rev: 43, bg: "#F0FFF4", desc: "Pure cold-pressed juice from GI-tagged Shahi Litchi. No added sugar, no preservatives." },
-  { id: 12, name: "Sikki Grass Basket", seller: "Champa Devi", dist: "Sitamarhi", cat: "Handicrafts", price: 450, unit: "piece", em: "🧺", gi: false, rat: "4.8", rev: 67, bg: "#FAFFF4", desc: "Handwoven basket made from Sikki grass — a traditional Bihar craft practiced by women artisans." },
-];
+
 
 const CATEGORIES = ["All", "Food & Agri", "Handicrafts", "Textiles", "Sweets", "Fruits"];
 
@@ -142,10 +129,10 @@ export default function ShopPage() {
   });
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '230px 1fr', minHeight: '80vh' }}>
+    <div className="shop-layout" style={{ display: 'grid', gridTemplateColumns: '230px 1fr', minHeight: '80vh' }}>
 
       {/* ── SIDEBAR ── */}
-      <aside style={{ background: '#fff', borderRight: '1px solid #E5E1DC', padding: '28px 18px', position: 'sticky', top: 64, height: 'calc(100vh - 64px)', overflowY: 'auto' }}>
+      <aside className="shop-sidebar" style={{ background: '#fff', borderRight: '1px solid #E5E1DC', padding: '28px 18px', position: 'sticky', top: 64, height: 'calc(100vh - 64px)', overflowY: 'auto' }}>
 
         {/* Categories */}
         <div style={{ marginBottom: 28 }}>
@@ -203,7 +190,7 @@ export default function ShopPage() {
       <div style={{ padding: '28px 36px' }}>
 
         {/* Toolbar */}
-        <div style={{ display: 'flex', justifycontent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 18, borderBottom: '1px solid #E5E1DC' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 18, borderBottom: '1px solid #E5E1DC' }}>
           <div style={{ fontSize: 13, color: '#7A7067' }}>
             <strong style={{ color: '#1A1410' }}>{sorted.length}</strong> products found
             {activeCat !== 'All' && <span> in <strong style={{ color: '#1B6B3A' }}>{activeCat}</strong></span>}
@@ -232,7 +219,7 @@ export default function ShopPage() {
             <p style={{ fontSize: 14, color: '#8C7B6E' }}>Try adjusting your filters</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <div className="shop-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {sorted.map(p => <ProductCard key={p.id} p={p} />)}
           </div>
         )}

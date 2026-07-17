@@ -27,8 +27,13 @@ export async function GET(request) {
       const cleanCat = categoryMapping[cat] || cat;
       products = products.filter(p => p.cat.toLowerCase().includes(cleanCat.toLowerCase()));
     }
+    // Pagination (default: page 1, limit 50)
+    const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
+    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50', 10)));
+    const total = products.length;
+    const paginated = products.slice((page - 1) * limit, page * limit);
 
-    return NextResponse.json({ success: true, products });
+    return NextResponse.json({ success: true, products: paginated, total, page, limit });
   } catch (error) {
     console.error('Products GET Error:', error);
     return NextResponse.json(
@@ -64,7 +69,7 @@ export async function POST(request) {
     }
 
     const sellerRecord = await findOne('sellers', 'id', sellerId);
-    if (!publicSeller(sellerRecord)) {
+    if (!sellerRecord) {
       return NextResponse.json(
         { success: false, error: 'Seller account not found.' },
         { status: 404 }

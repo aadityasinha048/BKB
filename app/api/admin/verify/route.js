@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { validateSession, extractToken, invalidateSession } from '@/lib/auth';
+import { validateSession, extractToken } from '@/lib/auth';
 
 // GET — Verify if session token is still valid
 export async function GET(request) {
@@ -8,7 +8,7 @@ export async function GET(request) {
 
     if (!token) {
       return NextResponse.json(
-        { success: false, valid: false, error: 'No token provided.' },
+        { success: false, valid: false, error: 'Incorrect email or password' },
         { status: 401 }
       );
     }
@@ -17,7 +17,7 @@ export async function GET(request) {
 
     if (!valid) {
       return NextResponse.json(
-        { success: false, valid: false, error: 'Session expired or invalid.' },
+        { success: false, valid: false, error: 'Incorrect email or password' },
         { status: 401 }
       );
     }
@@ -32,19 +32,7 @@ export async function GET(request) {
   }
 }
 
-// POST — Logout (invalidate session)
-export async function POST(request) {
-  try {
-    const token = extractToken(request);
-    if (token) {
-      await invalidateSession(token);
-    }
-    return NextResponse.json({ success: true, message: 'Logged out successfully.' });
-  } catch (error) {
-    console.error('Admin Logout Error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Internal server error.' },
-      { status: 500 }
-    );
-  }
+// POST — Logout (managed client-side via Firebase signOut)
+export async function POST() {
+  return NextResponse.json({ success: true, message: 'Logged out successfully.' });
 }

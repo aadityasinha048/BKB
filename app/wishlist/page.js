@@ -63,7 +63,38 @@ export default function WishlistPage() {
                         <Link href={`/shop/${p.id}`} style={{ textDecoration: 'none' }}>
                           <button style={{ width: '100%', padding: '9px', background: '#E8F5EC', color: '#1B6B3A', border: '1px solid #D0EBDA', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>View</button>
                         </Link>
-                        <button style={{ padding: '9px', background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>Add to Cart</button>
+                        <button 
+                          onClick={() => {
+                            const existing = localStorage.getItem('bkb_cart');
+                            let cartItems = [];
+                            try {
+                              cartItems = existing ? JSON.parse(existing) : [];
+                            } catch {
+                              cartItems = [];
+                            }
+                            const itemIndex = cartItems.findIndex(item => item.id === p.id);
+                            if (itemIndex > -1) {
+                              cartItems[itemIndex].qty += 1;
+                            } else {
+                              cartItems.push({
+                                id: p.id,
+                                name: p.name,
+                                seller: p.seller,
+                                dist: p.dist,
+                                price: p.price,
+                                unit: p.unit,
+                                imgSrc: p.imgSrc || `/images/products/prod_${p.id}.png`,
+                                bg: p.bg || '#FFF8E8',
+                                qty: 1
+                              });
+                            }
+                            localStorage.setItem('bkb_cart', JSON.stringify(cartItems));
+                            window.dispatchEvent(new Event('storage'));
+                          }}
+                          style={{ padding: '9px', background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+                        >
+                          Add to Cart
+                        </button>
                       </div>
                     </div>
                   </div>

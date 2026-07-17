@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { findOne, insertOne, updateOne } from '@/lib/db';
 import { sendWelcomeEmail } from '@/lib/email';
+import { rateLimit } from '@/lib/rateLimit';
 import {
   cleanImageSource,
   cleanString,
@@ -13,7 +14,40 @@ import {
   publicSeller,
 } from '@/lib/validation';
 
+import { z } from 'zod';
+
 const DEMO_OTP = process.env.BKB_DEMO_OTP || '123456';
+
+function sanitizeString(val) {
+  if (typeof val !== 'string') return '';
+  return val
+    .replace(/<[^>]*>?/gm, '') // strip html tags
+    .replace(/[<>"'`\\$]/g, '') // strip dangerous chars
+    .trim();
+}
+
+const sellerSignupSchema = z.object({
+  fullName: z.string()
+    .min(2)
+    .max(120)
+    .transform(sanitizeString),
+  mobile: z.string()
+    .length(10)
+    .regex(/^[6-9]\d{9}$/),
+  email: z.string()
+    .min(3)
+    .max(254)
+    .email()
+    .transform(val => sanitizeString(val).toLowerCase()),
+  language: z.string()
+    .min(2)
+    .max(40)
+    .transform(sanitizeString),
+  otp: z.string()
+    .length(6)
+    .regex(/^\d{6}$/),
+  photoSrc: z.string().optional()
+});
 const PATCH_FIELDS = new Set([
   'sellerType',
   'businessName',
@@ -51,7 +85,7 @@ export async function GET(request) {
 
     if (!seller) {
       return NextResponse.json(
-        { success: false, error: 'Seller account not found. Please verify your Seller ID.' },
+        { success: false, error: 'Incorrect email or password' },
         { status: 404 }
       );
     }
@@ -70,40 +104,33 @@ export async function GET(request) {
 // POST - Handles simulated OTP verification and initial account registration (Step 1)
 export async function POST(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+    const limitCheck = await rateLimit(ip, 'register-seller', 10, 60 * 1000);
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many registration attempts. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
-    const fullName = cleanString(body.fullName, 120);
-    const mobile = cleanString(body.mobile, 10);
-    const email = cleanString(body.email, 254).toLowerCase();
-    const language = cleanString(body.language, 40);
-    const otp = cleanString(body.otp, 6);
-    const photoSrc = cleanImageSource(body.photoSrc, '/images/farmers/farmer_1.png');
+    const validationResult = sellerSignupSchema.safeParse(body);
 
-    // Verify fields
-    if (!fullName || !mobile || !email || !language || !otp) {
+    if (!validationResult.success) {
+      console.warn(`[SECURITY MONITOR] Seller registration validation failed:`, validationResult.error.format());
       return NextResponse.json(
-        { success: false, error: 'Full Name, Mobile, Email, Language, and OTP are required.' },
+        { success: false, error: 'Incorrect email or password' },
         { status: 400 }
       );
     }
 
-    if (!isIndianMobile(mobile)) {
-      return NextResponse.json(
-        { success: false, error: 'Please enter a valid 10-digit Indian mobile number.' },
-        { status: 400 }
-      );
-    }
-
-    if (!isEmail(email)) {
-      return NextResponse.json(
-        { success: false, error: 'Please enter a valid email address.' },
-        { status: 400 }
-      );
-    }
+    const { fullName, mobile, email, language, otp, photoSrc: rawPhotoSrc } = validationResult.data;
+    const photoSrc = cleanImageSource(rawPhotoSrc, '/images/farmers/farmer_1.png');
 
     // Verify simulated OTP code (123456)
-    if (!isOtp(otp) || otp !== DEMO_OTP) {
+    if (otp !== DEMO_OTP) {
       return NextResponse.json(
-        { success: false, error: 'Invalid OTP code.' },
+        { success: false, error: 'Incorrect email or password' },
         { status: 400 }
       );
     }
@@ -111,10 +138,11 @@ export async function POST(request) {
     // Check if phone number is already registered
     const existingSeller = await findOne('sellers', 'mobile', mobile);
     if (existingSeller) {
-      return NextResponse.json(
-        { success: false, error: `This mobile number is already registered (Seller ID: ${existingSeller.id}). Use the "Resume Progress" panel to continue your registration.` },
-        { status: 400 }
-      );
+      // Do not confirm existence. Return generic success message to prevent enumeration.
+      return NextResponse.json({
+        success: true,
+        message: 'Registration request received. If valid, you will receive confirmation.'
+      });
     }
 
     // Create entry

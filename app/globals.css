@@ -586,3 +586,103 @@ textarea:focus {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(27,107,58,0.08);
 }
+
+/* ── RESPONSIVE NAVBAR, FOOTER & GRID CLASSES ── */
+@media (max-width: 1024px) {
+  .desktop-nav {
+    display: none !important;
+  }
+  .mobile-nav-toggle {
+    display: flex !important;
+  }
+  .bkb-navbar {
+    padding: 0 20px !important;
+  }
+  .bkb-footer-main {
+    grid-template-columns: 1fr !important;
+    gap: 36px !important;
+    padding: 40px 24px !important;
+  }
+  .bkb-footer-bottom {
+    padding: 18px 24px !important;
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+}
+
+/* Home Page grids responsiveness */
+@media (max-width: 1024px) {
+  .home-hero-grid {
+    grid-template-columns: 1fr !important;
+    padding: 40px 24px !important;
+    text-align: center;
+  }
+  .home-hero-grid > div:first-child {
+    padding: 40px 16px !important;
+  }
+  .home-hero-grid > div:last-child {
+    padding: 20px 0 40px !important;
+  }
+  .home-categories-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 16px !important;
+    padding: 40px 24px !important;
+  }
+  .home-products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 18px !important;
+    padding: 40px 24px !important;
+  }
+  .home-why-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    padding: 40px 24px !important;
+  }
+  .home-seller-grid {
+    grid-template-columns: 1fr !important;
+    gap: 48px !important;
+    padding: 48px 24px !important;
+  }
+  .home-stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 16px !important;
+    padding: 32px 24px !important;
+  }
+  .home-testimonials-grid {
+    grid-template-columns: 1fr !important;
+    gap: 18px !important;
+    padding: 40px 24px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-categories-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  .home-products-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .home-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Shop Page responsiveness */
+@media (max-width: 1024px) {
+  .shop-layout {
+    grid-template-columns: 1fr !important;
+  }
+  .shop-sidebar {
+    display: none !important;
+  }
+  .shop-products-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .shop-products-grid {
+    grid-template-columns: 1fr !important;
+  }
+}

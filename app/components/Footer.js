@@ -31,7 +31,7 @@ export default function Footer() {
     <footer style={{ background: '#0D3B1E', color: '#A8C9B4' }}>
 
       {/* Main Footer */}
-      <div style={{
+      <div className="bkb-footer-main" style={{
         padding: '56px 60px 40px',
         display: 'grid',
         gridTemplateColumns: '2.2fr 1fr 1fr 1fr',
@@ -107,14 +107,14 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div style={{
+      <div className="bkb-footer-bottom" style={{
         padding: '18px 60px',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
       }}>
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
-          © 2025 Bihar Ka Bazaar. All rights reserved.
+          © {new Date().getFullYear()} Bihar Ka Bazaar. All rights reserved.
         </span>
         <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
           An initiative by <strong style={{ color: '#E87B24' }}>Bindisa Agritech</strong>

@@ -52,7 +52,19 @@ export async function GET(request) {
     const sortBy = searchParams.get('sortBy') || 'registeredAt';
     const sortOrder = searchParams.get('sortOrder') || 'desc';
 
-    let sellers = await readCollection('sellers');
+    let allSellers = await readCollection('sellers');
+
+    // Compute stats from full collection BEFORE filtering
+    const stats = {
+      total: allSellers.length,
+      completed: allSellers.filter(s => s.status === 'Completed').length,
+      accountCreated: allSellers.filter(s => s.status === 'Account Created').length,
+      approved: allSellers.filter(s => s.status === 'Approved').length,
+      rejected: allSellers.filter(s => s.status === 'Rejected').length,
+      flagged: allSellers.filter(s => s.status === 'Flagged').length,
+    };
+
+    let sellers = [...allSellers];
 
     // Search filter (name, mobile, email, district, id, businessName)
     if (search) {
@@ -99,17 +111,6 @@ export async function GET(request) {
       }
       return aVal < bVal ? 1 : aVal > bVal ? -1 : 0;
     });
-
-    // Compute stats from full collection (before filtering)
-    const allSellers = await readCollection('sellers');
-    const stats = {
-      total: allSellers.length,
-      completed: allSellers.filter(s => s.status === 'Completed').length,
-      accountCreated: allSellers.filter(s => s.status === 'Account Created').length,
-      approved: allSellers.filter(s => s.status === 'Approved').length,
-      rejected: allSellers.filter(s => s.status === 'Rejected').length,
-      flagged: allSellers.filter(s => s.status === 'Flagged').length,
-    };
 
     // Category breakdown
     const categoryBreakdown = {};

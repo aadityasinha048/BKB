@@ -142,7 +142,7 @@ export default function HomePage() {
 
   const fetchBestsellers = useCallback(async () => {
     try {
-      const res = await fetch('/api/products');
+      const res = await fetch('/api/products?limit=4');
       const data = await res.json();
       if (data.success) {
         setBestsellers(data.products.slice(0, 4));
@@ -191,7 +191,7 @@ export default function HomePage() {
       <div className="blob-glow blob-orange" />
 
       {/* ── HERO BANNER ── */}
-      <div style={{
+      <div className="home-hero-grid" style={{
         background: currentSlide.bg,
         minHeight: '80vh',
         display: 'grid',
@@ -368,7 +368,7 @@ export default function HomePage() {
           <h2 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif", marginBottom: 10 }}>Categories</h2>
           <p style={{ fontSize: 15, color: '#7A7067' }}>Explore authentic products from every corner of Bihar</p>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 18 }}>
+        <div className="home-categories-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 18 }}>
           {categories.map(c => (
             <Link key={c.label} href="/shop" style={{ textDecoration: 'none' }}>
               <div 
@@ -427,7 +427,7 @@ export default function HomePage() {
             </button>
           </Link>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
+        <div className="home-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
           {bestsellers.map(p => <ProductCard key={p.id} p={p} />)}
         </div>
       </div>
@@ -475,7 +475,7 @@ export default function HomePage() {
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 8 }}>Why Bihar Ka Bazaar</div>
           <h2 style={{ fontSize: 32, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>Built for Bihar's People</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
+        <div className="home-why-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
           {[
             [Users, "No Middlemen", "#E8F5EC", "#1B6B3A", "Money goes directly to the seller. Farmers and artisans keep 95% of what you pay. No commission cuts, no agents."],
             [ShieldCheck, "Verified & Authentic", "#FFF4EC", "#E88724", "Every seller is verified. GI-tagged products are certified. You always get exactly what Bihar genuinely offers."],
@@ -495,7 +495,7 @@ export default function HomePage() {
       </div>
 
       {/* ── SELLER BAND ── */}
-      <div style={{ background: 'linear-gradient(135deg, #0D3B1E 0%, #1B6B3A 100%)', padding: '72px 60px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
+      <div className="home-seller-grid" style={{ background: 'linear-gradient(135deg, #0D3B1E 0%, #1B6B3A 100%)', padding: '72px 60px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
         <div style={{ position: 'absolute', right: 120, top: '50%', transform: 'translateY(-50%)', fontSize: 220, opacity: 0.06, lineHeight: 1 }}>🌾</div>
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 40, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>
@@ -588,7 +588,7 @@ export default function HomePage() {
 
       {/* ── STATS BAR ── */}
       <div style={{ background: 'linear-gradient(135deg, #E8F5EC 0%, #FFFBF7 100%)', padding: '48px 60px', borderTop: '1px solid #E5E1DC', borderBottom: '1px solid #E5E1DC', position: 'relative', zIndex: 1 }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, maxWidth: 900, margin: '0 auto' }}>
+        <div className="home-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, maxWidth: 900, margin: '0 auto' }}>
           {[
             ["240+", "Products Listed", "🛍️"],
             ["800+", "Verified Sellers", "🌾"],
@@ -610,7 +610,7 @@ export default function HomePage() {
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 8 }}>Customer Stories</div>
           <h2 style={{ fontSize: 32, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>Loved Across India</h2>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
+        <div className="home-testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
           {testimonials.map(t => (
             <div key={t.name} className="interactive-card" style={{ 
               background: '#fff', borderRadius: 16, padding: 28,

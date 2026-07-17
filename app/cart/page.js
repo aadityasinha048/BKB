@@ -3,11 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
-const SAMPLE_CART = [
-  { id: 1, name: "Premium Makhana (Fox Nuts)", seller: "Ram Prasad", dist: "Darbhanga", price: 480, unit: "500g", em: "🌰", bg: "#FFF8E8", qty: 2 },
-  { id: 2, name: "Madhubani Painting — Fish Motif", seller: "Sunita Devi", dist: "Madhubani", price: 1200, unit: "piece", em: "🎨", bg: "#FFF0F5", qty: 1 },
-  { id: 4, name: "Shahi Litchi — Fresh", seller: "Vijay Kumar", dist: "Muzaffarpur", price: 380, unit: "1kg", em: "🍈", bg: "#F0FFF4", qty: 1 },
-];
+
 
 export default function CartPage() {
   const [cart, setCart] = useState([]);
@@ -20,11 +16,8 @@ export default function CartPage() {
       try {
         setCart(JSON.parse(stored));
       } catch {
-        setCart(SAMPLE_CART);
+        setCart([]);
       }
-    } else {
-      setCart(SAMPLE_CART);
-      localStorage.setItem('bkb_cart', JSON.stringify(SAMPLE_CART));
     }
   }, []);
 
@@ -61,7 +54,7 @@ export default function CartPage() {
     <div style={{ background: '#fff', minHeight: '80vh' }}>
 
       {/* Header */}
-      <div style={{ padding: '32px 60px 0', background: '#fff', border_bottom: '1px solid #E5E1DC' }}>
+      <div style={{ padding: '32px 60px 0', background: '#fff', borderBottom: '1px solid #E5E1DC' }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 6 }}>Shopping</div>
         <h1 style={{ fontSize: 36, color: '#1A1410', fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>Your Cart</h1>
       </div>
@@ -90,7 +83,10 @@ export default function CartPage() {
                   {cart.length} item{cart.length !== 1 ? 's' : ''} in your cart
                 </span>
                 <button
-                  onClick={() => setCart([])}
+                  onClick={() => {
+                    setCart([]);
+                    localStorage.setItem('bkb_cart', JSON.stringify([]));
+                  }}
                   style={{ fontSize: 12, color: '#7A7067', background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'inherit' }}
                 >
                   Clear all
