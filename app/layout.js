@@ -25,7 +25,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${outfit.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${outfit.variable} bg-background`}>
       <body>
         <LayoutShell>{children}</LayoutShell>
       </body>

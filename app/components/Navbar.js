@@ -5,8 +5,6 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { ShoppingCart, Search, Heart, User, Menu, X, ChevronDown } from 'lucide-react';
 
-
-
 const SEARCH_SUGGESTIONS = [
   "Premium Makhana", "Madhubani Painting", "Bhagalpuri Silk",
   "Shahi Litchi", "Katarni Rice", "Silao Khaja", "Jardalu Mango",
@@ -31,7 +29,7 @@ export default function Navbar() {
   useEffect(() => {
     const sellerId = localStorage.getItem('bkb_seller_id');
     const userLoggedIn = localStorage.getItem('bkb_user_logged_in');
-    
+
     if (sellerId) {
       setUserRole('seller');
     } else if (userLoggedIn === 'true') {
@@ -93,100 +91,57 @@ export default function Navbar() {
     }
   };
 
+  const iconBtnClasses =
+    'flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg border-[1.5px] border-line bg-transparent text-ink-2 transition-all duration-200 hover:border-green hover:bg-green-bg hover:text-green focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green';
+
   return (
     <>
-      <nav className="bkb-navbar" style={{
-        background: '#fff',
-        borderBottom: '1px solid #E5E1DC',
-        height: 68,
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0 48px',
-        gap: 0,
-        position: 'sticky',
-        top: 0,
-        zIndex: 100,
-        boxShadow: '0 1px 8px rgba(0,0,0,0.04)',
-        transition: 'box-shadow 0.3s',
-      }}>
+      <nav className="sticky top-0 z-100 flex h-[68px] items-center border-b border-line bg-white px-5 shadow-[0_1px_8px_rgba(0,0,0,0.04)] lg:px-12">
 
         {/* Logo */}
-        <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: 12, textDecoration: 'none', flexShrink: 0, marginRight: 36 }}>
+        <Link href="/" className="mr-4 flex shrink-0 items-center gap-3 no-underline lg:mr-9">
           <img
             src="/images/bkb_logo.png"
             alt="BKB Logo"
-            style={{
-              height: 40,
-              width: 'auto',
-              objectFit: 'contain',
-            }}
+            className="h-10 w-auto object-contain"
           />
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#1B6B3A', lineHeight: 1.1, fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
+          <div className="flex flex-col">
+            <div className="devanagari text-base font-extrabold leading-tight text-green">
               बिहार का बाज़ार
             </div>
-            <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7A7067', marginTop: 2 }}>
+            <div className="mt-0.5 text-[8px] font-bold uppercase tracking-[2px] text-ink-3">
               Bihar Ka Bazaar
             </div>
           </div>
         </Link>
 
-        {/* Nav Links */}
-        <div className="desktop-nav" style={{ display: 'flex', gap: 2, flex: 1, alignItems: 'center' }}>
+        {/* Nav Links (desktop) */}
+        <div className="hidden flex-1 items-center gap-0.5 lg:flex">
           {linksToShow.map((link) => (
             link.children ? (
-              <div key={link.label}
-                style={{ position: 'relative' }}
+              <div
+                key={link.label}
+                className="relative"
                 onMouseEnter={() => setActiveDropdown(link.label)}
                 onMouseLeave={() => setActiveDropdown(null)}
               >
-                <button style={{
-                  padding: '8px 14px',
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: activeDropdown === link.label ? '#1B6B3A' : '#3D3730',
-                  background: activeDropdown === link.label ? '#E8F5EC' : 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                  fontFamily: 'inherit',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 4,
-                  transition: 'all 0.18s',
-                }}>
+                <button
+                  className={`flex cursor-pointer items-center gap-1 rounded-lg border-none px-3.5 py-2 font-sans text-[13px] font-medium transition-all duration-200 ${
+                    activeDropdown === link.label ? 'bg-green-bg text-green' : 'bg-transparent text-ink-2'
+                  }`}
+                >
                   {link.label}
-                  <ChevronDown size={13} style={{ transition: 'transform 0.2s', transform: activeDropdown === link.label ? 'rotate(180deg)' : 'none' }} />
+                  <ChevronDown
+                    size={13}
+                    className={`transition-transform duration-200 ${activeDropdown === link.label ? 'rotate-180' : ''}`}
+                  />
                 </button>
 
                 {activeDropdown === link.label && (
-                  <div style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    background: '#fff',
-                    border: '1px solid #E5E1DC',
-                    borderRadius: 14,
-                    padding: '8px',
-                    minWidth: 210,
-                    boxShadow: '0 8px 32px rgba(0,0,0,0.1)',
-                    zIndex: 200,
-                    marginTop: 4,
-                  }}>
+                  <div className="absolute left-0 top-full z-200 mt-1 min-w-[210px] rounded-[14px] border border-line bg-white p-2 shadow-[0_8px_32px_rgba(0,0,0,0.1)]">
                     {link.children.map(child => (
-                      <Link key={child.href} href={child.href} style={{ textDecoration: 'none' }}>
-                        <div style={{
-                          padding: '9px 13px',
-                          borderRadius: 8,
-                          fontSize: 13,
-                          fontWeight: 500,
-                          color: '#3D3730',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s',
-                        }}
-                          onMouseEnter={e => { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}
-                          onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#3D3730'; }}
-                        >
+                      <Link key={child.href} href={child.href} className="no-underline">
+                        <div className="cursor-pointer rounded-lg px-3 py-2 text-[13px] font-medium text-ink-2 transition-colors duration-150 hover:bg-green-bg hover:text-green">
                           {child.label}
                         </div>
                       </Link>
@@ -195,19 +150,13 @@ export default function Navbar() {
                 )}
               </div>
             ) : (
-              <Link key={link.href} href={link.href} style={{ textDecoration: 'none' }}>
-                <div style={{
-                  padding: '8px 14px',
-                  borderRadius: 8,
-                  fontSize: 13,
-                  fontWeight: 500,
-                  color: pathname === link.href ? '#1B6B3A' : '#3D3730',
-                  background: pathname === link.href ? '#E8F5EC' : 'transparent',
-                  transition: 'all 0.18s',
-                  cursor: 'pointer',
-                }}
-                  onMouseEnter={e => { if (pathname !== link.href) { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}}
-                  onMouseLeave={e => { if (pathname !== link.href) { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#3D3730'; }}}
+              <Link key={link.href} href={link.href} className="no-underline">
+                <div
+                  className={`cursor-pointer rounded-lg px-3.5 py-2 text-[13px] font-medium transition-all duration-200 ${
+                    pathname === link.href
+                      ? 'bg-green-bg text-green'
+                      : 'bg-transparent text-ink-2 hover:bg-green-bg hover:text-green'
+                  }`}
                 >
                   {link.label}
                 </div>
@@ -217,56 +166,45 @@ export default function Navbar() {
         </div>
 
         {/* Right Actions */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+        <div className="ml-auto flex shrink-0 items-center gap-1.5 lg:ml-0">
 
           {/* Search */}
-          <button onClick={() => setSearchOpen(true)} aria-label="Search products" style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
-          >
-            <Search size={16} color="#3D3730" />
+          <button onClick={() => setSearchOpen(true)} aria-label="Search products" className={iconBtnClasses}>
+            <Search size={16} />
           </button>
 
           {/* Wishlist */}
-          <Link href="/wishlist" className="desktop-nav">
-            <button aria-label="View saved items" style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
-            >
-              <Heart size={16} color="#3D3730" />
-            </button>
+          <Link href="/wishlist" className="hidden lg:block" aria-label="View saved items">
+            <span className={iconBtnClasses}>
+              <Heart size={16} />
+            </span>
           </Link>
 
           {/* Profile */}
-          <Link href={userRole === 'seller' ? '/dashboard' : (userRole === 'buyer' ? '/profile' : '/login')} className="desktop-nav">
-            <button aria-label="My account profile" style={{ width: 38, height: 38, borderRadius: 8, background: 'none', border: '1.5px solid #E5E1DC', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#E8F5EC'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = 'none'; }}
-            >
-              <User size={16} color="#3D3730" />
-            </button>
+          <Link
+            href={userRole === 'seller' ? '/dashboard' : (userRole === 'buyer' ? '/profile' : '/login')}
+            className="hidden lg:block"
+            aria-label="My account profile"
+          >
+            <span className={iconBtnClasses}>
+              <User size={16} />
+            </span>
           </Link>
 
-          <div className="desktop-nav" style={{ width: 1, height: 28, background: '#E5E1DC', margin: '0 4px' }} />
+          <div className="mx-1 hidden h-7 w-px bg-line lg:block" />
 
           {/* Sell Button */}
-          <Link href="/sellers" className="desktop-nav" style={{ textDecoration: 'none' }}>
-            <button style={{ padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: '1.5px solid #1B6B3A', color: '#1B6B3A', background: '#E8F5EC', cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.18s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#1B6B3A'; e.currentTarget.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}
-            >
+          <Link href="/sellers" className="hidden no-underline lg:block">
+            <span className="inline-flex cursor-pointer items-center rounded-lg border-[1.5px] border-green bg-green-bg px-4 py-2 font-sans text-[13px] font-semibold text-green transition-all duration-200 hover:bg-green hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green">
               Sell
-            </button>
+            </span>
           </Link>
 
           {/* Cart */}
-          <Link href="/cart" style={{ textDecoration: 'none' }}>
-            <div aria-label="Shopping Cart" style={{ position: 'relative', width: 42, height: 38, borderRadius: 8, background: '#E8F5EC', border: '1.5px solid #D0EBDA', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', transition: 'all 0.18s' }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#1B6B3A'; const icon = e.currentTarget.querySelector('svg'); if (icon) icon.style.color = '#fff'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#E8F5EC'; const icon = e.currentTarget.querySelector('svg'); if (icon) icon.style.color = '#1B6B3A'; }}
-            >
-              <ShoppingCart size={17} color="#1B6B3A" />
-              <span style={{ position: 'absolute', top: -6, right: -6, background: '#E87B24', color: '#fff', borderRadius: '50%', width: 18, height: 18, fontSize: 10, fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff', fontFamily: 'inherit' }}>
+          <Link href="/cart" className="no-underline" aria-label="Shopping Cart">
+            <div className="group relative flex h-10 w-[42px] cursor-pointer items-center justify-center rounded-lg border-[1.5px] border-green-bg2 bg-green-bg transition-all duration-200 hover:bg-green">
+              <ShoppingCart size={17} className="text-green transition-colors duration-200 group-hover:text-white" />
+              <span className="absolute -right-1.5 -top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-white bg-orange font-sans text-[10px] font-extrabold text-white">
                 {cartCount}
               </span>
             </div>
@@ -274,23 +212,12 @@ export default function Navbar() {
 
           {/* Mobile Hamburger menu toggle */}
           <button
-            className="mobile-nav-toggle"
             onClick={() => setMobileOpen(!mobileOpen)}
-            style={{
-              display: 'none',
-              width: 38,
-              height: 38,
-              borderRadius: 8,
-              background: 'none',
-              border: '1.5px solid #E5E1DC',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              marginLeft: 4,
-            }}
+            className={`${iconBtnClasses} ml-1 lg:hidden`}
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileOpen}
           >
-            {mobileOpen ? <X size={18} color="#3D3730" /> : <Menu size={18} color="#3D3730" />}
+            {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
         </div>
@@ -299,37 +226,35 @@ export default function Navbar() {
       {/* ── SEARCH OVERLAY ── */}
       {searchOpen && (
         <div
-          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', zIndex: 300, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 80 }}
+          className="fixed inset-0 z-300 flex items-start justify-center bg-black/50 pt-20 backdrop-blur-sm"
           onClick={(e) => { if (e.target === e.currentTarget) setSearchOpen(false); }}
         >
-          <div style={{ background: '#fff', borderRadius: 20, padding: '28px', width: '100%', maxWidth: 640, boxShadow: '0 20px 60px rgba(0,0,0,0.2)', margin: '0 24px' }}>
+          <div className="mx-6 w-full max-w-[640px] rounded-[20px] bg-white p-7 shadow-[0_20px_60px_rgba(0,0,0,0.2)]">
             <form onSubmit={handleSearch}>
-              <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 20 }}>
-                <Search size={20} color="#7A7067" style={{ flexShrink: 0 }} />
+              <div className="mb-5 flex items-center gap-2.5">
+                <Search size={20} className="shrink-0 text-ink-3" />
                 <input
                   ref={searchRef}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   placeholder="Search for makhana, madhubani, silk saree..."
-                  style={{ flex: 1, border: 'none', fontSize: 16, fontFamily: 'inherit', outline: 'none', color: '#1A1410', background: 'transparent' }}
+                  className="flex-1 border-none bg-transparent font-sans text-base text-ink outline-none placeholder:text-ink-4"
                 />
-                <button type="button" onClick={() => setSearchOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4 }}>
-                  <X size={20} color="#7A7067" />
+                <button type="button" onClick={() => setSearchOpen(false)} aria-label="Close search" className="cursor-pointer border-none bg-transparent p-1 text-ink-3 hover:text-ink">
+                  <X size={20} />
                 </button>
               </div>
             </form>
-            <div style={{ borderTop: '1px solid #E5E1DC', paddingTop: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7A7067', marginBottom: 12 }}>
+            <div className="border-t border-line pt-4">
+              <div className="mb-3 text-[11px] font-bold uppercase tracking-[2px] text-ink-3">
                 Popular Searches
               </div>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+              <div className="flex flex-wrap gap-2">
                 {SEARCH_SUGGESTIONS.map(s => (
-                  <Link key={s} href={`/search?q=${encodeURIComponent(s)}`} style={{ textDecoration: 'none' }}>
+                  <Link key={s} href={`/search?q=${encodeURIComponent(s)}`} className="no-underline">
                     <span
                       onClick={() => setSearchOpen(false)}
-                      style={{ background: '#E8F5EC', color: '#1B6B3A', fontSize: 13, fontWeight: 600, padding: '7px 14px', borderRadius: 40, border: '1px solid #D0EBDA', cursor: 'pointer', display: 'inline-block', transition: 'all 0.18s' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = '#1B6B3A'; e.currentTarget.style.color = '#fff'; }}
-                      onMouseLeave={e => { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}
+                      className="inline-block cursor-pointer rounded-full border border-green-bg2 bg-green-bg px-3.5 py-[7px] text-[13px] font-semibold text-green transition-all duration-200 hover:bg-green hover:text-white"
                     >
                       {s}
                     </span>
@@ -340,47 +265,48 @@ export default function Navbar() {
           </div>
         </div>
       )}
+
       {/* ── MOBILE MENU DRAWER ── */}
       {mobileOpen && (
-        <div style={{
-          position: 'fixed',
-          top: 68,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: '#fff',
-          zIndex: 99,
-          padding: '24px 20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 16,
-          borderTop: '1px solid #E5E1DC',
-          overflowY: 'auto',
-        }}>
+        <div className="fixed inset-x-0 bottom-0 top-[68px] z-99 flex flex-col gap-4 overflow-y-auto border-t border-line bg-white px-5 py-6 lg:hidden">
           {linksToShow.map((link) => (
             link.children ? (
-              <div key={link.label} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#7A7067', textTransform: 'uppercase', letterSpacing: 1 }}>{link.label}</div>
+              <div key={link.label} className="flex flex-col gap-2">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-ink-3">{link.label}</div>
                 {link.children.map(child => (
-                  <Link key={child.href} href={child.href} onClick={() => setMobileOpen(false)} style={{ textDecoration: 'none', paddingLeft: 12, fontSize: 14, fontWeight: 500, color: '#3D3730' }}>
+                  <Link
+                    key={child.href}
+                    href={child.href}
+                    onClick={() => setMobileOpen(false)}
+                    className="pl-3 text-sm font-medium text-ink-2 no-underline"
+                  >
                     {child.label}
                   </Link>
                 ))}
               </div>
             ) : (
-              <Link key={link.href} href={link.href} onClick={() => setMobileOpen(false)} style={{ textDecoration: 'none', fontSize: 15, fontWeight: 600, color: pathname === link.href ? '#1B6B3A' : '#3D3730', padding: '6px 0' }}>
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={`py-1.5 text-[15px] font-semibold no-underline ${pathname === link.href ? 'text-green' : 'text-ink-2'}`}
+              >
                 {link.label}
               </Link>
             )
           ))}
-          <div style={{ borderTop: '1px solid #E5E1DC', paddingTop: 16, marginTop: 'auto', display: 'flex', gap: 10 }}>
-            <Link href={userRole === 'seller' ? '/dashboard' : (userRole === 'buyer' ? '/profile' : '/login')} onClick={() => setMobileOpen(false)} style={{ flex: 1, textDecoration: 'none' }}>
-              <button style={{ width: '100%', padding: '10px', borderRadius: 8, background: '#F8F6F3', border: '1.5px solid #E5E1DC', color: '#3D3730', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+          <div className="mt-auto flex gap-2.5 border-t border-line pt-4">
+            <Link
+              href={userRole === 'seller' ? '/dashboard' : (userRole === 'buyer' ? '/profile' : '/login')}
+              onClick={() => setMobileOpen(false)}
+              className="flex-1 no-underline"
+            >
+              <button className="w-full cursor-pointer rounded-lg border-[1.5px] border-line bg-bg-3 p-2.5 font-sans text-[13px] font-semibold text-ink-2">
                 Account Profile
               </button>
             </Link>
-            <Link href="/sellers" onClick={() => setMobileOpen(false)} style={{ flex: 1, textDecoration: 'none' }}>
-              <button style={{ width: '100%', padding: '10px', borderRadius: 8, background: '#1B6B3A', border: 'none', color: '#fff', fontWeight: 600, fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+            <Link href="/sellers" onClick={() => setMobileOpen(false)} className="flex-1 no-underline">
+              <button className="w-full cursor-pointer rounded-lg border-none bg-green p-2.5 font-sans text-[13px] font-semibold text-white">
                 Sell on BKB
               </button>
             </Link>

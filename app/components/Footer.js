@@ -28,76 +28,47 @@ const footerLinks = {
 
 export default function Footer() {
   return (
-    <footer style={{ background: '#0D3B1E', color: '#A8C9B4' }}>
+    <footer className="bg-green-dark text-[#A8C9B4]">
 
       {/* Main Footer */}
-      <div className="bkb-footer-main" style={{
-        padding: '56px 60px 40px',
-        display: 'grid',
-        gridTemplateColumns: '2.2fr 1fr 1fr 1fr',
-        gap: 48,
-        borderBottom: '1px solid rgba(255,255,255,0.08)',
-      }}>
+      <div className="grid grid-cols-1 gap-9 border-b border-white/10 px-6 py-10 lg:grid-cols-[2.2fr_1fr_1fr_1fr] lg:gap-12 lg:px-[60px] lg:pb-10 lg:pt-14">
 
         {/* Brand */}
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+        <div className="flex flex-col">
+          <div className="mb-4 flex items-center gap-3">
             <img
               src="/images/bkb_logo.png"
               alt="BKB Logo"
-              style={{
-                height: 44,
-                width: 'auto',
-                objectFit: 'contain',
-                borderRadius: 8,
-                background: '#fff',
-                padding: '4px',
-              }}
+              className="h-11 w-auto rounded-lg bg-white object-contain p-1"
             />
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#fff', lineHeight: 1.1, fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
+            <div className="flex flex-col">
+              <div className="devanagari text-xl font-extrabold leading-tight text-white">
                 बिहार का बाज़ार
               </div>
-              <div style={{ fontSize: 8, color: 'rgba(255,255,255,0.5)', letterSpacing: 2, textTransform: 'uppercase', marginTop: 2 }}>
+              <div className="mt-0.5 text-[8px] uppercase tracking-[2px] text-white/50">
                 Bihar Ka Bazaar
               </div>
             </div>
           </div>
-          <p style={{ fontSize: 13, lineHeight: 1.8, color: 'rgba(255,255,255,0.5)', maxWidth: 280, marginBottom: 20 }}>
-            An initiative by Bindisa Agritech to connect Bihar's farmers and artisans directly to buyers across India. Authentic. Transparent. Empowering.
+          <p className="mb-5 max-w-[280px] text-[13px] leading-relaxed text-white/50">
+            An initiative by Bindisa Agritech to connect Bihar&apos;s farmers and artisans directly to buyers across India. Authentic. Transparent. Empowering.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>📍 Patna, Bihar, India — 800001</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>✉️ contact@biharkabazaar.in</div>
-            <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)' }}>📞 +91 612-XXX-XXXX</div>
+          <div className="flex flex-col gap-1.5">
+            <div className="text-xs text-white/45">📍 Patna, Bihar, India — 800001</div>
+            <div className="text-xs text-white/45">✉️ contact@biharkabazaar.in</div>
+            <div className="text-xs text-white/45">📞 +91 612-XXX-XXXX</div>
           </div>
         </div>
 
         {/* Link Columns */}
         {Object.entries(footerLinks).map(([title, links]) => (
           <div key={title}>
-            <div style={{
-              fontSize: 11,
-              fontWeight: 700,
-              letterSpacing: 2,
-              textTransform: 'uppercase',
-              color: 'rgba(255,255,255,0.6)',
-              marginBottom: 16,
-            }}>
+            <div className="mb-4 text-[11px] font-bold uppercase tracking-[2px] text-white/60">
               {title}
             </div>
             {links.map((link) => (
-              <Link key={link.label} href={link.href} style={{ textDecoration: 'none' }}>
-                <div style={{
-                  fontSize: 13,
-                  color: 'rgba(255,255,255,0.4)',
-                  marginBottom: 10,
-                  cursor: 'pointer',
-                  transition: 'color 0.18s',
-                }}
-                  onMouseEnter={e => e.target.style.color = '#E87B24'}
-                  onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.4)'}
-                >
+              <Link key={link.label} href={link.href} className="no-underline">
+                <div className="mb-2.5 cursor-pointer text-[13px] text-white/40 transition-colors duration-200 hover:text-orange">
                   {link.label}
                 </div>
               </Link>
@@ -107,17 +78,12 @@ export default function Footer() {
       </div>
 
       {/* Bottom Bar */}
-      <div className="bkb-footer-bottom" style={{
-        padding: '18px 60px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-      }}>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
+      <div className="flex flex-col items-center gap-2 px-6 py-[18px] text-center lg:flex-row lg:justify-between lg:px-[60px] lg:text-left">
+        <span className="text-[11px] text-white/25">
           © {new Date().getFullYear()} Bihar Ka Bazaar. All rights reserved.
         </span>
-        <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.25)' }}>
-          An initiative by <strong style={{ color: '#E87B24' }}>Bindisa Agritech</strong>
+        <span className="text-[11px] text-white/25">
+          An initiative by <strong className="text-orange">Bindisa Agritech</strong>
         </span>
       </div>
 
