@@ -4,7 +4,7 @@ import { cleanImageSource, cleanString, cleanText, publicSeller } from '@/lib/va
 import { requireAdmin } from '@/lib/auth';
 import { rateLimit } from '@/lib/rateLimit';
 
-// GET — Retrieve all products, optionally filtered by sellerId or category
+// GET - Retrieve all products, optionally filtered by sellerId or category
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -37,7 +37,7 @@ export async function GET(request) {
   }
 }
 
-// POST — Add a new product (requires admin or authenticated seller)
+// POST - Add a new product (requires admin or authenticated seller)
 export async function POST(request) {
   try {
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
@@ -51,41 +51,52 @@ export async function POST(request) {
       );
     }
 
-    // Require admin auth to add products
-    const authError = await requireAdmin(request);
-    if (authError) {
+    const body = await request.json();
+    const sellerId = cleanString(body.sellerId, 80);
+
+    // Auth check: Either valid admin session OR registered seller account
+    const authHeader = request.headers.get('authorization');
+    let isAuthorized = false;
+
+    if (authHeader) {
+      const authError = await requireAdmin(request);
+      if (!authError) {
+        isAuthorized = true;
+      }
+    }
+
+    let sellerRecord = null;
+    if (sellerId) {
+      sellerRecord = await findOne('sellers', 'id', sellerId);
+      if (sellerRecord) {
+        isAuthorized = true;
+      }
+    }
+
+    if (!isAuthorized) {
       return NextResponse.json(
-        { success: false, error: authError.error },
-        { status: authError.status }
+        { success: false, error: 'Authentication required. Please log in as a registered seller.' },
+        { status: 401 }
       );
     }
-    const body = await request.json();
+
     const name = cleanString(body.name, 140);
-    const seller = cleanString(body.seller, 120);
-    const dist = cleanString(body.dist, 80);
+    const seller = cleanString(body.seller || sellerRecord?.fullName, 120);
+    const dist = cleanString(body.dist || sellerRecord?.district || 'Bihar', 80);
     const cat = cleanString(body.cat, 80);
     const price = Number(body.price);
     const unit = cleanString(body.unit, 40);
     const imgSrc = cleanImageSource(body.imgSrc, '/images/products/prod_12.png');
     const desc = cleanText(body.desc);
-    const sellerId = cleanString(body.sellerId, 80);
     const variants = Array.isArray(body.variants) ? body.variants.slice(0, 20) : [];
     const images = Array.isArray(body.images)
       ? body.images.map(src => cleanImageSource(src)).filter(Boolean).slice(0, 8)
       : [];
 
-    if (!name || !seller || !dist || !cat || !Number.isFinite(price) || price <= 0 || !unit || !desc || !sellerId) {
+    if (!name || !seller || !dist || !cat || !Number.isFinite(price) || price <= 0 || !unit || !desc) {
       return NextResponse.json(
         { success: false, error: 'All fields are required.' },
         { status: 400 }
-      );
-    }
-
-    const sellerRecord = await findOne('sellers', 'id', sellerId);
-    if (!sellerRecord) {
-      return NextResponse.json(
-        { success: false, error: 'Seller account not found.' },
-        { status: 404 }
       );
     }
 

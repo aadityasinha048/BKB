@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Tag, Image as ImageIcon, CheckCircle, HelpCircle } from 'lucide-react';
+import { ShoppingBag, Tag, Image as ImageIcon, CheckCircle, HelpCircle, AlertCircle, Upload } from 'lucide-react';
 
 const PRODUCT_IMAGES = [
   { label: "Makhana (Fox Nuts)", url: "/images/products/prod_1.png" },
@@ -127,7 +127,7 @@ export default function AddProductPage() {
       return;
     }
 
-    if (imagesList.length === 0) {
+    if (imagesList.length === 0 && !selectedImg) {
       setError('Please select or upload at least one product photo.');
       return;
     }
@@ -207,7 +207,9 @@ export default function AddProductPage() {
 
       {submitted ? (
         <div style={{ textAlign: 'center', padding: '80px 60px' }}>
-          <div style={{ fontSize: 72, marginBottom: 16 }}>🎉</div>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: '#EAF5F0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+            <CheckCircle size={40} color="#1A5C38" />
+          </div>
           <h2 style={{ fontSize: 28, color: '#1A5C38', marginBottom: 10, fontFamily: "'Playfair Display', serif" }}>Product Listed!</h2>
           <p style={{ fontSize: 15, color: '#8C7B6E' }}>Your product is now listed on Bihar Ka Bazaar. Redirecting to your dashboard...</p>
         </div>
@@ -218,14 +220,15 @@ export default function AddProductPage() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             
             {error && (
-              <div style={{ background: '#FDECEA', border: '1px solid rgba(211,47,47,0.2)', borderRadius: 12, padding: '12px 14px', color: '#D32F2F', fontSize: 13, fontWeight: 600 }}>
-                ⚠️ {error}
+              <div style={{ background: '#FDECEA', border: '1px solid rgba(211,47,47,0.2)', borderRadius: 12, padding: '12px 14px', color: '#D32F2F', fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 8 }}>
+                <AlertCircle size={16} style={{ flexShrink: 0 }} />
+                <span>{error}</span>
               </div>
             )}
 
             {/* Basic Info */}
             <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, overflow: 'hidden' }}>
-              <div style={{ padding: '18px 24px', borderBottom: '1px solid #E8DDD4', fontSize: 15, fontWeight: 700, color: '#1A1410' }}>📦 Basic Information</div>
+              <div style={{ padding: '18px 24px', borderBottom: '1px solid #E8DDD4', fontSize: 15, fontWeight: 700, color: '#1A1410' }}>Basic Information</div>
               <div style={{ padding: 24 }}>
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 5 }}>Product Name <span style={{ color: '#C85A08' }}>*</span></label>
@@ -242,7 +245,7 @@ export default function AddProductPage() {
                 <div style={{ marginBottom: 16 }}>
                   <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 5 }}>Product Description <span style={{ color: '#C85A08' }}>*</span></label>
                   <textarea 
-                    placeholder="Describe your product — what makes it special, how it's made, its quality..." 
+                    placeholder="Describe your product - what makes it special, how it's made, its quality..." 
                     rows={4}
                     value={desc}
                     onChange={e => setDesc(e.target.value)}
@@ -270,7 +273,7 @@ export default function AddProductPage() {
             {/* Pricing & Stock (Variants) */}
             <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, overflow: 'hidden' }}>
               <div style={{ padding: '18px 24px', borderBottom: '1px solid #E8DDD4', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontSize: 15, fontWeight: 700, color: '#1A1410' }}>💰 Pricing & Weight Options</span>
+                <span style={{ fontSize: 15, fontWeight: 700, color: '#1A1410' }}>Pricing & Weight Options</span>
                 <button
                   type="button"
                   onClick={addVariant}
@@ -286,7 +289,7 @@ export default function AddProductPage() {
                     fontFamily: 'inherit'
                   }}
                 >
-                  ➕ Add Weight
+                  + Add Weight
                 </button>
               </div>
               <div style={{ padding: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -353,7 +356,7 @@ export default function AddProductPage() {
 
             {/* Product Image Selector */}
             <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, overflow: 'hidden' }}>
-              <div style={{ padding: '18px 24px', borderBottom: '1px solid #E8DDD4', fontSize: 15, fontWeight: 700, color: '#1A1410' }}>📸 Product Image Assets</div>
+              <div style={{ padding: '18px 24px', borderBottom: '1px solid #E8DDD4', fontSize: 15, fontWeight: 700, color: '#1A1410' }}>Product Image Assets</div>
               <div style={{ padding: 24 }}>
                 {/* Gallery List Preview */}
                 {imagesList.length > 0 && (
@@ -432,7 +435,7 @@ export default function AddProductPage() {
                   onMouseLeave={e => e.currentTarget.style.borderColor = '#E8DDD4'}
                   onClick={() => document.getElementById('computer-file-input').click()}
                 >
-                  <div style={{ fontSize: 24, marginBottom: 6 }}>📁</div>
+                  <Upload size={24} color="#C85A08" style={{ margin: "0 auto 6px", display: "block" }} />
                   <div style={{ fontSize: 13, fontWeight: 700, color: '#1A1410' }}>Click to Browse local file</div>
                   <div style={{ fontSize: 11, color: '#8C7B6E', marginTop: 4 }}>Supports PNG, JPG, JPEG up to 5MB</div>
                   <input 
@@ -458,7 +461,7 @@ export default function AddProductPage() {
                 disabled={loading}
                 style={{ flex: 2, padding: 14, background: loading ? '#8C7B6E' : '#C85A08', color: '#fff', border: 'none', borderRadius: 12, fontSize: 14, fontWeight: 700, cursor: loading ? 'not-allowed' : 'pointer', fontFamily: 'inherit' }}
               >
-                {loading ? 'Publishing...' : 'Publish Product →'}
+                {loading ? 'Publishing...' : 'Publish Product'}
               </button>
             </div>
 
@@ -483,7 +486,7 @@ export default function AddProductPage() {
                   {name || 'Your Product Name'}
                 </div>
                 <div style={{ fontSize: 12, color: '#8C7B6E', marginBottom: 12 }}>
-                  by {seller.fullName} · {seller.district || 'Bihar'}
+                  by {seller.fullName} | {seller.district || 'Bihar'}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontSize: 20, fontWeight: 800, color: '#C85A08' }}>
@@ -495,7 +498,7 @@ export default function AddProductPage() {
             </div>
             
             <div style={{ marginTop: 14, background: '#EAF5F0', border: '1px solid rgba(26,92,56,0.2)', borderRadius: 12, padding: '14px 16px', fontSize: 13, color: '#1A5C38' }}>
-              ✅ Your product will be live instantly on the marketplace catalog.
+              ✓ Your product will be live instantly on the marketplace catalog.
             </div>
           </div>
 
