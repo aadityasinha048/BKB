@@ -8,7 +8,7 @@ export async function GET(request) {
 
     if (!token) {
       return NextResponse.json(
-        { success: false, valid: false, error: 'Incorrect email or password' },
+        { success: false, valid: false, error: 'Authentication token is missing.' },
         { status: 401 }
       );
     }
@@ -17,7 +17,7 @@ export async function GET(request) {
 
     if (!valid) {
       return NextResponse.json(
-        { success: false, valid: false, error: 'Incorrect email or password' },
+        { success: false, valid: false, error: 'Authentication token is invalid or expired.' },
         { status: 401 }
       );
     }

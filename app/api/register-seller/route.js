@@ -71,8 +71,21 @@ const PATCH_FIELDS = new Set([
 // GET - Retrieves a seller account by ID to resume registration progress
 export async function GET(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || '127.0.0.1';
+
+    // Rate limit GET by IP to prevent enumeration/scraping of seller IDs
+    const limitCheck = await rateLimit(ip, 'register-seller-get', 20, 60 * 1000);
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
-    const sellerId = searchParams.get('sellerId');
+    const sellerId = cleanString(searchParams.get('sellerId'), 80);
 
     if (!sellerId) {
       return NextResponse.json(
@@ -84,8 +97,9 @@ export async function GET(request) {
     const seller = await findOne('sellers', 'id', sellerId);
 
     if (!seller) {
+      // Generic 404 — do not reveal whether ID exists or not
       return NextResponse.json(
-        { success: false, error: 'Incorrect email or password' },
+        { success: false, error: 'Seller account not found.' },
         { status: 404 }
       );
     }
@@ -104,7 +118,9 @@ export async function GET(request) {
 // POST - Handles simulated OTP verification and initial account registration (Step 1)
 export async function POST(request) {
   try {
-    const ip = request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || '127.0.0.1';
     const limitCheck = await rateLimit(ip, 'register-seller', 10, 60 * 1000);
     if (!limitCheck.success) {
       return NextResponse.json(
@@ -119,7 +135,7 @@ export async function POST(request) {
     if (!validationResult.success) {
       console.warn(`[SECURITY MONITOR] Seller registration validation failed:`, validationResult.error.format());
       return NextResponse.json(
-        { success: false, error: 'Incorrect email or password' },
+        { success: false, error: 'Please check that all registration fields are filled out correctly.' },
         { status: 400 }
       );
     }
@@ -130,7 +146,7 @@ export async function POST(request) {
     // Verify simulated OTP code (123456)
     if (otp !== DEMO_OTP) {
       return NextResponse.json(
-        { success: false, error: 'Incorrect email or password' },
+        { success: false, error: 'Invalid OTP. Please enter the code 123456.' },
         { status: 400 }
       );
     }
@@ -202,12 +218,37 @@ export async function POST(request) {
 // PATCH - Handles incremental updates to the seller profile (Steps 2, 3, and 4)
 export async function PATCH(request) {
   try {
-    const { sellerId, ...updates } = await request.json();
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || '127.0.0.1';
+
+    // Rate limit PATCH to prevent rapid mass-update attempts across seller IDs
+    const patchLimit = await rateLimit(ip, 'register-seller-patch', 15, 60 * 1000);
+    if (!patchLimit.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many update requests. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
+
+    const rawBody = await request.json();
+    const sellerId = cleanString(rawBody.sellerId, 80);
+    const updates = { ...rawBody };
+    delete updates.sellerId;
 
     if (!sellerId) {
       return NextResponse.json(
         { success: false, error: 'Seller ID is required to update details.' },
         { status: 400 }
+      );
+    }
+
+    // Verify seller exists before applying updates (prevents blind writes to arbitrary IDs)
+    const existingSeller = await findOne('sellers', 'id', sellerId);
+    if (!existingSeller) {
+      return NextResponse.json(
+        { success: false, error: 'Seller account not found.' },
+        { status: 404 }
       );
     }
 

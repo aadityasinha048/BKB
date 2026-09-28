@@ -22,7 +22,7 @@ const footerLinks = {
     { label: 'Bindisa Agritech', href: '/about' },
     { label: 'Our Mission', href: '/about' },
     { label: 'Contact BKB', href: '/contact' },
-    { label: 'Privacy Policy', href: '#' },
+    { label: 'Privacy Policy', href: '/privacy' },
   ],
 };
 

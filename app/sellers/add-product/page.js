@@ -469,8 +469,12 @@ export default function AddProductPage() {
             <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, overflow: 'hidden' }}>
               <div style={{ padding: '14px 18px', borderBottom: '1px solid #E8DDD4', fontSize: 12, fontWeight: 700, color: '#8C7B6E', textTransform: 'uppercase', letterSpacing: 1 }}>Live Preview</div>
               
-              <div style={{ height: 180, width: '100%', background: '#F5EEE6', overflow: 'hidden' }}>
-                <img src={selectedImg} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              <div style={{ height: 180, width: '100%', background: '#F5EEE6', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {selectedImg ? (
+                  <img src={selectedImg} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <span style={{ fontSize: 13, color: '#8C7B6E', fontWeight: 500 }}>No Image Selected</span>
+                )}
               </div>
 
               <div style={{ padding: '16px 18px' }}>

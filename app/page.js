@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Award, Users, ShieldCheck, Truck } from 'lucide-react';
+import { Award, Users, ShieldCheck, Truck, Zap, CheckCircle, CreditCard, Headphones, Leaf, Heart, ShoppingBag, MapPin } from 'lucide-react';
 
 const categories = [
   { label: "Food & Agri", imgSrc: "/images/categories/food_agri.png", count: 84 },
@@ -14,13 +14,13 @@ const categories = [
 ];
 
 const marqueeItems = [
-  "🪔 Madhubani Paintings",
-  "🌿 Shahi Litchi · Muzaffarpur",
-  "🍚 Katarni Rice · Bhojpur",
-  "🍭 Silao Khaja · Nalanda",
-  "🧵 Bhagalpuri Silk",
-  "🌾 Makhana · Darbhanga",
-  "🥭 Jardalu Mango · Bhagalpur",
+  "✦ Madhubani Paintings",
+  "✦ Shahi Litchi · Muzaffarpur",
+  "✦ Katarni Rice · Bhojpur",
+  "✦ Silao Khaja · Nalanda",
+  "✦ Bhagalpuri Silk",
+  "✦ Makhana · Darbhanga",
+  "✦ Jardalu Mango · Bhagalpur",
 ];
 
 const testimonials = [
@@ -157,7 +157,7 @@ export default function HomePage() {
   }, [fetchBestsellers]);
 
   useEffect(() => {
-    const timer = setInterval(() => setHeroSlide(s => (s + 1) % 3), 5000);
+    const timer = setInterval(() => setHeroSlide(s => (s + 1) % 4), 5000);
     return () => clearInterval(timer);
   }, []);
 
@@ -165,184 +165,358 @@ export default function HomePage() {
     { 
       title: "FARM FRESH", subtitle: "From Bihar's Fields", 
       desc: "Authentic GI-tagged products directly from farmers",
-      img: "/images/products/prod_1.png", bg: "linear-gradient(135deg, #FFF9F2 0%, #F0FAF3 100%)",
-      accent: '#1B6B3A'
+      img: "/images/products/prod_1.png", bg: "linear-gradient(135deg, #F0FAF3 0%, #FEFCF4 40%, #FFF5EC 100%)",
+      accent: '#1B6B3A', type: 'product'
     },
     { 
       title: "SHAHI LITCHI", subtitle: "Muzaffarpur's Pride", 
       desc: "World-renowned sweetness, now at your doorstep",
-      img: "/images/products/prod_4.png", bg: "linear-gradient(135deg, #F0FAF3 0%, #FFF9F2 100%)",
-      accent: '#E87B24'
+      img: "/images/products/prod_4.png", bg: "linear-gradient(135deg, #FFF5EC 0%, #FEF8E0 40%, #F0FAF3 100%)",
+      accent: '#E87B24', type: 'product'
     },
     { 
       title: "SILK HERITAGE", subtitle: "Bhagalpur's Legacy", 
       desc: "Handwoven Tussar silk from fourth-generation weavers",
-      img: "/images/products/prod_3.png", bg: "linear-gradient(135deg, #F0F4FF 0%, #F0FAF3 100%)",
-      accent: '#1B6B3A'
+      img: "/images/products/prod_3.png", bg: "linear-gradient(135deg, #F0F4FF 0%, #F0FAF3 40%, #FEF8E0 100%)",
+      accent: '#1B6B3A', type: 'product'
+    },
+    {
+      type: 'farmer',
+      img: "/images/about/hero_farmer.png",
+      bg: '#0D3B1E',
+      accent: '#A8E6C3',
     },
   ];
 
   const currentSlide = heroSlides[heroSlide];
 
   return (
-    <div className="blob-container" style={{ fontFamily: "'Outfit', sans-serif", background: '#ffffff', overflow: 'hidden' }}>
+    <div className="blob-container grain-overlay" style={{ fontFamily: "'Outfit', sans-serif", background: '#ffffff', overflow: 'hidden' }}>
       {/* Background organic blobs for premium depth */}
       <div className="blob-glow blob-green" />
       <div className="blob-glow blob-orange" />
+      <div className="blob-gold" />
+      <div className="blob-teal" />
 
       {/* ── HERO BANNER ── */}
-      <div className="home-hero-grid" style={{
-        background: currentSlide.bg,
-        minHeight: '80vh',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        alignItems: 'center',
-        position: 'relative',
-        overflow: 'hidden',
-        transition: 'background 0.8s ease',
-      }}>
-        {/* Decorative circles */}
-        <div style={{ position: 'absolute', right: -80, top: -80, width: 300, height: 300, borderRadius: '50%', background: 'rgba(27,107,58,0.04)' }} />
-        <div style={{ position: 'absolute', left: -40, bottom: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(232,123,36,0.04)' }} />
+      {currentSlide.type === 'farmer' ? (
+        /* ── FARMER SLIDE — Full-bleed emotional layout ── */
+        <div className="home-hero-grid" style={{
+          minHeight: '80vh',
+          position: 'relative',
+          overflow: 'hidden',
+          display: 'flex',
+          alignItems: 'center',
+        }}>
+          {/* Background farmer image with ken-burns */}
+          <img
+            className="farmer-slide-img"
+            src="/images/about/hero_farmer.png"
+            alt="Indian farmer in golden wheat field"
+          />
+          {/* Dark gradient overlay for text readability */}
+          <div className="farmer-slide-overlay" />
 
-        {/* Left text content */}
-        <div style={{ padding: '80px 44px 80px 72px', position: 'relative', zIndex: 1 }}>
-          <div style={{
-            display: 'inline-flex', alignItems: 'center', gap: 6,
-            background: '#E8F5EC', border: '1.5px solid rgba(27,107,58,0.2)',
-            borderRadius: 40, padding: '6px 16px', fontSize: 11,
-            fontWeight: 700, color: '#1B6B3A', marginBottom: 24, width: 'fit-content',
+          {/* Floating particles */}
+          {[1,2,3,4,5,6].map(i => (
+            <div key={i} className="hero-particle" style={{
+              left: `${10 + i * 14}%`,
+              bottom: `${15 + (i % 3) * 25}%`,
+              animationDelay: `${i * 0.8}s`,
+              animationDuration: `${5 + i}s`,
+              background: i % 2 === 0 ? 'rgba(168,230,195,0.4)' : 'rgba(254,248,224,0.3)',
+              width: i % 3 === 0 ? 8 : 5,
+              height: i % 3 === 0 ? 8 : 5,
+            }} />
+          ))}
+
+          {/* Left — emotional slogan */}
+          <div key={heroSlide} className="hero-text-animate" style={{
+            position: 'relative', zIndex: 2,
+            padding: '80px 60px 80px 72px',
+            maxWidth: 640,
           }}>
-            <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#1B6B3A', display: 'inline-block' }} />
-            Fresh From Bihar's Farms
+            <div style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.2)',
+              borderRadius: 40, padding: '6px 18px', fontSize: 11,
+              fontWeight: 700, color: '#A8E6C3', marginBottom: 28,
+              backdropFilter: 'blur(8px)',
+            }}>
+              <Leaf size={12} />
+              किसान हमारी पहचान — FARMER IS OUR IDENTITY
+            </div>
+
+            <h1 style={{
+              fontSize: 52, lineHeight: 1.1, marginBottom: 16, color: '#fff',
+              fontFamily: "'Playfair Display', serif",
+              letterSpacing: '-1px',
+            }}>
+              <span style={{ display: 'block', fontSize: 22, fontWeight: 400, color: '#A8E6C3', fontFamily: "'Outfit', sans-serif", letterSpacing: 1, marginBottom: 8, textTransform: 'uppercase' }}>
+                If you ate today,
+              </span>
+              Thank a <em style={{ color: '#A8E6C3' }}>Farmer</em>
+            </h1>
+
+            <p style={{
+              fontSize: 18, color: 'rgba(255,255,255,0.85)', lineHeight: 1.75,
+              maxWidth: 480, marginBottom: 12,
+            }}>
+              हर दाने में किसान का पसीना है, हर उत्पाद में बिहार की मिट्टी की खुशबू है। हम उनकी मेहनत को सही दाम दिलाते हैं।
+            </p>
+            <p style={{
+              fontSize: 14, color: 'rgba(255,255,255,0.55)', lineHeight: 1.7,
+              maxWidth: 480, marginBottom: 36, fontStyle: 'italic',
+            }}>
+              Every grain carries a farmer's sweat, every product carries the fragrance of Bihar's soil. We ensure their hard work gets its rightful value.
+            </p>
+
+            <div style={{ display: 'flex', gap: 14, marginBottom: 40 }}>
+              <Link href="/about">
+                <button style={{
+                  padding: '14px 32px', borderRadius: 10, fontSize: 15, fontWeight: 700,
+                  background: '#fff', color: '#0D3B1E', border: 'none',
+                  cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.25s',
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
+                  display: 'flex', alignItems: 'center', gap: 8,
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 8px 30px rgba(0,0,0,0.3)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.2)'; }}
+                >
+                  OUR STORY
+                </button>
+              </Link>
+              <Link href="/shop">
+                <button style={{
+                  padding: '14px 32px', borderRadius: 10, fontSize: 15, fontWeight: 700,
+                  background: 'transparent', color: '#fff', border: '2px solid rgba(255,255,255,0.4)',
+                  cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.1)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.7)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)'; }}
+                >
+                  SHOP PRODUCTS
+                </button>
+              </Link>
+            </div>
+
+            {/* Slide dots — light version */}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {heroSlides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setHeroSlide(i)}
+                  style={{
+                    width: i === heroSlide ? 28 : 10, height: 10, borderRadius: 5, border: 'none',
+                    background: i === heroSlide ? '#fff' : 'rgba(255,255,255,0.3)',
+                    cursor: 'pointer', transition: 'all 0.3s',
+                  }}
+                />
+              ))}
+              {/* Progress bar */}
+              <div style={{ marginLeft: 12, width: 80, height: 3, background: 'rgba(255,255,255,0.15)', borderRadius: 2, overflow: 'hidden' }}>
+                <div key={heroSlide} className="slide-progress-bar" style={{ background: '#A8E6C3' }} />
+              </div>
+            </div>
           </div>
 
-          <h1 style={{ 
-            fontSize: 58, lineHeight: 1.05, marginBottom: 8, color: currentSlide.accent, 
-            fontFamily: "'Playfair Display', serif",
-            transition: 'color 0.5s',
-            letterSpacing: '-1px',
+          {/* Floating stats on farmer slide */}
+          <div className="float" style={{
+            position: 'absolute', bottom: 60, right: 80,
+            background: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(16px)',
+            borderRadius: 18, padding: '20px 24px',
+            border: '1px solid rgba(255,255,255,0.15)',
+            display: 'flex', gap: 24, zIndex: 3,
           }}>
-            {currentSlide.title}
-          </h1>
-          <h2 style={{ 
-            fontSize: 36, lineHeight: 1.15, marginBottom: 18, color: '#1A1410', 
-            fontFamily: "'Playfair Display', serif", fontWeight: 700,
-          }}>
-            {currentSlide.subtitle}
-          </h2>
-
-          <p style={{ fontSize: 16, color: '#3D3730', lineHeight: 1.7, maxWidth: 420, marginBottom: 36 }}>
-            {currentSlide.desc}. Discover genuine GI-tagged products grown and crafted by real farmers and artisans of Bihar.
-          </p>
-
-          <div style={{ display: 'flex', gap: 14, marginBottom: 40 }}>
-            <Link href="/shop">
-              <button style={{
-                padding: '14px 32px', borderRadius: 10, fontSize: 15, fontWeight: 700,
-                background: '#1B6B3A', color: '#fff', border: 'none',
-                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.25s',
-                boxShadow: '0 4px 16px rgba(27,107,58,0.25)',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#0D3B1E'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = '#1B6B3A'; e.currentTarget.style.transform = 'none'; }}
-              >
-                ORDER NOW
-              </button>
-            </Link>
-            <Link href="/gi-products">
-              <button style={{
-                padding: '14px 32px', borderRadius: 10, fontSize: 15, fontWeight: 700,
-                background: 'transparent', color: '#1B6B3A', border: '2px solid #1B6B3A',
-                cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
-              }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#E8F5EC'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
-              >
-                Explore GI Products
-              </button>
-            </Link>
-          </div>
-
-          {/* Slide dots */}
-          <div style={{ display: 'flex', gap: 8 }}>
-            {heroSlides.map((_, i) => (
-              <button 
-                key={i} 
-                onClick={() => setHeroSlide(i)}
-                style={{ 
-                  width: i === heroSlide ? 28 : 10, height: 10, borderRadius: 5, border: 'none',
-                  background: i === heroSlide ? '#1B6B3A' : '#D0EBDA',
-                  cursor: 'pointer', transition: 'all 0.3s',
-                }} 
-              />
+            {[
+              ['800+', 'Farmers', '#A8E6C3'],
+              ['38', 'Districts', '#FEF8E0'],
+              ['₹2Cr+', 'Direct Pay', '#FFD5B0'],
+            ].map(([num, label, col]) => (
+              <div key={label} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: 24, fontWeight: 800, color: col, fontFamily: "'Playfair Display', serif" }}>{num}</div>
+                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{label}</div>
+              </div>
             ))}
           </div>
         </div>
-
-        {/* Right — hero product image */}
-        <div style={{ 
-          display: 'flex', alignItems: 'center', justifyContent: 'center', 
-          padding: '60px 72px 60px 0', position: 'relative', zIndex: 1,
+      ) : (
+        /* ── PRODUCT SLIDES — Standard grid layout ── */
+        <div className="home-hero-grid" style={{
+          background: currentSlide.bg,
+          minHeight: '80vh',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          alignItems: 'center',
+          position: 'relative',
+          overflow: 'hidden',
+          transition: 'background 0.8s ease',
         }}>
-          <div style={{
-            width: 420, height: 420, borderRadius: '50%',
-            background: 'rgba(255,255,255,0.7)',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.08)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            overflow: 'hidden',
-            border: '3px solid rgba(27,107,58,0.1)',
-          }}>
-            <img 
-              src={currentSlide.img} 
-              alt={currentSlide.title}
-              style={{ 
-                width: '105%', height: '105%', objectFit: 'cover',
-                transition: 'all 0.6s ease',
-              }}
-            />
-          </div>
-          {/* Floating badges */}
-          <div className="float" style={{
-            position: 'absolute', top: 80, right: 80,
-            background: '#fff', borderRadius: 14, padding: '12px 16px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            display: 'flex', alignItems: 'center', gap: 8,
-          }}>
-            <span style={{ fontSize: 22 }}>🏅</span>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1410' }}>GI Certified</div>
-              <div style={{ fontSize: 10, color: '#7A7067' }}>7 Products</div>
+          {/* Decorative circles */}
+          <div style={{ position: 'absolute', right: -80, top: -80, width: 400, height: 400, borderRadius: '50%', background: 'radial-gradient(circle, rgba(27,107,58,0.06) 0%, transparent 70%)' }} />
+          <div style={{ position: 'absolute', left: -40, bottom: -40, width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(232,135,36,0.06) 0%, transparent 70%)' }} />
+          <div style={{ position: 'absolute', right: '20%', bottom: -60, width: 250, height: 250, borderRadius: '50%', background: 'radial-gradient(circle, rgba(184,134,11,0.05) 0%, transparent 70%)' }} />
+
+          {/* Floating particles */}
+          {[1,2,3,4].map(i => (
+            <div key={i} className="hero-particle" style={{
+              left: `${15 + i * 18}%`,
+              bottom: `${20 + (i % 3) * 20}%`,
+              animationDelay: `${i * 1.2}s`,
+              animationDuration: `${6 + i}s`,
+              background: i % 2 === 0 ? 'rgba(27,107,58,0.15)' : 'rgba(232,135,36,0.12)',
+            }} />
+          ))}
+
+          {/* Left text content */}
+          <div key={heroSlide} className="hero-text-animate" style={{ padding: '80px 44px 80px 72px', position: 'relative', zIndex: 1 }}>
+            <div className="hero-shimmer" style={{
+              display: 'inline-flex', alignItems: 'center', gap: 6,
+              background: 'linear-gradient(135deg, #E8F5EC, #D4EDD9)', border: '1.5px solid rgba(27,107,58,0.2)',
+              borderRadius: 40, padding: '6px 16px', fontSize: 11,
+              fontWeight: 700, color: '#1B6B3A', marginBottom: 24, width: 'fit-content',
+            }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#1B6B3A', display: 'inline-block' }} />
+              Fresh From Bihar's Farms
+            </div>
+
+            <h1 style={{
+              fontSize: 58, lineHeight: 1.05, marginBottom: 8, color: currentSlide.accent,
+              fontFamily: "'Playfair Display', serif",
+              transition: 'color 0.5s',
+              letterSpacing: '-1px',
+            }}>
+              {currentSlide.title}
+            </h1>
+            <h2 style={{
+              fontSize: 36, lineHeight: 1.15, marginBottom: 18, color: '#1A1410',
+              fontFamily: "'Playfair Display', serif", fontWeight: 700,
+            }}>
+              {currentSlide.subtitle}
+            </h2>
+
+            <p style={{ fontSize: 16, color: '#3D3730', lineHeight: 1.7, maxWidth: 420, marginBottom: 36 }}>
+              {currentSlide.desc}. Discover genuine GI-tagged products grown and crafted by real farmers and artisans of Bihar.
+            </p>
+
+            <div style={{ display: 'flex', gap: 14, marginBottom: 40 }}>
+              <Link href="/shop">
+                <button style={{
+                  padding: '14px 32px', borderRadius: 10, fontSize: 15, fontWeight: 700,
+                  background: '#1B6B3A', color: '#fff', border: 'none',
+                  cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.25s',
+                  boxShadow: '0 4px 16px rgba(27,107,58,0.25)',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#0D3B1E'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = '#1B6B3A'; e.currentTarget.style.transform = 'none'; }}
+                >
+                  ORDER NOW
+                </button>
+              </Link>
+              <Link href="/gi-products">
+                <button style={{
+                  padding: '14px 32px', borderRadius: 10, fontSize: 15, fontWeight: 700,
+                  background: 'transparent', color: '#1B6B3A', border: '2px solid #1B6B3A',
+                  cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
+                }}
+                  onMouseEnter={e => { e.currentTarget.style.background = '#E8F5EC'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
+                >
+                  Explore GI Products
+                </button>
+              </Link>
+            </div>
+
+            {/* Slide dots + progress bar */}
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              {heroSlides.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setHeroSlide(i)}
+                  style={{
+                    width: i === heroSlide ? 28 : 10, height: 10, borderRadius: 5, border: 'none',
+                    background: i === heroSlide ? '#1B6B3A' : '#D0EBDA',
+                    cursor: 'pointer', transition: 'all 0.3s',
+                  }}
+                />
+              ))}
+              <div style={{ marginLeft: 12, width: 80, height: 3, background: '#E8DDD4', borderRadius: 2, overflow: 'hidden' }}>
+                <div key={heroSlide} className="slide-progress-bar" />
+              </div>
             </div>
           </div>
-          <div className="float" style={{
-            position: 'absolute', bottom: 100, left: 20,
-            background: '#fff', borderRadius: 14, padding: '12px 16px',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
-            display: 'flex', alignItems: 'center', gap: 8,
-            animationDelay: '1.5s',
+
+          {/* Right — hero product image */}
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: '60px 72px 60px 0', position: 'relative', zIndex: 1,
           }}>
-            <span style={{ fontSize: 22 }}>🌾</span>
-            <div>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1410' }}>800+ Farmers</div>
-              <div style={{ fontSize: 10, color: '#7A7067' }}>38 Districts</div>
+            <div style={{
+              width: 420, height: 420, borderRadius: '50%',
+              background: 'rgba(255,255,255,0.7)',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.08)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              overflow: 'hidden',
+              border: '3px solid rgba(27,107,58,0.1)',
+            }}>
+              <img
+                className="hero-img-zoom"
+                src={currentSlide.img}
+                alt={currentSlide.title}
+                style={{
+                  width: '105%', height: '105%', objectFit: 'cover',
+                  transition: 'all 0.6s ease',
+                }}
+              />
+            </div>
+            {/* Floating badges */}
+            <div className="float" style={{
+              position: 'absolute', top: 80, right: 80,
+              background: '#fff', borderRadius: 14, padding: '12px 16px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+              display: 'flex', alignItems: 'center', gap: 8,
+            }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: '#FFF4EC', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Award size={20} color="#C85A08" />
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1410' }}>GI Certified</div>
+                <div style={{ fontSize: 10, color: '#7A7067' }}>7 Products</div>
+              </div>
+            </div>
+            <div className="float" style={{
+              position: 'absolute', bottom: 100, left: 20,
+              background: '#fff', borderRadius: 14, padding: '12px 16px',
+              boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
+              display: 'flex', alignItems: 'center', gap: 8,
+              animationDelay: '1.5s',
+            }}>
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: '#EAF5F0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <Leaf size={18} color="#1B6B3A" />
+              </div>
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: '#1A1410' }}>800+ Farmers</div>
+                <div style={{ fontSize: 10, color: '#7A7067' }}>38 Districts</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* ── TRUST STRIP (KisanKonnect style) ── */}
       <div style={{ padding: '36px 0' }}>
         <div className="trust-strip">
           {[
-            ['🚚', 'Free Delivery*', 'On orders above ₹500'],
-            ['⚡', 'Fast Shipping', 'Across India in 3–5 days'],
-            ['✅', 'Verified Farmers', '100% authentic Bihar products'],
-            ['💳', 'Secure Payments', 'UPI, Cards, Net Banking & COD'],
-            ['🎧', 'Customer Support', '7 AM – 10 PM, Mon–Sat'],
-          ].map(([icon, title, desc]) => (
+            [Truck, 'Free Delivery*', 'On orders above ₹500'],
+            [Zap, 'Fast Shipping', 'Across India in 3–5 days'],
+            [CheckCircle, 'Verified Farmers', '100% authentic Bihar products'],
+            [CreditCard, 'Secure Payments', 'UPI, Cards, Net Banking & COD'],
+            [Headphones, 'Customer Support', '7 AM – 10 PM, Mon–Sat'],
+          ].map(([Icon, title, desc]) => (
             <div key={title} className="trust-item">
-              <div className="trust-icon">{icon}</div>
+              <div className="trust-icon" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: 44, height: 44, borderRadius: 12, background: '#E8F5EC', color: '#1B6B3A', margin: '0 auto 12px' }}>
+                <Icon size={20} />
+              </div>
               <div className="trust-title">{title}</div>
               <div className="trust-desc">{desc}</div>
             </div>
@@ -363,7 +537,7 @@ export default function HomePage() {
       </div>
 
       {/* ── CATEGORIES (KisanKonnect-style large cards) ── */}
-      <div style={{ padding: '64px 60px', background: 'radial-gradient(circle at 10% 20%, #F5FAF6 0%, #FFFFFF 100%)', position: 'relative', zIndex: 1 }}>
+      <div style={{ padding: '64px 60px', background: 'linear-gradient(180deg, #F2FAF4 0%, #FEFCF4 50%, #FFFFFF 100%)', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', marginBottom: 44 }}>
           <h2 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif", marginBottom: 10 }}>Categories</h2>
           <p style={{ fontSize: 15, color: '#7A7067' }}>Explore authentic products from every corner of Bihar</p>
@@ -411,7 +585,7 @@ export default function HomePage() {
       </div>
 
       {/* ── FEATURED PRODUCTS ── */}
-      <div style={{ padding: '64px 60px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF9F6 100%)', position: 'relative', zIndex: 1 }}>
+      <div style={{ padding: '64px 60px', background: 'linear-gradient(180deg, #FFFFFF 0%, #F5FAF6 30%, #FAF8F5 100%)', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 36 }}>
           <div>
             <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 8 }}>Bestsellers</div>
@@ -433,7 +607,7 @@ export default function HomePage() {
       </div>
 
       {/* ── GI TAG SECTION ── */}
-      <div style={{ background: 'linear-gradient(135deg, #FAF8F5 0%, #EBF4EE 50%, #FAF8F5 100%)', borderTop: '1px solid #E5E1DC', borderBottom: '1px solid #E5E1DC', padding: '64px 60px' }}>
+      <div style={{ background: 'linear-gradient(135deg, #F0FAF3 0%, #FEF8E0 50%, #F0FAF3 100%)', borderTop: '1px solid #D0EBDA', borderBottom: '1px solid #D0EBDA', padding: '64px 60px', position: 'relative' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 52, alignItems: 'center', maxWidth: 940, margin: '0 auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center' }}>
             <div style={{
@@ -470,7 +644,7 @@ export default function HomePage() {
       </div>
 
       {/* ── WHY BKB ── */}
-      <div style={{ padding: '64px 60px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%)', position: 'relative', zIndex: 1 }}>
+      <div style={{ padding: '64px 60px', background: 'linear-gradient(180deg, #FFFFFF 0%, #F0FAF3 50%, #FEFCF4 100%)', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', maxWidth: 500, margin: '0 auto 40px' }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 8 }}>Why Bihar Ka Bazaar</div>
           <h2 style={{ fontSize: 32, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>Built for Bihar's People</h2>
@@ -496,7 +670,11 @@ export default function HomePage() {
 
       {/* ── SELLER BAND ── */}
       <div className="home-seller-grid" style={{ background: 'linear-gradient(135deg, #0D3B1E 0%, #1B6B3A 100%)', padding: '72px 60px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 72, alignItems: 'center', position: 'relative', overflow: 'hidden' }}>
-        <div style={{ position: 'absolute', right: 120, top: '50%', transform: 'translateY(-50%)', fontSize: 220, opacity: 0.06, lineHeight: 1 }}>🌾</div>
+        <div style={{ position: 'absolute', right: 120, top: '50%', transform: 'translateY(-50%)', width: 220, height: 220, opacity: 0.06, color: '#fff', pointerEvents: 'none' }}>
+          <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%' }}>
+            <path d="M17 8C8 10 4 21 4 21S13 15 20 8C21 7 21 5 20 4S18 3 17 8Z"/>
+          </svg>
+        </div>
         <div style={{ position: 'relative', zIndex: 1 }}>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(255,255,255,0.1)', borderRadius: 40, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.8)', marginBottom: 20 }}>
             <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#28A745', display: 'inline-block' }} />
@@ -587,16 +765,18 @@ export default function HomePage() {
       </div>
 
       {/* ── STATS BAR ── */}
-      <div style={{ background: 'linear-gradient(135deg, #E8F5EC 0%, #FFFBF7 100%)', padding: '48px 60px', borderTop: '1px solid #E5E1DC', borderBottom: '1px solid #E5E1DC', position: 'relative', zIndex: 1 }}>
+      <div style={{ background: 'linear-gradient(135deg, #E0F2E5 0%, #F0FAF3 40%, #FEF8E0 100%)', padding: '48px 60px', borderTop: '1px solid #D0EBDA', borderBottom: '1px solid #D0EBDA', position: 'relative', zIndex: 1 }}>
         <div className="home-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, maxWidth: 900, margin: '0 auto' }}>
           {[
-            ["240+", "Products Listed", "🛍️"],
-            ["800+", "Verified Sellers", "🌾"],
-            ["38", "Districts Covered", "📍"],
-            ["10K+", "Happy Customers", "💚"],
-          ].map(([n, l, icon]) => (
-            <div key={l} style={{ textAlign: 'center', padding: '20px 16px' }}>
-              <div style={{ fontSize: 28, marginBottom: 8 }}>{icon}</div>
+            [ShoppingBag, "240+", "Products Listed", "#1B6B3A"],
+            [Leaf, "800+", "Verified Sellers", "#1B6B3A"],
+            [MapPin, "38", "Districts Covered", "#1B6B3A"],
+            [Heart, "10K+", "Happy Customers", "#E87B24"],
+          ].map(([Icon, n, l, color]) => (
+            <div key={l} style={{ textAlign: 'center', padding: '20px 16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ marginBottom: 12, display: 'flex', justifyContent: 'center', alignItems: 'center', width: 44, height: 44, borderRadius: 12, background: 'rgba(27,107,58,0.06)' }}>
+                <Icon size={20} color={color} />
+              </div>
               <div style={{ fontSize: 32, fontWeight: 800, color: '#1B6B3A', fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>{n}</div>
               <div style={{ fontSize: 13, color: '#7A7067' }}>{l}</div>
             </div>
@@ -605,7 +785,7 @@ export default function HomePage() {
       </div>
 
       {/* ── TESTIMONIALS ── */}
-      <div style={{ padding: '64px 60px', background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF9F6 100%)', position: 'relative', zIndex: 1 }}>
+      <div style={{ padding: '64px 60px', background: 'linear-gradient(180deg, #FFFFFF 0%, #F5FAF6 50%, #FAF9F6 100%)', position: 'relative', zIndex: 1 }}>
         <div style={{ textAlign: 'center', maxWidth: 500, margin: '0 auto 40px' }}>
           <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 8 }}>Customer Stories</div>
           <h2 style={{ fontSize: 32, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>Loved Across India</h2>
@@ -618,7 +798,7 @@ export default function HomePage() {
               <div style={{ color: '#1B6B3A', fontSize: 15, marginBottom: 14, letterSpacing: 2 }}>★★★★★</div>
               <p style={{ fontSize: 14, color: '#3D3730', lineHeight: 1.75, marginBottom: 18, fontStyle: 'italic' }}>"{t.text}"</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 42, height: 42, borderRadius: '50%', background: t.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>{t.em}</div>
+                <div style={{ width: 42, height: 42, borderRadius: '50%', background: t.bg, color: '#1B6B3A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700 }}>{t.name.charAt(0)}</div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1410' }}>{t.name}</div>
                   <div style={{ fontSize: 12, color: '#7A7067' }}>{t.city}</div>

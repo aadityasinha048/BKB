@@ -3,11 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
+import { BarChart2, Users, Rocket } from 'lucide-react';
 
 const NAV_ITEMS = [
-  { href: '/admin', label: 'Overview', icon: '📊' },
-  { href: '/admin/sellers', label: 'Sellers', icon: '👥' },
-  { href: '/admin/prelaunch', label: 'Pre-Launch', icon: '🚀' },
+  { href: '/admin', label: 'Overview', icon: BarChart2 },
+  { href: '/admin/sellers', label: 'Sellers', icon: Users },
+  { href: '/admin/prelaunch', label: 'Pre-Launch', icon: Rocket },
 ];
 
 export default function AdminLayout({ children }) {
@@ -79,8 +80,18 @@ export default function AdminLayout({ children }) {
         alignItems: 'center',
         justifyContent: 'center',
       }}>
+        <style>{`
+          @keyframes adminSpin {
+            to { transform: rotate(360deg); }
+          }
+        `}</style>
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: 36, marginBottom: 16, animation: 'pulse 1.5s infinite' }}>🌾</div>
+          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}>
+            <svg style={{ animation: 'adminSpin 1s linear infinite', width: 36, height: 36, color: '#C85A08' }} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle style={{ opacity: 0.25 }} cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path style={{ opacity: 0.75 }} fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          </div>
           <div style={{ fontSize: 14, color: '#8C7B6E', fontWeight: 500 }}>Loading Admin Panel...</div>
         </div>
       </div>
@@ -176,7 +187,7 @@ export default function AdminLayout({ children }) {
                     }
                   }}
                 >
-                  <span style={{ fontSize: 18, flexShrink: 0 }}>{item.icon}</span>
+                  <Icon size={18} style={{ flexShrink: 0, color: isActive ? '#F09819' : '#9B9BA8' }} />
                   {!sidebarCollapsed && (
                     <span style={{
                       fontSize: 13,

@@ -1,8 +1,21 @@
 import { NextResponse } from 'next/server';
 import { cleanString, isUpiId } from '@/lib/validation';
+import { rateLimit } from '@/lib/rateLimit';
 
 export async function POST(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || '127.0.0.1';
+
+    const limitCheck = await rateLimit(ip, 'verify-upi', 10, 60 * 1000);
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many verification requests. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
+
     const body = await request.json();
     const upiId = cleanString(body.upiId, 320);
 

@@ -3,14 +3,15 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { User, Package, MapPin, Settings, LogOut, Leaf, Palette, Citrus } from 'lucide-react';
 
 const TABS = ['Profile', 'My Orders', 'Addresses', 'Settings'];
 
 const ORDERS = [
-  { id: '#BKB-1082', product: 'Premium Makhana 500g', em: '🌰', date: 'Dec 28, 2024', amount: '₹480', status: 'Delivered', bg: '#FFF8E8' },
-  { id: '#BKB-1079', product: 'Madhubani Painting', em: '🎨', date: 'Dec 20, 2024', amount: '₹1,200', status: 'Delivered', bg: '#FFF0F5' },
-  { id: '#BKB-1065', product: 'Shahi Litchi 2kg', em: '🍈', date: 'Dec 10, 2024', amount: '₹720', status: 'Delivered', bg: '#F0FFF4' },
-  { id: '#BKB-1058', product: 'Katarni Rice 2kg', em: '🍚', date: 'Nov 28, 2024', amount: '₹320', status: 'Delivered', bg: '#FAFFF4' },
+  { id: '#BKB-1082', product: 'Premium Makhana 500g', icon: Leaf, date: 'Dec 28, 2024', amount: '₹480', status: 'Delivered', bg: '#FFF8E8', color: '#1B6B3A' },
+  { id: '#BKB-1079', product: 'Madhubani Painting', icon: Palette, date: 'Dec 20, 2024', amount: '₹1,200', status: 'Delivered', bg: '#FFF0F5', color: '#B83280' },
+  { id: '#BKB-1065', product: 'Shahi Litchi 2kg', icon: Citrus, date: 'Dec 10, 2024', amount: '₹720', status: 'Delivered', bg: '#F0FFF4', color: '#2F855A' },
+  { id: '#BKB-1058', product: 'Katarni Rice 2kg', icon: Leaf, date: 'Nov 28, 2024', amount: '₹320', status: 'Delivered', bg: '#FAFFF4', color: '#276749' },
 ];
 
 function StatusPill({ status }) {
@@ -90,35 +91,45 @@ export default function ProfilePage() {
         <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, overflow: 'hidden' }}>
           {/* Avatar */}
           <div style={{ padding: '28px 24px', textAlign: 'center', borderBottom: '1px solid #E8DDD4', background: 'linear-gradient(135deg, #FFF4EC, #FFFCF8)' }}>
-            <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#FFF4EC', border: '3px solid #FFE8D4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 36, margin: '0 auto 12px' }}>👤</div>
+            <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#FFF4EC', border: '3px solid #FFE8D4', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+              <User size={36} color="#C85A08" />
+            </div>
             <div style={{ fontSize: 16, fontWeight: 700, color: '#1A1410', marginBottom: 3 }}>{buyerProfile.name}</div>
             <div style={{ fontSize: 12, color: '#8C7B6E' }}>{buyerProfile.email}</div>
             <div style={{ marginTop: 12, display: 'inline-flex', alignItems: 'center', gap: 5, background: '#EAF5F0', color: '#1A5C38', fontSize: 11, fontWeight: 700, padding: '4px 10px', borderRadius: 20 }}>✓ Verified Account</div>
           </div>
           {/* Nav */}
           <div style={{ padding: '10px 10px' }}>
-            {TABS.map(tab => (
-              <button key={tab} onClick={() => setActiveTab(tab)}
-                style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', marginBottom: 3, background: activeTab === tab ? '#FFF4EC' : 'transparent', color: activeTab === tab ? '#C85A08' : '#4A3F35', transition: 'all 0.18s' }}>
-                {tab === 'Profile' ? '👤 ' : tab === 'My Orders' ? '📦 ' : tab === 'Addresses' ? '📍 ' : '⚙️ '}{tab}
-              </button>
-            ))}
+            {TABS.map(tab => {
+              const Icon = tab === 'Profile' ? User : tab === 'My Orders' ? Package : tab === 'Addresses' ? MapPin : Settings;
+              const active = activeTab === tab;
+              return (
+                <button key={tab} onClick={() => setActiveTab(tab)}
+                  style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', marginBottom: 3, background: active ? '#FFF4EC' : 'transparent', color: active ? '#C85A08' : '#4A3F35', transition: 'all 0.18s', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Icon size={16} color={active ? '#C85A08' : '#7A7067'} />
+                  {tab}
+                </button>
+              );
+            })}
             <div style={{ margin: '8px 0', height: 1, background: '#E8DDD4' }} />
             {isSeller ? (
-              <Link href="/dashboard">
-                <button style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#4A3F35' }}>
-                  🌾 Seller Dashboard
+              <Link href="/dashboard" style={{ textDecoration: 'none' }}>
+                <button style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#4A3F35', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Leaf size={16} color="#7A7067" />
+                  Seller Dashboard
                 </button>
               </Link>
             ) : (
-              <Link href="/sellers">
-                <button style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#1A5C38' }}>
-                  🌾 Sell on BKB
+              <Link href="/sellers" style={{ textDecoration: 'none' }}>
+                <button style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#1A5C38', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <Leaf size={16} color="#1A5C38" />
+                  Sell on BKB
                 </button>
               </Link>
             )}
-            <button onClick={handleLogout} style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#C0392B' }}>
-              🚪 Log Out
+            <button onClick={handleLogout} style={{ width: '100%', padding: '11px 14px', borderRadius: 9, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', fontFamily: 'inherit', textAlign: 'left', background: 'transparent', color: '#C0392B', display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <LogOut size={16} color="#C0392B" />
+              Log Out
             </button>
           </div>
         </div>
@@ -138,13 +149,15 @@ export default function ProfilePage() {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 18, marginBottom: 18 }}>
                   {[
                     ['Full Name', buyerProfile.name],
-                    ['Phone Number', `+91 ${buyerProfile.mobile}`],
                     ['Email Address', buyerProfile.email],
-                    ['District / Region', buyerProfile.district]
-                  ].map(([label, value]) => (
+                    ['Mobile Number', `+91 ${buyerProfile.mobile}`],
+                    ['Location', buyerProfile.city ? `${buyerProfile.city}, ${buyerProfile.state}` : (buyerProfile.district || 'Patna')],
+                    ['PIN Code', buyerProfile.pincode || '846004'],
+                    ['Delivery Address', buyerProfile.address],
+                  ].map(([label, val]) => (
                     <div key={label}>
                       <div style={{ fontSize: 11, fontWeight: 700, color: '#8C7B6E', marginBottom: 6, textTransform: 'uppercase', letterSpacing: 0.5 }}>{label}</div>
-                      <div style={{ fontSize: 15, fontWeight: 500, color: '#1A1410' }}>{value}</div>
+                      <div style={{ fontSize: 15, fontWeight: 500, color: '#1A1410' }}>{val}</div>
                     </div>
                   ))}
                 </div>
@@ -164,7 +177,9 @@ export default function ProfilePage() {
               </div>
               {ORDERS.map((o, i) => (
                 <div key={o.id} style={{ display: 'grid', gridTemplateColumns: '60px 1fr auto', gap: 16, padding: '20px 26px', borderBottom: i < ORDERS.length - 1 ? '1px solid #E8DDD4' : 'none', alignItems: 'center' }}>
-                  <div style={{ width: 60, height: 60, borderRadius: 10, background: o.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28 }}>{o.em}</div>
+                  <div style={{ width: 60, height: 60, borderRadius: 10, background: o.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <o.icon size={26} color={o.color} />
+                  </div>
                   <div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1410', marginBottom: 3 }}>{o.product}</div>
                     <div style={{ fontSize: 12, color: '#8C7B6E', marginBottom: 6 }}>Ordered on {o.date}</div>
@@ -191,7 +206,7 @@ export default function ProfilePage() {
                     <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1410', marginBottom: 4 }}>{buyerProfile.name}</div>
                     <div style={{ fontSize: 14, color: '#4A3F35', lineHeight: 1.7 }}>
                       {buyerProfile.address}<br />
-                      District: {buyerProfile.district}, Bihar<br />
+                      {buyerProfile.city ? `${buyerProfile.city}, ${buyerProfile.state} - ${buyerProfile.pincode}` : `District: ${buyerProfile.district}, Bihar`}<br />
                       Mobile: +91 {buyerProfile.mobile}
                     </div>
                   </div>

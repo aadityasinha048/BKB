@@ -20,7 +20,7 @@ export async function POST(request) {
 
     if (!result.success) {
       console.warn('[SECURITY MONITOR] Firebase Webhook parse failed:', result.error.format());
-      return NextResponse.json({ success: false, error: 'Incorrect email or password' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Invalid webhook payload structure.' }, { status: 400 });
     }
 
     const { secret, event, user } = result.data;
@@ -28,7 +28,7 @@ export async function POST(request) {
     // Verify webhook signature/secret mapping
     if (secret !== process.env.FIREBASE_WEBHOOK_SECRET) {
       console.warn('[SECURITY MONITOR] Unauthorized Firebase Webhook access attempt.');
-      return NextResponse.json({ success: false, error: 'Incorrect email or password' }, { status: 401 });
+      return NextResponse.json({ success: false, error: 'Unauthorized webhook secret token.' }, { status: 401 });
     }
 
     if (event === 'user.created') {

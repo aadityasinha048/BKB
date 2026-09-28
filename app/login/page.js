@@ -5,7 +5,7 @@ const IS_DEV = process.env.NODE_ENV === 'development';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { User, Shield, UserCheck, Phone, Key, ArrowRight } from 'lucide-react';
+import { User, Shield, UserCheck, Phone, Key, ArrowRight, Leaf, Users, MapPin, Award, Truck, AlertTriangle, CheckCircle } from 'lucide-react';
 
 function LoginForm() {
   const router = useRouter();
@@ -22,7 +22,9 @@ function LoginForm() {
   const [signupMode, setSignupMode] = useState(false);
   const [buyerName, setBuyerName] = useState('');
   const [buyerEmail, setBuyerEmail] = useState('');
-  const [buyerDistrict, setBuyerDistrict] = useState('Patna');
+  const [buyerState, setBuyerState] = useState('Bihar');
+  const [buyerCity, setBuyerCity] = useState('');
+  const [buyerPincode, setBuyerPincode] = useState('');
   const [buyerAddress, setBuyerAddress] = useState('');
 
   // Admin login details
@@ -35,8 +37,12 @@ function LoginForm() {
 
   const handleBuyerSignup = (e) => {
     e.preventDefault();
-    if (!buyerName.trim() || !buyerEmail.trim() || !buyerAddress.trim()) {
+    if (!buyerName.trim() || !buyerEmail.trim() || !buyerCity.trim() || !buyerPincode.trim() || !buyerAddress.trim()) {
       setError('Please fill in all profile fields.');
+      return;
+    }
+    if (!/^\d{6}$/.test(buyerPincode.trim())) {
+      setError('Please enter a valid 6-digit PIN code.');
       return;
     }
 
@@ -44,7 +50,10 @@ function LoginForm() {
       name: buyerName.trim(),
       email: buyerEmail.trim(),
       mobile: mobile.trim(),
-      district: buyerDistrict,
+      state: buyerState,
+      city: buyerCity.trim(),
+      pincode: buyerPincode.trim(),
+      district: buyerCity.trim(), // fallback field for old pages reading .district
       address: buyerAddress.trim()
     };
 
@@ -214,7 +223,9 @@ function LoginForm() {
     setSignupMode(false);
     setBuyerName('');
     setBuyerEmail('');
-    setBuyerDistrict('Patna');
+    setBuyerState('Bihar');
+    setBuyerCity('');
+    setBuyerPincode('');
     setBuyerAddress('');
     setAdminUser('');
     setAdminPass('');
@@ -303,7 +314,8 @@ function LoginForm() {
               position: 'absolute',
               left: `${10 + Math.random() * 80}%`,
               bottom: 0,
-              fontSize: [18, 14, 20, 16, 22, 12, 17, 15][i],
+              width: [18, 14, 20, 16, 22, 12, 17, 15][i],
+              height: [18, 14, 20, 16, 22, 12, 17, 15][i],
               animation: `floatUp ${8 + i * 2}s linear infinite`,
               animationDelay: `${i * 1.5}s`,
               opacity: 0,
@@ -311,14 +323,18 @@ function LoginForm() {
               zIndex: 2,
             }}
           >
-            {['🌾', '🍃', '🌿', '🌱', '🍂', '🌻', '🪺', '🌼'][i]}
+            <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: '100%', height: '100%', color: i % 2 === 0 ? '#90E8B0' : '#A8E6C3' }}>
+              <path d="M17 8C8 10 4 21 4 21S13 15 20 8C21 7 21 5 20 4S18 3 17 8Z"/>
+            </svg>
           </div>
         ))}
 
         {/* Bottom overlay content */}
         <div style={{ position: 'relative', zIndex: 3, padding: '0 48px 48px' }}>
           <div style={{
-            display: 'inline-block',
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
             background: 'rgba(255,255,255,0.15)',
             backdropFilter: 'blur(12px)',
             borderRadius: 12,
@@ -326,8 +342,9 @@ function LoginForm() {
             marginBottom: 16,
             border: '1px solid rgba(255,255,255,0.2)',
           }}>
+            <Leaf size={14} color="#A8E6C3" style={{ flexShrink: 0 }} />
             <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#A8E6C3' }}>
-              🌾 Farm to Doorstep
+              Farm to Doorstep
             </span>
           </div>
 
@@ -351,11 +368,11 @@ function LoginForm() {
           {/* Trust badges */}
           <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
             {[
-              ['🌿', '800+ Farmers'],
-              ['📍', '38 Districts'],
-              ['🏅', 'GI Certified'],
-              ['🚚', 'Pan-India'],
-            ].map(([em, label]) => (
+              [Leaf, '800+ Farmers', '#A8E6C3'],
+              [MapPin, '38 Districts', '#A8C3E6'],
+              [Award, 'GI Certified', '#E6C3A8'],
+              [Truck, 'Pan-India', '#E6A8A8'],
+            ].map(([Icon, label, color]) => (
               <div key={label} style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -366,7 +383,7 @@ function LoginForm() {
                 padding: '8px 14px',
                 border: '1px solid rgba(255,255,255,0.15)',
               }}>
-                <span style={{ fontSize: 16 }}>{em}</span>
+                <Icon size={14} color={color} style={{ flexShrink: 0 }} />
                 <span style={{ fontSize: 12, fontWeight: 700, color: '#fff' }}>{label}</span>
               </div>
             ))}
@@ -501,13 +518,15 @@ function LoginForm() {
 
           {/* Feedback Alert Messages */}
           {error && (
-            <div style={{ background: '#FEF2F2', border: '1px solid rgba(211,47,47,0.15)', borderRadius: 10, padding: '12px 14px', color: '#D32F2F', fontSize: 13, marginBottom: 20, fontWeight: 600, animation: 'fadeInUp 0.3s ease' }}>
-              ⚠️ {error}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#FEF2F2', border: '1px solid rgba(211,47,47,0.15)', borderRadius: 10, padding: '12px 14px', color: '#D32F2F', fontSize: 13, marginBottom: 20, fontWeight: 600, animation: 'fadeInUp 0.3s ease' }}>
+              <AlertTriangle size={16} style={{ flexShrink: 0 }} />
+              {error}
             </div>
           )}
           {success && (
-            <div style={{ background: '#EAF5F0', border: '1px solid rgba(27,107,58,0.2)', borderRadius: 10, padding: '12px 14px', color: '#1B6B3A', fontSize: 13, marginBottom: 20, fontWeight: 600, animation: 'fadeInUp 0.3s ease' }}>
-              🎉 {success}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#EAF5F0', border: '1px solid rgba(27,107,58,0.2)', borderRadius: 10, padding: '12px 14px', color: '#1B6B3A', fontSize: 13, marginBottom: 20, fontWeight: 600, animation: 'fadeInUp 0.3s ease' }}>
+              <CheckCircle size={16} style={{ flexShrink: 0 }} />
+              {success}
             </div>
           )}
 
@@ -547,17 +566,56 @@ function LoginForm() {
                 />
               </div>
 
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 6 }}>State *</label>
+                  <select
+                    value={buyerState}
+                    onChange={e => setBuyerState(e.target.value)}
+                    style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #D4E8D9', borderRadius: 10, fontSize: 14, fontFamily: 'inherit', background: 'rgba(255,255,255,0.7)', outline: 'none', color: '#1A1410', boxSizing: 'border-box', cursor: 'pointer' }}
+                  >
+                    {[
+                      "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chhattisgarh", "Goa", "Gujarat", "Haryana", 
+                      "Himachal Pradesh", "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra", "Manipur", 
+                      "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", 
+                      "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal", "Delhi", "Jammu & Kashmir", "Ladakh", "Puducherry"
+                    ].map(s => (
+                      <option key={s} value={s}>{s}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 6 }}>City / Town *</label>
+                  <input
+                    className="login-input"
+                    type="text"
+                    placeholder="e.g. Pune"
+                    required
+                    value={buyerCity}
+                    onChange={e => {
+                      setBuyerCity(e.target.value);
+                      if (error) setError('');
+                    }}
+                    style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #D4E8D9', borderRadius: 10, fontSize: 14, fontFamily: 'inherit', background: 'rgba(255,255,255,0.7)', outline: 'none', color: '#1A1410', boxSizing: 'border-box', transition: 'all 0.2s' }}
+                  />
+                </div>
+              </div>
+
               <div style={{ marginBottom: 14 }}>
-                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 6 }}>District *</label>
-                <select
-                  value={buyerDistrict}
-                  onChange={e => setBuyerDistrict(e.target.value)}
-                  style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #D4E8D9', borderRadius: 10, fontSize: 14, fontFamily: 'inherit', background: 'rgba(255,255,255,0.7)', outline: 'none', color: '#1A1410', boxSizing: 'border-box', cursor: 'pointer' }}
-                >
-                  {["Patna", "Muzaffarpur", "Darbhanga", "Bhagalpur", "Gaya", "Nalanda", "Madhubani"].map(d => (
-                    <option key={d} value={d}>{d}</option>
-                  ))}
-                </select>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 6 }}>PIN Code *</label>
+                <input
+                  className="login-input"
+                  type="text"
+                  maxLength={6}
+                  placeholder="6-digit PIN code"
+                  required
+                  value={buyerPincode}
+                  onChange={e => {
+                    setBuyerPincode(e.target.value);
+                    if (error) setError('');
+                  }}
+                  style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #D4E8D9', borderRadius: 10, fontSize: 14, fontFamily: 'inherit', background: 'rgba(255,255,255,0.7)', outline: 'none', color: '#1A1410', boxSizing: 'border-box', transition: 'all 0.2s' }}
+                />
               </div>
 
               <div style={{ marginBottom: 20 }}>

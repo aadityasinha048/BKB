@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Phone, Mail, UserCheck, MapPin, CheckCircle } from 'lucide-react';
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -27,13 +28,15 @@ export default function ContactPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 36 }}>
               {[
-                ['📞', 'Phone', '+91 612-XXX-XXXX', 'Mon–Sat, 9am to 6pm IST'],
-                ['✉️', 'General Email', 'contact@biharkazaar.in', 'We reply within 24 hours'],
-                ['🌾', 'Seller Support', 'sellers@biharkazaar.in', 'For farmers & artisans'],
-                ['📍', 'Office Address', 'Bindisa Agritech, Patna', 'Bihar, India — 800001'],
-              ].map(([em, label, value, sub]) => (
+                [Phone, 'Phone', '+91 963-115-7174', 'Mon–Sat, 9am to 6pm IST'],
+                [Mail, 'General Email', 'contact@biharkazaar.in', 'We reply within 24 hours'],
+                [UserCheck, 'Seller Support', 'sellers@biharkazaar.in', 'For farmers & artisans'],
+                [MapPin, 'Office Address', 'Bindisa Agritech, Behind 80 FT Statue Bodhgaya, GayaJi', 'Bihar, India — 800001'],
+              ].map(([Icon, label, value, sub]) => (
                 <div key={label} style={{ display: 'flex', gap: 16, alignItems: 'flex-start' }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 12, background: '#FFF4EC', border: '1.5px solid #FFE8D4', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>{em}</div>
+                  <div style={{ width: 48, height: 48, borderRadius: 12, background: '#FFF4EC', border: '1.5px solid #FFE8D4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Icon size={20} color="#C85A08" />
+                  </div>
                   <div>
                     <div style={{ fontSize: 12, fontWeight: 700, color: '#8C7B6E', textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 3 }}>{label}</div>
                     <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1410', marginBottom: 2 }}>{value}</div>
@@ -64,7 +67,9 @@ export default function ContactPage() {
           <div>
             {submitted ? (
               <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 20, padding: '60px 40px', textAlign: 'center' }}>
-                <div style={{ fontSize: 64, marginBottom: 16 }}>✅</div>
+                <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+                  <CheckCircle size={64} color="#1A5C38" />
+                </div>
                 <h3 style={{ fontSize: 26, color: '#1A5C38', marginBottom: 12, fontFamily: "'Playfair Display', serif" }}>Message Sent!</h3>
                 <p style={{ fontSize: 14, color: '#4A3F35', lineHeight: 1.7 }}>Thank you for reaching out. Our team will get back to you within 24 hours.</p>
                 <button onClick={() => setSubmitted(false)} style={{ marginTop: 24, padding: '11px 24px', background: '#FFF4EC', color: '#C85A08', border: '1.5px solid #FFE8D4', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>

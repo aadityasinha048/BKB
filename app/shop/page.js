@@ -2,14 +2,82 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-
+import { Leaf, Info, Award, Heart, ShoppingBag } from 'lucide-react';
 
 const CATEGORIES = ["All", "Food & Agri", "Handicrafts", "Textiles", "Sweets", "Fruits"];
 
 const CATEGORY_COUNTS = {
   "All": 281, "Food & Agri": 84, "Handicrafts": 62,
   "Textiles": 38, "Sweets": 47, "Fruits": 21,
+};
+
+const CATEGORY_BANNERS = {
+  "All": {
+    title: "Support Bihar's Grassroots Farmers & Weavers",
+    subtitle: "सीधा खेत और शिल्पकारों के घरों से",
+    desc: "Every purchase directly supports rural families in Bihar. We ensure no middleman commission cuts, allowing producers to keep 95% of their hard-earned revenue. हर खरीद गाँव की समृद्धि में योगदान है।",
+    fact: "Over 800+ families across all 38 districts of Bihar are directly connected to our marketplace.",
+    img: "/images/about/team_field_1.jpg",
+    bgColor: "linear-gradient(135deg, #0D3B1E 0%, #1B6B3A 100%)",
+    textColor: "#ffffff",
+    accentColor: "#A8E6C3",
+    icon: Leaf
+  },
+  "Food & Agri": {
+    title: "Bihar's Pure Agricultural Wealth",
+    subtitle: "मिट्टी की खुशबू, शुद्ध स्वाद",
+    desc: "From the fertile floodplains of Darbhanga comes the world-famous GI-tagged Mithila Makhana, hand-harvested by local fishermen. Fragrant Katarni Rice from Bhojpur is nurtured with traditional organic practices.",
+    fact: "Mithila Makhana is rich in protein and antioxidants, harvested through an ancient, grueling manual process of seed collection from pond beds.",
+    img: "/images/banners/food_agri_banner.png",
+    bgColor: "linear-gradient(135deg, #F0FAF3 0%, #E8F5EC 100%)",
+    textColor: "#1A1410",
+    accentColor: "#1B6B3A",
+    icon: Leaf
+  },
+  "Handicrafts": {
+    title: "Empowering Madhubani Women Artisans",
+    subtitle: "हाथों का हुनर, सदियों की परंपरा",
+    desc: "Each Madhubani painting tells a story of mythological folklore and nature. Traditionally painted using fingers, twigs, and matchsticks with natural plant-based dyes.",
+    fact: "Madhubani art dates back to the Ramayana era. By buying directly, you ensure these women receive the true value of weeks of meticulous handcrafting.",
+    img: "/images/banners/handicrafts_banner.png",
+    bgColor: "linear-gradient(135deg, #FFF4EC 0%, #FFF0E4 100%)",
+    textColor: "#1A1410",
+    accentColor: "#E87B24",
+    icon: Award
+  },
+  "Textiles": {
+    title: "The Handloom Weavers of Bhagalpur",
+    subtitle: "भागलपुरी सिल्क — ताने-बाने का जादू",
+    desc: "Bhagalpur is known as the 'Silk City'. Traditional weavers use wooden handlooms to weave Tussar Silk, celebrated for its unique texture and natural golden sheen.",
+    fact: "A single Bhagalpuri Tussar silk saree takes 3 to 4 days of continuous handloom weaving by fourth-generation weavers.",
+    img: "/images/banners/textiles_banner.png",
+    bgColor: "linear-gradient(135deg, #F0F4FF 0%, #EAF0FF 100%)",
+    textColor: "#1A1410",
+    accentColor: "#3060CC",
+    icon: ShoppingBag
+  },
+  "Sweets": {
+    title: "The Heritage Sweet Makers of Bihar",
+    subtitle: "सिलाव का खाजा — मिठास का इतिहास",
+    desc: "Silao Khaja is a multi-layered crisp sweet preparation from Nalanda district. Nurtured by local halwais who have preserved this recipe for centuries.",
+    fact: "Silao Khaja received its GI Tag because of its unique 52 distinct layers, prepared using local water from heritage wells in Nalanda.",
+    img: "/images/banners/sweets_banner.png",
+    bgColor: "linear-gradient(135deg, #FEF8E0 0%, #FFF0CC 100%)",
+    textColor: "#1A1410",
+    accentColor: "#B8860B",
+    icon: Heart
+  },
+  "Fruits": {
+    title: "Muzaffarpur's Celebrated Orchards",
+    subtitle: "शाही लीची — स्वाद और सुगंध",
+    desc: "Nurtured by the unique climate and soil of Muzaffarpur, the Shahi Litchi is famous for its sweet, juicy pulp and signature aroma.",
+    fact: "Shahi Litchi received its GI Tag in 2018. We pick them at dawn and package them with temperature-control wraps to deliver fresh across India.",
+    img: "/images/banners/fruits_banner.png",
+    bgColor: "linear-gradient(135deg, #FFF0F0 0%, #FFE5E5 100%)",
+    textColor: "#1A1410",
+    accentColor: "#C0392B",
+    icon: Award
+  }
 };
 
 function ProductCard({ p }) {
@@ -188,6 +256,73 @@ export default function ShopPage() {
 
       {/* ── MAIN CONTENT ── */}
       <div style={{ padding: '28px 36px' }}>
+
+        {/* Dynamic Educational Banner */}
+        {(() => {
+          const banner = CATEGORY_BANNERS[activeCat];
+          if (!banner) return null;
+          const BannerIcon = banner.icon;
+          return (
+            <div
+              key={activeCat}
+              className="hero-text-animate"
+              style={{
+                background: banner.bgColor,
+                borderRadius: 20,
+                padding: '32px 36px',
+                marginBottom: 28,
+                color: banner.textColor,
+                display: 'grid',
+                gridTemplateColumns: '1.4fr 1fr',
+                gap: 32,
+                alignItems: 'center',
+                boxShadow: '0 8px 32px rgba(0,0,0,0.06)',
+                border: activeCat === 'All' ? 'none' : `1.5px solid ${banner.accentColor}25`,
+                position: 'relative',
+                overflow: 'hidden'
+              }}
+            >
+              {/* Subtle background overlay circles */}
+              <div style={{ position: 'absolute', right: -40, top: -40, width: 200, height: 200, borderRadius: '50%', background: 'rgba(255,255,255,0.03)', pointerEvents: 'none' }} />
+              
+              <div style={{ zIndex: 1 }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: activeCat === 'All' ? 'rgba(255,255,255,0.15)' : `${banner.accentColor}15`, border: `1px solid ${activeCat === 'All' ? 'rgba(255,255,255,0.25)' : `${banner.accentColor}25`}`, borderRadius: 40, padding: '4px 12px', fontSize: 10, fontWeight: 700, color: activeCat === 'All' ? '#A8E6C3' : banner.accentColor, marginBottom: 12 }}>
+                  <BannerIcon size={12} />
+                  <span>{banner.subtitle}</span>
+                </div>
+                <h2 style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, fontFamily: "'Playfair Display', serif", color: activeCat === 'All' ? '#fff' : '#1A1410' }}>
+                  {banner.title}
+                </h2>
+                <p style={{ fontSize: 13, lineHeight: 1.6, color: activeCat === 'All' ? 'rgba(255,255,255,0.85)' : '#4A3F35', marginBottom: 18, maxWidth: 540 }}>
+                  {banner.desc}
+                </p>
+                
+                {/* Educational / Fact Box */}
+                <div style={{ background: activeCat === 'All' ? 'rgba(255,255,255,0.08)' : '#ffffff', border: activeCat === 'All' ? '1px solid rgba(255,255,255,0.15)' : `1px solid ${banner.accentColor}25`, borderRadius: 12, padding: '12px 16px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+                  <div style={{ width: 28, height: 28, borderRadius: 8, background: activeCat === 'All' ? 'rgba(255,255,255,0.15)' : `${banner.accentColor}12`, display: 'flex', alignItems: 'center', justifyItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+                    <Info size={14} color={activeCat === 'All' ? '#fff' : banner.accentColor} />
+                  </div>
+                  <div>
+                    <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, color: activeCat === 'All' ? '#A8E6C3' : banner.accentColor, marginBottom: 2 }}>Did you know?</div>
+                    <div style={{ fontSize: 12, lineHeight: 1.5, color: activeCat === 'All' ? 'rgba(255,255,255,0.8)' : '#5C544C' }}>{banner.fact}</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right column: Image with zoom hover effect */}
+              <div style={{ display: 'flex', justifyContent: 'center', zIndex: 1 }}>
+                <div style={{ width: 200, height: 200, borderRadius: '50%', overflow: 'hidden', border: `4px solid ${activeCat === 'All' ? 'rgba(255,255,255,0.15)' : '#ffffff'}`, boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
+                  <img
+                    className="hero-img-zoom"
+                    src={banner.img}
+                    alt={banner.title}
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Toolbar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24, paddingBottom: 18, borderBottom: '1px solid #E5E1DC' }}>

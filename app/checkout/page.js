@@ -66,8 +66,11 @@ export default function CheckoutPage() {
           setFullName(profile.name || '');
           setEmail(profile.email || '');
           setAddressLine1(profile.address || '');
-          setCity(profile.district || '');
-          setPincode('846004'); // sensible default
+          setCity(profile.city || profile.district || '');
+          setPincode(profile.pincode || '846004');
+          if (profile.state) {
+            setStateName(profile.state);
+          }
         } catch {
           // Ignore fallback
         }

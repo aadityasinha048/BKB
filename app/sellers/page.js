@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Tag, Truck, CreditCard, LayoutDashboard, Award, MessageSquare, Camera, Globe } from 'lucide-react';
+import { Tag, Truck, CreditCard, LayoutDashboard, Award, MessageSquare, Camera, Globe, Leaf, User, CheckCircle } from 'lucide-react';
 
 const FEATURES = [
   { icon: Tag, title: "Free Registration", desc: "No charges to join. No monthly fees. List your products and start selling completely free.", color: '#1A5C38' },
@@ -669,7 +669,8 @@ export default function SellersPage() {
       }}>
         <div>
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#EAF5F0', border: '1px solid rgba(26,92,56,0.2)', borderRadius: 40, padding: '5px 14px', fontSize: 11, fontWeight: 700, color: '#1A5C38', marginBottom: 20 }}>
-            🌾 For Farmers & Artisans of Bihar
+            <Leaf size={12} color="#1A5C38" style={{ flexShrink: 0 }} />
+            For Farmers & Artisans of Bihar
           </div>
           <h1 className="bkb-hero-title" style={{ fontSize: 46, color: '#1A1410', lineHeight: 1.1, marginBottom: 16, fontFamily: "'Playfair Display', serif" }}>
             Sell Your <em style={{ color: '#1A5C38', fontStyle: 'italic' }}>Bihar Products</em> to All of India
@@ -698,7 +699,11 @@ export default function SellersPage() {
         {/* Seller Story Card */}
         <div style={{ background: '#fff', borderRadius: 22, padding: 36, border: '1.5px solid #E8DDD4', boxShadow: '0 4px 20px rgba(0,0,0,0.06)' }}>
           <div style={{ textAlign: 'center', marginBottom: 22 }}>
-            <div style={{ fontSize: 64, marginBottom: 10 }}>👨‍🌾</div>
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+              <div style={{ width: 80, height: 80, borderRadius: '50%', background: '#EAF5F0', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #1A5C38' }}>
+                <User size={40} color="#1A5C38" />
+              </div>
+            </div>
             <div style={{ fontSize: 15, fontWeight: 700, color: '#1A5C38' }}>Ram Prasad — Makhana Farmer</div>
             <div style={{ fontSize: 12, color: '#8C7B6E' }}>Darbhanga, Bihar</div>
           </div>
@@ -1527,15 +1532,15 @@ export default function SellersPage() {
         </div>
         <div className="bkb-testimonials-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 22 }}>
           {[
-            { em: "👩‍🌾", bg: "#EAF5F0", name: "Kamla Devi", role: "Madhubani Artist · Madhubani", text: "Before BKB I could only sell locally. Now my paintings go to Bangalore, Mumbai, even overseas. I earn 4x more than before." },
-            { em: "👨‍🌾", bg: "#FFF4EC", name: "Ram Prasad", role: "Makhana Farmer · Darbhanga", text: "I used to sell to middlemen at very low prices. Now I get the full market price directly. My family's life has completely changed." },
-            { em: "👩‍🌾", bg: "#FEF8E0", name: "Sunita Kumari", role: "Silk Weaver · Bhagalpur", text: "The team helped me get my GI certificate and even helped me take better photos of my sarees. Orders started coming within a week!" },
+            { bg: "#EAF5F0", name: "Kamla Devi", role: "Madhubani Artist · Madhubani", text: "Before BKB I could only sell locally. Now my paintings go to Bangalore, Mumbai, even overseas. I earn 4x more than before." },
+            { bg: "#FFF4EC", name: "Ram Prasad", role: "Makhana Farmer · Darbhanga", text: "I used to sell to middlemen at very low prices. Now I get the full market price directly. My family's life has completely changed." },
+            { bg: "#FEF8E0", name: "Sunita Kumari", role: "Silk Weaver · Bhagalpur", text: "The team helped me get my GI certificate and even helped me take better photos of my sarees. Orders started coming within a week!" },
           ].map(t => (
             <div key={t.name} style={{ background: '#FFFCF8', border: '1.5px solid #E8DDD4', borderRadius: 16, padding: 28 }}>
-              <div style={{ color: '#9A720A', fontSize: 15, marginBottom: 12, letterSpacing: 2 }}>★★★★★</div>
+               <div style={{ color: '#9A720A', fontSize: 15, marginBottom: 12, letterSpacing: 2 }}>★★★★★</div>
               <p style={{ fontSize: 14, color: '#4A3F35', lineHeight: 1.75, marginBottom: 18, fontStyle: 'italic' }}>"{t.text}"</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                <div style={{ width: 44, height: 44, borderRadius: '50%', background: t.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>{t.em}</div>
+                <div style={{ width: 44, height: 44, borderRadius: '50%', background: t.bg, color: '#1A5C38', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16, fontWeight: 700 }}>{t.name.charAt(0)}</div>
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1410' }}>{t.name}</div>
                   <div style={{ fontSize: 11, color: '#8C7B6E' }}>{t.role}</div>

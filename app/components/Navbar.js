@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { ShoppingCart, Search, Heart, User, Menu, X, ChevronDown } from 'lucide-react';
+import { ShoppingCart, Search, Heart, User, Menu, X, ChevronDown, ShoppingBag, Award, Leaf, Palette, Shirt, Citrus } from 'lucide-react';
 
 
 
@@ -69,12 +69,12 @@ export default function Navbar() {
     {
       label: 'Shop',
       children: [
-        { href: '/shop', label: '🛍️ All Products' },
-        { href: '/gi-products', label: '🏅 GI Tag Products' },
-        { href: '/shop?cat=Food & Agri', label: '🌾 Food & Agri' },
-        { href: '/shop?cat=Handicrafts', label: '🎨 Handicrafts' },
-        { href: '/shop?cat=Textiles', label: '🧵 Textiles & Silk' },
-        { href: '/shop?cat=Fruits', label: '🍈 Fresh Fruits' },
+        { href: '/shop', label: 'All Products', icon: ShoppingBag },
+        { href: '/gi-products', label: 'GI Tag Products', icon: Award },
+        { href: '/shop?cat=Food & Agri', label: 'Food & Agri', icon: Leaf },
+        { href: '/shop?cat=Handicrafts', label: 'Handicrafts', icon: Palette },
+        { href: '/shop?cat=Textiles', label: 'Textiles & Silk', icon: Shirt },
+        { href: '/shop?cat=Fruits', label: 'Fresh Fruits', icon: Citrus },
       ]
     },
     ...(userRole !== 'seller' ? [{ href: '/sellers', label: 'Sell on BKB' }] : []),
@@ -183,10 +183,14 @@ export default function Navbar() {
                           color: '#3D3730',
                           cursor: 'pointer',
                           transition: 'all 0.15s',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
                         }}
                           onMouseEnter={e => { e.currentTarget.style.background = '#E8F5EC'; e.currentTarget.style.color = '#1B6B3A'; }}
                           onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#3D3730'; }}
                         >
+                          {child.icon && <child.icon size={15} style={{ opacity: 0.8 }} />}
                           {child.label}
                         </div>
                       </Link>
@@ -362,7 +366,8 @@ export default function Navbar() {
               <div key={link.label} style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: '#7A7067', textTransform: 'uppercase', letterSpacing: 1 }}>{link.label}</div>
                 {link.children.map(child => (
-                  <Link key={child.href} href={child.href} onClick={() => setMobileOpen(false)} style={{ textDecoration: 'none', paddingLeft: 12, fontSize: 14, fontWeight: 500, color: '#3D3730' }}>
+                  <Link key={child.href} href={child.href} onClick={() => setMobileOpen(false)} style={{ textDecoration: 'none', paddingLeft: 12, fontSize: 14, fontWeight: 500, color: '#3D3730', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {child.icon && <child.icon size={15} style={{ opacity: 0.8 }} />}
                     {child.label}
                   </Link>
                 ))}

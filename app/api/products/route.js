@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { findOne, mutateCollection, readCollection } from '@/lib/db';
 import { cleanImageSource, cleanString, cleanText, publicSeller } from '@/lib/validation';
+import { requireAdmin } from '@/lib/auth';
+import { rateLimit } from '@/lib/rateLimit';
 
 // GET — Retrieve all products, optionally filtered by sellerId or category
 export async function GET(request) {
@@ -16,16 +18,8 @@ export async function GET(request) {
     }
 
     if (cat) {
-      // Handle simple category mapping if query matches
-      const categoryMapping = {
-        'Food & Agri': 'Food & Agri',
-        'Handicrafts': 'Handicrafts',
-        'Textiles': 'Textiles',
-        'Fruits': 'Fruits',
-        'Sweets': 'Sweets'
-      };
-      const cleanCat = categoryMapping[cat] || cat;
-      products = products.filter(p => p.cat.toLowerCase().includes(cleanCat.toLowerCase()));
+      const cleanCat = cleanString(cat, 80).toLowerCase();
+      products = products.filter(p => (p.cat || '').toLowerCase().includes(cleanCat));
     }
     // Pagination (default: page 1, limit 50)
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
@@ -43,9 +37,28 @@ export async function GET(request) {
   }
 }
 
-// POST — Add a new product (restricted/mock verification via sellerId)
+// POST — Add a new product (requires admin or authenticated seller)
 export async function POST(request) {
   try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || '127.0.0.1';
+    const limitCheck = await rateLimit(ip, 'products-post', 10, 60 * 1000);
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
+
+    // Require admin auth to add products
+    const authError = await requireAdmin(request);
+    if (authError) {
+      return NextResponse.json(
+        { success: false, error: authError.error },
+        { status: authError.status }
+      );
+    }
     const body = await request.json();
     const name = cleanString(body.name, 140);
     const seller = cleanString(body.seller, 120);

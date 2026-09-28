@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "id": "BKB-PL-1784357961741",
+    "registeredAt": "2026-07-18T06:59:21.741Z",
+    "name": "Aditya Sinha",
+    "email": "aditya@example.com",
+    "phone": "9876543210",
+    "city": "Patna",
+    "interests": [
+      "Handicrafts",
+      "Sweets"
+    ]
+  }
+]
