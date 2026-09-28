@@ -20,7 +20,7 @@ const footerLinks = {
   'Company': [
     { label: 'About Us', href: '/about' },
     { label: 'Bindisa Agritech', href: '/about' },
-    { label: 'Our Mission', href: '/about' },
+    { label: 'Our Mission', href: '/mission' },
     { label: 'Contact BKB', href: '/contact' },
     { label: 'Privacy Policy', href: '/privacy' },
   ],
