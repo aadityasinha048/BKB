@@ -123,7 +123,7 @@ export default function Navbar() {
             }}
           />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ fontSize: 16, fontWeight: 800, color: '#1B6B3A', lineHeight: 1.1, fontFamily: "var(--font-devanagari), sans-serif" }}>
+            <div style={{ fontSize: 16, fontWeight: 800, color: '#1B6B3A', lineHeight: 1.1, fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
               à¤¬à¤¿à¤¹à¤¾à¤° à¤•à¤¾ à¤¬à¤¾à¤œà¤¼à¤¾à¤°
             </div>
             <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7A7067', marginTop: 2 }}>

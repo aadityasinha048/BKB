@@ -1,28 +1,28 @@
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&display=swap');
 
 :root {
   --font-playfair: 'Playfair Display', Georgia, serif;
   --font-outfit: 'Outfit', system-ui, sans-serif;
 
-  /* ── PRIMARY: Deep Forest Green ── */
+  /* â”€â”€ PRIMARY: Deep Forest Green â”€â”€ */
   --green: #1B6B3A;
   --green-dark: #0D3B1E;
   --green-light: #28A745;
   --green-bg: #E8F5EC;
   --green-bg2: #D0EBDA;
 
-  /* ── ACCENT: Warm Orange ── */
+  /* â”€â”€ ACCENT: Warm Orange â”€â”€ */
   --orange: #E87B24;
   --orange-dark: #C85A08;
   --orange-light: #F5A54A;
   --orange-bg: #FFF4EC;
   --orange-bg2: #FFE8D4;
 
-  /* ── GOLD / GI TAG ── */
+  /* â”€â”€ GOLD / GI TAG â”€â”€ */
   --gold: #B8860B;
   --gold-bg: #FEF8E0;
 
-  /* ── NEUTRALS ── */
+  /* â”€â”€ NEUTRALS â”€â”€ */
   --text: #1A1410;
   --text-2: #3D3730;
   --text-3: #7A7067;
@@ -35,13 +35,13 @@
   --border: #E5E1DC;
   --border-2: #D1CBC4;
 
-  /* ── SPACING & SHAPE ── */
+  /* â”€â”€ SPACING & SHAPE â”€â”€ */
   --radius: 10px;
   --radius-lg: 16px;
   --radius-xl: 22px;
   --radius-round: 50px;
 
-  /* ── SHADOWS ── */
+  /* â”€â”€ SHADOWS â”€â”€ */
   --shadow-xs: 0 1px 3px rgba(0,0,0,0.04);
   --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
   --shadow: 0 4px 20px rgba(0,0,0,0.08);
@@ -85,7 +85,7 @@ h1, h2, h3, h4, .serif {
   font-family: 'Noto Sans Devanagari', sans-serif;
 }
 
-/* ── MARQUEE ── */
+/* â”€â”€ MARQUEE â”€â”€ */
 @keyframes marquee-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
@@ -99,7 +99,7 @@ h1, h2, h3, h4, .serif {
   animation-play-state: paused;
 }
 
-/* ── ANIMATIONS ── */
+/* â”€â”€ ANIMATIONS â”€â”€ */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -174,13 +174,13 @@ h1, h2, h3, h4, .serif {
   animation: pulse-green 2s infinite;
 }
 
-/* ── SCROLLBAR ── */
+/* â”€â”€ SCROLLBAR â”€â”€ */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--bg-3); }
 ::-webkit-scrollbar-thumb { background: var(--green); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--green-dark); }
 
-/* ── FOCUS ── */
+/* â”€â”€ FOCUS â”€â”€ */
 input:focus,
 select:focus,
 textarea:focus {
@@ -189,7 +189,7 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(27, 107, 58, 0.1);
 }
 
-/* ── UTILITY CLASSES ── */
+/* â”€â”€ UTILITY CLASSES â”€â”€ */
 .section-eye {
   font-size: 11px;
   font-weight: 700;
@@ -208,7 +208,7 @@ textarea:focus {
   box-shadow: var(--shadow-lg);
 }
 
-/* ── BUTTONS ── */
+/* â”€â”€ BUTTONS â”€â”€ */
 .btn-primary {
   background: var(--green);
   color: #fff;
@@ -286,7 +286,7 @@ textarea:focus {
   border-color: var(--orange-dark);
 }
 
-/* ── FORM ELEMENTS ── */
+/* â”€â”€ FORM ELEMENTS â”€â”€ */
 .form-input {
   width: 100%;
   padding: 11px 14px;
@@ -312,7 +312,7 @@ textarea:focus {
   letter-spacing: 0.2px;
 }
 
-/* ── CARDS ── */
+/* â”€â”€ CARDS â”€â”€ */
 .card {
   background: #fff;
   border: 1.5px solid var(--border);
@@ -320,7 +320,7 @@ textarea:focus {
   overflow: hidden;
 }
 
-/* ── STATUS PILLS ── */
+/* â”€â”€ STATUS PILLS â”€â”€ */
 .status-delivered { background: #E8F5EC; color: #1B6B3A; }
 .status-shipped   { background: #EEF2FF; color: #3060CC; }
 .status-processing{ background: #FEF8E0; color: #B8860B; }
@@ -334,7 +334,7 @@ textarea:focus {
   display: inline-block;
 }
 
-/* ── GI BADGE ── */
+/* â”€â”€ GI BADGE â”€â”€ */
 .gi-badge {
   background: var(--gold);
   color: #fff;
@@ -346,7 +346,7 @@ textarea:focus {
   display: inline-block;
 }
 
-/* ── SECTION LAYOUT ── */
+/* â”€â”€ SECTION LAYOUT â”€â”€ */
 .section {
   padding: 72px 60px;
 }
@@ -357,14 +357,14 @@ textarea:focus {
 .section-cream { background: var(--bg-cream); }
 .section-green { background: var(--green); }
 
-/* ── PAGE HEADER ── */
+/* â”€â”€ PAGE HEADER â”€â”€ */
 .page-header {
   background: #fff;
   border-bottom: 1px solid var(--border);
   padding: 28px 60px;
 }
 
-/* ── BREADCRUMB ── */
+/* â”€â”€ BREADCRUMB â”€â”€ */
 .breadcrumb {
   display: flex;
   align-items: center;
@@ -384,7 +384,7 @@ textarea:focus {
   color: var(--text-4);
 }
 
-/* ── PRODUCT GRID ── */
+/* â”€â”€ PRODUCT GRID â”€â”€ */
 .product-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -396,7 +396,7 @@ textarea:focus {
   gap: 20px;
 }
 
-/* ── TABLE ── */
+/* â”€â”€ TABLE â”€â”€ */
 .data-table {
   width: 100%;
   border-collapse: collapse;
@@ -426,7 +426,7 @@ textarea:focus {
   background: var(--bg-2);
 }
 
-/* ── SIDEBAR ── */
+/* â”€â”€ SIDEBAR â”€â”€ */
 .sidebar-item {
   display: flex;
   align-items: center;
@@ -461,7 +461,7 @@ textarea:focus {
   color: var(--green);
 }
 
-/* ── TRUST STRIP ── */
+/* â”€â”€ TRUST STRIP â”€â”€ */
 .trust-strip {
   display: flex;
   justify-content: center;
@@ -510,7 +510,7 @@ textarea:focus {
   line-height: 1.4;
 }
 
-/* ── PREMIUM INTERACTIVE DESIGN UTILITIES ── */
+/* â”€â”€ PREMIUM INTERACTIVE DESIGN UTILITIES â”€â”€ */
 .premium-glow-green {
   background: radial-gradient(circle at 10% 20%, rgba(27,107,58,0.06) 0%, rgba(255,255,255,0) 50%);
 }
@@ -637,7 +637,7 @@ textarea:focus {
   pointer-events: none;
 }
 
-/* ── HERO SLIDE ANIMATIONS ── */
+/* â”€â”€ HERO SLIDE ANIMATIONS â”€â”€ */
 @keyframes fadeInUp {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
@@ -761,7 +761,7 @@ textarea:focus {
   box-shadow: 0 4px 12px rgba(27,107,58,0.08);
 }
 
-/* ── RESPONSIVE NAVBAR, FOOTER & GRID CLASSES ── */
+/* â”€â”€ RESPONSIVE NAVBAR, FOOTER & GRID CLASSES â”€â”€ */
 @media (max-width: 1024px) {
   .desktop-nav {
     display: none !important;
