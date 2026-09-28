@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
@@ -52,26 +52,28 @@ const MILESTONES = [
     image: '/images/mission/bihar_agri_minister.jpg',
     imageCaption: 'Team BKB presenting Bihar Ka Bazaar platform to the Agriculture Minister of Bihar',
     imagePosition: 'right',
+    imageObjectPosition: 'left center',
     accent: '#7B3FA0',
     icon: Handshake,
     stat: { n: 'State', l: 'Government Backed' },
   },
   {
-    id: 'bihar-minister-2',
-    badge: 'Policy & Partnership',
+    id: 'msme-minister',
+    badge: 'MSME & Entrepreneurship',
     badgeColor: '#1A5C38',
     badgeBg: '#EAF5F0',
     year: '2024',
-    title: 'Live Platform Demo to Bihar Leadership',
-    subtitle: 'Bihar Government · Platform Walkthrough',
-    body: "In a follow-up engagement with Bihar's ministerial leadership, our team conducted a live demonstration of the Bihar Ka Bazaar marketplace, seller onboarding system, and GI product cataloguing process — highlighting how technology enables Bihar's smallest farmers to reach pan-India buyers.",
-    detail: "Key outcomes included discussions on integrating our platform with government rural e-commerce initiatives, and exploring how BKB could serve as a digital marketplace for Bihar's SHGs — empowering women entrepreneurs in rural Bihar.",
+    title: 'Union MSME Minister Shri Jitan Ram Manjhi — Empowering Bihar Artisans',
+    subtitle: 'Shri Jitan Ram Manjhi, Union Minister of Micro, Small & Medium Enterprises, India',
+    body: "We had the honour of presenting Bihar Ka Bazaar to Shri Jitan Ram Manjhi, Union Minister of MSME, Government of India. Bihar's artisans — weavers, potters, painters, and food producers — are micro-entrepreneurs at heart. BKB gives them a direct digital channel to sell pan-India without middlemen.",
+    detail: "The Minister appreciated how BKB is creating a marketplace specifically designed for Bihar's micro-entrepreneurs and artisan communities. The meeting opened pathways to explore alignment with government MSME schemes including PM Vishwakarma and MUDRA — giving BKB sellers access to credit, skilling, and market support.",
     image: '/images/mission/bihar_minister_demo.jpg',
-    imageCaption: "Live demonstration of the BKB platform to Bihar's agricultural leadership",
+    imageCaption: 'Team BKB presenting Bihar Ka Bazaar platform to Shri Jitan Ram Manjhi, Union Minister of MSME',
     imagePosition: 'left',
+    imageObjectPosition: 'center center',
     accent: '#1A5C38',
     icon: Handshake,
-    stat: { n: '38', l: 'Districts Covered' },
+    stat: { n: 'MSME', l: 'Ministry Support' },
   },
   {
     id: 'central-minister',
@@ -121,7 +123,7 @@ function Card({ m, i }) {
     <FadeIn delay={i * 60}>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', borderRadius: 28, overflow: 'hidden', border: '1.5px solid #E8DDD4', boxShadow: '0 4px 40px rgba(0,0,0,0.07)', marginBottom: 44, background: '#fff' }}>
         <div style={{ order: imgLeft ? 0 : 1, position: 'relative', minHeight: 440, overflow: 'hidden' }}>
-          <img src={m.image} alt={m.imageCaption} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', display: 'block', transition: 'transform 0.5s ease' }}
+          <img src={m.image} alt={m.imageCaption} style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: m.imageObjectPosition || 'center top', display: 'block', transition: 'transform 0.5s ease' }}
             onMouseEnter={e => e.currentTarget.style.transform = 'scale(1.05)'}
             onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'} />
           <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 55%)', pointerEvents: 'none' }} />
