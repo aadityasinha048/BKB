@@ -1,4 +1,4 @@
-﻿import './globals.css';
+import './globals.css';
 import { Playfair_Display, Outfit, Noto_Sans_Devanagari } from 'next/font/google';
 import LayoutShell from './components/LayoutShell';
 
@@ -25,7 +25,7 @@ const devanagari = Noto_Sans_Devanagari({
 });
 
 export const metadata = {
-  title: 'Bihar Ka Bazaar â€” Authentic Products from Bihar',
+  title: 'Bihar Ka Bazaar - Authentic Products from Bihar',
   description: 'A Bindisa Agritech initiative. Shop GI-tagged and authentic products directly from Bihar farmers and artisans.',
   keywords: 'Bihar, GI Tag, Makhana, Madhubani, Bhagalpuri Silk, Shahi Litchi, Authentic Products',
 };

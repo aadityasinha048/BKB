@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Leaf, Sprout, FlaskConical, Handshake, Award, ArrowRight } from 'lucide-react';
+import { Leaf, Sprout, FlaskConical, Handshake, Award, ArrowRight, Microscope, Landmark, Smartphone } from 'lucide-react';
 
 const MILESTONES = [
   {
@@ -11,10 +11,10 @@ const MILESTONES = [
     badgeColor: '#1A5C38',
     badgeBg: '#EAF5F0',
     year: '2023',
-    title: 'खेत से शुरुआत — It Began in the Fields',
-    subtitle: 'Grassroots Farmer Outreach · Bihar',
-    body: "Before writing a single line of code, we drove into the villages. We sat with farmers under trees, ate at their homes, and truly listened. The story of Bihar Ka Bazaar did not start in a boardroom — it started in the paddy fields of Darbhanga, the makhana lakes of Mithilanchal, and the silk looms of Bhagalpur.",
-    detail: "We personally visited 200+ farming families across 15 districts, understanding that the core problem was not production — it was access. Farmers were getting Rs 15 for Makhana that sells at Rs 300 in Delhi. That gap became our mission.",
+    title: 'खेत से शुरुआत - It Began in the Fields',
+    subtitle: 'Grassroots Farmer Outreach | Bihar',
+    body: "Before writing a single line of code, we drove into the villages. We sat with farmers under trees, ate at their homes, and truly listened. The story of Bihar Ka Bazaar did not start in a boardroom - it started in the paddy fields of Darbhanga, the makhana lakes of Mithilanchal, and the silk looms of Bhagalpur.",
+    detail: "We personally visited 200+ farming families across 15 districts, understanding that the core problem was not production - it was access. Farmers were getting Rs 15 for Makhana that sells at Rs 300 in Delhi. That gap became our mission.",
     image: '/images/mission/farmer_field_visit.jpg',
     imageCaption: 'Team BKB meeting farmers at their fields in rural Bihar',
     imagePosition: 'right',
@@ -28,10 +28,10 @@ const MILESTONES = [
     badgeColor: '#C85A08',
     badgeBg: '#FFF4EC',
     year: '2023',
-    title: 'ICAR Lab Visit — Science Meets Agriculture',
+    title: 'ICAR Lab Visit - Science Meets Agriculture',
     subtitle: 'Indian Council of Agricultural Research',
-    body: "To truly serve farmers, we needed to understand agriculture at its scientific core. Our team visited ICAR labs to understand soil science, crop quality certification, GI-tagging processes, and post-harvest management — knowledge that now powers our product verification system.",
-    detail: "The visit opened our eyes to how world-class agricultural research often does not reach the farmers who need it most. Bihar Ka Bazaar committed to bridging that gap — connecting ICAR-certified quality standards with our seller onboarding process.",
+    body: "To truly serve farmers, we needed to understand agriculture at its scientific core. Our team visited ICAR labs to understand soil science, crop quality certification, GI-tagging processes, and post-harvest management - knowledge that now powers our product verification system.",
+    detail: "The visit opened our eyes to how world-class agricultural research often does not reach the farmers who need it most. Bihar Ka Bazaar committed to bridging that gap - connecting ICAR-certified quality standards with our seller onboarding process.",
     image: '/images/mission/icar_lab_visit.jpg',
     imageCaption: 'BKB team at ICAR research laboratory studying crop quality and certification processes',
     imagePosition: 'left',
@@ -45,9 +45,9 @@ const MILESTONES = [
     badgeColor: '#7B3FA0',
     badgeBg: '#F5EEFF',
     year: '2024',
-    title: 'Bihar Agriculture Minister — Seeking Blessings',
+    title: 'Bihar Agriculture Minister - Seeking Blessings',
     subtitle: "Meeting with Bihar's Agricultural Leadership",
-    body: "We presented Bihar Ka Bazaar's platform and mission to the Agriculture Minister, Bihar Government. The meeting was a milestone — endorsement from the state's top agricultural leadership validated our approach and opened doors to collaborate with government schemes like ATMA and PM-KISAN.",
+    body: "We presented Bihar Ka Bazaar's platform and mission to the Agriculture Minister, Bihar Government. The meeting was a milestone - endorsement from the state's top agricultural leadership validated our approach and opened doors to collaborate with government schemes like ATMA and PM-KISAN.",
     detail: "The minister expressed strong support for BKB's zero-commission model and our commitment to ensuring maximum revenue reaches the farmer directly. We demonstrated our platform and discussed integration with Bihar's rural Self-Help Groups (SHGs).",
     image: '/images/mission/bihar_agri_minister.jpg',
     imageCaption: 'Team BKB presenting Bihar Ka Bazaar platform to the Agriculture Minister of Bihar',
@@ -63,10 +63,10 @@ const MILESTONES = [
     badgeColor: '#1A5C38',
     badgeBg: '#EAF5F0',
     year: '2024',
-    title: 'Union MSME Minister Shri Jitan Ram Manjhi — Empowering Bihar Artisans',
+    title: 'Union MSME Minister Shri Jitan Ram Manjhi - Empowering Bihar Artisans',
     subtitle: 'Shri Jitan Ram Manjhi, Union Minister of Micro, Small & Medium Enterprises, India',
-    body: "We had the honour of presenting Bihar Ka Bazaar to Shri Jitan Ram Manjhi, Union Minister of MSME, Government of India. Bihar's artisans — weavers, potters, painters, and food producers — are micro-entrepreneurs at heart. BKB gives them a direct digital channel to sell pan-India without middlemen.",
-    detail: "The Minister appreciated how BKB is creating a marketplace specifically designed for Bihar's micro-entrepreneurs and artisan communities. The meeting opened pathways to explore alignment with government MSME schemes including PM Vishwakarma and MUDRA — giving BKB sellers access to credit, skilling, and market support.",
+    body: "We had the honour of presenting Bihar Ka Bazaar to Shri Jitan Ram Manjhi, Union Minister of MSME, Government of India. Bihar's artisans (weavers, potters, painters, and food producers) are micro-entrepreneurs at heart. BKB gives them a direct digital channel to sell pan-India without middlemen.",
+    detail: "The Minister appreciated how BKB is creating a marketplace specifically designed for Bihar's micro-entrepreneurs and artisan communities. The meeting opened pathways to explore alignment with government MSME schemes including PM Vishwakarma and MUDRA - giving BKB sellers access to credit, skilling, and market support.",
     image: '/images/mission/bihar_minister_demo.jpg',
     imageCaption: 'Team BKB presenting Bihar Ka Bazaar platform to Shri Jitan Ram Manjhi, Union Minister of MSME',
     imagePosition: 'left',
@@ -81,10 +81,10 @@ const MILESTONES = [
     badgeColor: '#B8860B',
     badgeBg: '#FEF8E0',
     year: '2024',
-    title: 'Union Agriculture Minister — A National Mission',
+    title: 'Union Agriculture Minister - A National Mission',
     subtitle: 'Shri Shivraj Singh Chouhan, Union Minister of Agriculture and Farmers Welfare',
     body: "The culmination of our outreach was a meeting with the Union Minister of Agriculture and Farmers Welfare, Shri Shivraj Singh Chouhan. We presented our zero-commission direct farmer trade model and Bihar GI-tagged products potential for global markets.",
-    detail: "The Minister appreciated BKB's farmer-first philosophy and our grassroots approach of personally visiting farming communities before building technology solutions. This meeting reinforced our belief: technology in the service of agriculture is not just a business — it is a national mission.",
+    detail: "The Minister appreciated BKB's farmer-first philosophy and our grassroots approach of personally visiting farming communities before building technology solutions. This meeting reinforced our belief: technology in the service of agriculture is not just a business - it is a national mission.",
     image: '/images/mission/central_agri_minister.jpg',
     imageCaption: 'Team BKB presenting Bihar Ka Bazaar to Shri Shivraj Singh Chouhan, Union Minister of Agriculture',
     imagePosition: 'right',
@@ -96,7 +96,7 @@ const MILESTONES = [
 
 const IMPACT = [
   { n: '800+', l: 'Registered Sellers', desc: 'Farmers and artisans from all 38 Bihar districts', color: '#1A5C38', bg: '#EAF5F0' },
-  { n: 'Rs 2 Cr+', l: 'Paid to Farmers', desc: 'Directly to sellers — no middlemen', color: '#C85A08', bg: '#FFF4EC' },
+  { n: 'Rs 2 Cr+', l: 'Paid to Farmers', desc: 'Directly to sellers - no middlemen', color: '#C85A08', bg: '#FFF4EC' },
   { n: '200+', l: 'Field Visits', desc: 'We went to fields before building tech', color: '#7B3FA0', bg: '#F5EEFF' },
   { n: '14K+', l: 'Happy Customers', desc: 'Across India buying directly from Bihar', color: '#B8860B', bg: '#FEF8E0' },
 ];
@@ -165,13 +165,13 @@ export default function MissionPage() {
             From the Fields of Bihar<br /><span style={{ color: '#FBD97A' }}>to Every Indian Home</span>
           </h1>
           <p style={{ fontSize: 18, color: 'rgba(255,255,255,0.75)', lineHeight: 1.8, maxWidth: 660, margin: '0 auto 42px' }}>
-            Bihar Ka Bazaar exists for one reason — to make sure the farmer who grows your food gets paid fairly for it. No middlemen. No exploitation. Just direct trade, respect, and dignity for Bihar's farmers and artisans.
+            Bihar Ka Bazaar exists for one reason - to make sure the farmer who grows your food gets paid fairly for it. No middlemen. No exploitation. Just direct trade, respect, and dignity for Bihar's farmers and artisans.
           </p>
           <div style={{ display: 'inline-block', background: 'rgba(255,255,255,0.09)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 18, padding: '20px 36px', maxWidth: 560 }}>
             <p style={{ fontSize: 16.5, color: '#FBD97A', fontStyle: 'italic', lineHeight: 1.65, fontWeight: 500 }}>
-              "किसान की मेहनत का सही दाम मिलना चाहिए — यही बिहार का बाज़ार की नींव है।"
+              "किसान की मेहनत का सही दाम मिलना चाहिए - यही बिहार का बाज़ार की नींव है।"
             </p>
-            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 10, fontWeight: 600 }}>— Bihar Ka Bazaar Founding Principle</p>
+            <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginTop: 10, fontWeight: 600 }}>- Bihar Ka Bazaar Founding Principle</p>
           </div>
         </div>
       </section>
@@ -207,19 +207,21 @@ export default function MissionPage() {
           <div style={{ background: 'linear-gradient(135deg,#1A5C38 0%,#0B3320 100%)', borderRadius: 30, padding: '64px 68px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 60, alignItems: 'center', marginBottom: 80 }}>
             <div>
               <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 3, textTransform: 'uppercase', color: '#86EFAC', marginBottom: 16 }}>Our Mission</div>
-              <h2 style={{ fontSize: 38, fontWeight: 900, color: '#fff', fontFamily: 'Georgia, serif', lineHeight: 1.2, marginBottom: 22 }}>Help Farmers Grow —<br /><span style={{ color: '#FBD97A' }}>In Every Sense</span></h2>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', lineHeight: 1.85, marginBottom: 18 }}>Our mission is to eliminate the exploitative middlemen chain that has kept Bihar's farmers poor for generations. By connecting them directly to buyers across India, we ensure farmers earn 3–5× more than what middlemen would pay them.</p>
-              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', lineHeight: 1.85 }}>But helping farmers grow is not just about money. It's about dignity, recognition, and building a future where Bihar's youth sees farming as a path to prosperity — not a trap of poverty.</p>
+              <h2 style={{ fontSize: 38, fontWeight: 900, color: '#fff', fontFamily: 'Georgia, serif', lineHeight: 1.2, marginBottom: 22 }}>Help Farmers Grow -<br /><span style={{ color: '#FBD97A' }}>In Every Sense</span></h2>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', lineHeight: 1.85, marginBottom: 18 }}>Our mission is to eliminate the exploitative middlemen chain that has kept Bihar's farmers poor for generations. By connecting them directly to buyers across India, we ensure farmers earn 3 to 5 times more than what middlemen would pay them.</p>
+              <p style={{ fontSize: 15, color: 'rgba(255,255,255,0.78)', lineHeight: 1.85 }}>But helping farmers grow is not just about money. It's about dignity, recognition, and building a future where Bihar's youth sees farming as a path to prosperity - not a trap of poverty.</p>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
               {[
-                { icon: '🌾', t: 'Eliminate Middlemen', d: '95% of every rupee you pay goes directly to the farmer or artisan.' },
-                { icon: '🔬', t: 'Science-Backed Quality', d: 'ICAR research partnerships ensure quality and authenticity of every product.' },
-                { icon: '🏛️', t: 'Government Aligned', d: 'Working with both Bihar state and central government agriculture initiatives.' },
-                { icon: '📱', t: 'Technology for All', d: 'Building tech simple enough for first-generation smartphone users in rural Bihar.' },
+                { Icon: Sprout, t: 'Eliminate Middlemen', d: '95% of every rupee you pay goes directly to the farmer or artisan.' },
+                { Icon: Microscope, t: 'Science-Backed Quality', d: 'ICAR research partnerships ensure quality and authenticity of every product.' },
+                { Icon: Landmark, t: 'Government Aligned', d: 'Working with both Bihar state and central government agriculture initiatives.' },
+                { Icon: Smartphone, t: 'Technology for All', d: 'Building tech simple enough for first-generation smartphone users in rural Bihar.' },
               ].map(p => (
                 <div key={p.t} style={{ background: 'rgba(255,255,255,0.1)', borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'flex-start', gap: 14, border: '1px solid rgba(255,255,255,0.12)' }}>
-                  <span style={{ fontSize: 22, flexShrink: 0 }}>{p.icon}</span>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <p.Icon size={20} color="#FBD97A" />
+                  </div>
                   <div>
                     <div style={{ fontSize: 13, fontWeight: 800, color: '#fff', marginBottom: 4 }}>{p.t}</div>
                     <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.62)', lineHeight: 1.55 }}>{p.d}</div>
@@ -234,7 +236,7 @@ export default function MissionPage() {
           <div style={{ textAlign: 'center', marginBottom: 60 }}>
             <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 12 }}>The Journey</div>
             <h2 style={{ fontSize: 42, fontWeight: 900, color: '#1A1410', fontFamily: 'Georgia, serif', lineHeight: 1.2, marginBottom: 16 }}>How We Are Making It Happen</h2>
-            <p style={{ fontSize: 16, color: '#6B5C50', lineHeight: 1.75, maxWidth: 620, margin: '0 auto' }}>From meeting farmers in their fields to presenting to the nation's top agricultural leadership — every step taken with one goal: a better deal for Bihar's farmers.</p>
+            <p style={{ fontSize: 16, color: '#6B5C50', lineHeight: 1.75, maxWidth: 620, margin: '0 auto' }}>From meeting farmers in their fields to presenting to the nation's top agricultural leadership - every step taken with one goal: a better deal for Bihar's farmers.</p>
           </div>
         </FadeIn>
 
@@ -242,9 +244,9 @@ export default function MissionPage() {
 
         <FadeIn>
           <div style={{ background: '#fff', border: '2px solid #E8DDD4', borderRadius: 30, padding: '64px', textAlign: 'center' }}>
-            <div style={{ fontSize: 52, marginBottom: 18 }}>🌾</div>
+            <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'rgba(26,92,56,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}><Sprout size={36} color="#1A5C38" /></div>
             <h2 style={{ fontSize: 36, fontWeight: 900, color: '#1A1410', fontFamily: 'Georgia, serif', marginBottom: 18 }}>Be Part of Bihar's <span style={{ color: '#1A5C38' }}>Agricultural Revolution</span></h2>
-            <p style={{ fontSize: 16, color: '#6B5C50', lineHeight: 1.8, maxWidth: 560, margin: '0 auto 40px' }}>When you buy from Bihar Ka Bazaar, you're not just getting a product — you're directly changing a farmer's life.</p>
+            <p style={{ fontSize: 16, color: '#6B5C50', lineHeight: 1.8, maxWidth: 560, margin: '0 auto 40px' }}>When you buy from Bihar Ka Bazaar, you're not just getting a product - you're directly changing a farmer's life.</p>
             <div style={{ display: 'flex', gap: 16, justifyContent: 'center', flexWrap: 'wrap' }}>
               <Link href="/shop" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#C85A08', color: '#fff', padding: '15px 34px', borderRadius: 50, fontSize: 14, fontWeight: 800, textDecoration: 'none', boxShadow: '0 4px 22px rgba(200,90,8,0.35)', transition: 'background 0.2s' }}
                 onMouseEnter={e => e.currentTarget.style.background = '#A04806'}
