@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { BarChart2, Users, Rocket } from 'lucide-react';
+import { BarChart2, Users, Rocket, Globe, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
 
 const NAV_ITEMS = [
   { href: '/admin', label: 'Overview', icon: BarChart2 },
@@ -65,7 +65,7 @@ export default function AdminLayout({ children }) {
     router.replace('/admin/login');
   };
 
-  // Login page — no shell
+  // Login page - no shell
   if (isLoginPage) {
     return <>{children}</>;
   }
@@ -105,7 +105,7 @@ export default function AdminLayout({ children }) {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#0F0F12' }}>
 
-      {/* ── SIDEBAR ── */}
+      {/* SIDEBAR */}
       <aside style={{
         width: sidebarWidth,
         background: 'linear-gradient(180deg, #141418 0%, #0F0F12 100%)',
@@ -160,6 +160,7 @@ export default function AdminLayout({ children }) {
         <nav style={{ flex: 1, padding: '16px 10px' }}>
           {NAV_ITEMS.map(item => {
             const isActive = pathname === item.href;
+            const Icon = item.icon;
             return (
               <Link key={item.href} href={item.href} style={{ textDecoration: 'none' }}>
                 <div
@@ -223,7 +224,11 @@ export default function AdminLayout({ children }) {
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
             onMouseLeave={e => e.currentTarget.style.background = 'none'}
           >
-            <span style={{ fontSize: 16, color: '#6B6B78' }}>{sidebarCollapsed ? '→' : '←'}</span>
+            {sidebarCollapsed ? (
+              <ChevronRight size={16} color="#6B6B78" />
+            ) : (
+              <ChevronLeft size={16} color="#6B6B78" />
+            )}
             {!sidebarCollapsed && (
               <span style={{ fontSize: 12, color: '#6B6B78', fontWeight: 500 }}>Collapse</span>
             )}
@@ -245,7 +250,7 @@ export default function AdminLayout({ children }) {
               onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.04)'}
               onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
             >
-              <span style={{ fontSize: 16 }}>🌐</span>
+              <Globe size={18} color="#6B6B78" style={{ flexShrink: 0 }} />
               {!sidebarCollapsed && (
                 <span style={{ fontSize: 12, color: '#6B6B78', fontWeight: 500 }}>Visit Site</span>
               )}
@@ -270,7 +275,7 @@ export default function AdminLayout({ children }) {
             onMouseEnter={e => e.currentTarget.style.background = 'rgba(211,47,47,0.1)'}
             onMouseLeave={e => e.currentTarget.style.background = 'none'}
           >
-            <span style={{ fontSize: 16 }}>🚪</span>
+            <LogOut size={18} color="#D32F2F" style={{ flexShrink: 0 }} />
             {!sidebarCollapsed && (
               <span style={{ fontSize: 12, color: '#D32F2F', fontWeight: 600 }}>Logout</span>
             )}
@@ -278,7 +283,7 @@ export default function AdminLayout({ children }) {
         </div>
       </aside>
 
-      {/* ── MAIN CONTENT ── */}
+      {/* MAIN CONTENT */}
       <main style={{
         flex: 1,
         marginLeft: sidebarWidth,
