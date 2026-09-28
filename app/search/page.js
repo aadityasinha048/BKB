@@ -157,19 +157,23 @@ function SearchProductCard({ p }) {
         qty: 1
       });
     }
+    if (p.status === 'out_of_stock' || p.outOfStock) return;
     localStorage.setItem('bkb_cart', JSON.stringify(cartItems));
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
   };
 
+  const isOutOfStock = p.status === 'out_of_stock' || p.outOfStock;
+
   return (
     <Link href={`/shop/${p.id}`} style={{ textDecoration: 'none' }}>
-      <div style={{ background: '#fff', border: '1px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', height: '100%' }}
+      <div style={{ background: '#fff', border: '1px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', height: '100%', opacity: isOutOfStock ? 0.85 : 1 }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(27,107,58,0.13)'; }}
         onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
       >
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160, background: p.bg, overflow: 'hidden' }}>
-          {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#B8860B', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>🏅 GI Tag</span>}
+          {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#B8860B', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>GI Tag</span>}
+          {isOutOfStock && <span style={{ position: 'absolute', top: 10, left: p.gi ? 72 : 10, background: '#C85A08', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>Out of Stock</span>}
           <img 
             src={p.imgSrc || `/images/products/prod_${p.id}.png`} 
             alt={p.name} 
@@ -177,14 +181,20 @@ function SearchProductCard({ p }) {
           />
         </div>
         <div style={{ padding: '14px 15px 13px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-          <div style={{ fontSize: 11, color: '#7A7067', marginBottom: 3 }}>📍 {p.dist} · ★ {p.rat || '4.8'}</div>
+          <div style={{ fontSize: 11, color: '#7A7067', marginBottom: 3 }}>{p.dist} | ★ {p.rat || '4.8'}</div>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#1A1410', lineHeight: 1.3, marginBottom: 2 }}>{p.name}</div>
           <div style={{ fontSize: 11, color: '#7A7067', marginBottom: 10 }}>by {p.seller}</div>
           <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: 18, fontWeight: 800, color: '#1A1410' }}>₹{p.price.toLocaleString()}</span>
-            <button onClick={handleAddToCart} style={{ background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 7, padding: '7px 12px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>
-              {added ? '✓ Added' : 'Add +'}
-            </button>
+            {isOutOfStock ? (
+              <button disabled onClick={e => { e.preventDefault(); e.stopPropagation(); }} style={{ background: '#F5EEE6', color: '#8C7B6E', border: '1px solid #E8DDD4', borderRadius: 7, padding: '6px 10px', fontSize: 11, fontWeight: 700, cursor: 'not-allowed', fontFamily: 'inherit' }}>
+                Out of Stock
+              </button>
+            ) : (
+              <button onClick={handleAddToCart} style={{ background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 7, padding: '7px 12px', fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s' }}>
+                {added ? '✓ Added' : 'Add +'}
+              </button>
+            )}
           </div>
         </div>
       </div>

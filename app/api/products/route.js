@@ -14,7 +14,11 @@ export async function GET(request) {
     let products = await readCollection('products');
 
     if (sellerId) {
+      // Seller view: return all products belonging to this seller (including hidden & out of stock)
       products = products.filter(p => p.sellerId === sellerId);
+    } else {
+      // Public catalog: exclude items hidden or placed on hold by the seller
+      products = products.filter(p => p.status !== 'hidden' && !p.isHidden);
     }
 
     if (cat) {
@@ -118,7 +122,11 @@ export async function POST(request) {
         desc,
         sellerId,
         variants,
-        images
+        images,
+        status: 'active',
+        outOfStock: false,
+        isHidden: false,
+        createdAt: new Date().toISOString()
       };
 
       products.push(product);
@@ -128,6 +136,180 @@ export async function POST(request) {
     return NextResponse.json({ success: true, product: newProduct });
   } catch (error) {
     console.error('Products POST Error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal Server Error.' },
+      { status: 500 }
+    );
+  }
+}
+
+// PATCH - Update product availability status (active, out of stock, hidden/on hold)
+export async function PATCH(request) {
+  try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || '127.0.0.1';
+    const limitCheck = await rateLimit(ip, 'products-patch', 30, 60 * 1000);
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
+
+    const body = await request.json();
+    const id = body.id;
+    const sellerId = cleanString(body.sellerId, 80);
+
+    if (id === undefined || id === null) {
+      return NextResponse.json(
+        { success: false, error: 'Product ID is required.' },
+        { status: 400 }
+      );
+    }
+
+    const products = await readCollection('products');
+    const existing = products.find(p => String(p.id) === String(id));
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Product not found.' },
+        { status: 404 }
+      );
+    }
+
+    // Verify ownership or admin auth
+    const authHeader = request.headers.get('authorization');
+    let isAuthorized = false;
+
+    if (authHeader) {
+      const authError = await requireAdmin(request);
+      if (!authError) isAuthorized = true;
+    }
+
+    if (!isAuthorized) {
+      if (!sellerId || existing.sellerId !== sellerId) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized to modify this product.' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Determine status updates
+    // Supported status values: 'active', 'out_of_stock', 'hidden'
+    let newStatus = existing.status || 'active';
+    let outOfStock = existing.outOfStock || false;
+    let isHidden = existing.isHidden || false;
+
+    if (body.status === 'out_of_stock' || body.outOfStock === true) {
+      newStatus = 'out_of_stock';
+      outOfStock = true;
+      isHidden = false;
+    } else if (body.status === 'hidden' || body.isHidden === true) {
+      newStatus = 'hidden';
+      isHidden = true;
+    } else if (body.status === 'active' || (body.outOfStock === false && body.isHidden === false)) {
+      newStatus = 'active';
+      outOfStock = false;
+      isHidden = false;
+    }
+
+    const updated = await mutateCollection('products', async (items) => {
+      const idx = items.findIndex(p => String(p.id) === String(id));
+      if (idx === -1) return null;
+      items[idx] = {
+        ...items[idx],
+        status: newStatus,
+        outOfStock,
+        isHidden,
+        updatedAt: new Date().toISOString()
+      };
+      return items[idx];
+    });
+
+    return NextResponse.json({ success: true, product: updated });
+  } catch (error) {
+    console.error('Products PATCH Error:', error);
+    return NextResponse.json(
+      { success: false, error: 'Internal Server Error.' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Remove a product permanently
+export async function DELETE(request) {
+  try {
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim()
+      || request.headers.get('x-real-ip')
+      || '127.0.0.1';
+    const limitCheck = await rateLimit(ip, 'products-delete', 20, 60 * 1000);
+    if (!limitCheck.success) {
+      return NextResponse.json(
+        { success: false, error: 'Too many requests. Please try again in a minute.' },
+        { status: 429 }
+      );
+    }
+
+    const { searchParams } = new URL(request.url);
+    let id = searchParams.get('id');
+    let sellerId = searchParams.get('sellerId');
+
+    if (!id) {
+      try {
+        const body = await request.json();
+        id = body?.id;
+        sellerId = body?.sellerId || sellerId;
+      } catch {}
+    }
+
+    if (id === undefined || id === null) {
+      return NextResponse.json(
+        { success: false, error: 'Product ID is required.' },
+        { status: 400 }
+      );
+    }
+
+    const products = await readCollection('products');
+    const existing = products.find(p => String(p.id) === String(id));
+
+    if (!existing) {
+      return NextResponse.json(
+        { success: false, error: 'Product not found.' },
+        { status: 404 }
+      );
+    }
+
+    // Verify ownership or admin auth
+    const authHeader = request.headers.get('authorization');
+    let isAuthorized = false;
+
+    if (authHeader) {
+      const authError = await requireAdmin(request);
+      if (!authError) isAuthorized = true;
+    }
+
+    if (!isAuthorized) {
+      if (!sellerId || existing.sellerId !== sellerId) {
+        return NextResponse.json(
+          { success: false, error: 'Unauthorized to delete this product.' },
+          { status: 403 }
+        );
+      }
+    }
+
+    await mutateCollection('products', async (items) => {
+      const idx = items.findIndex(p => String(p.id) === String(id));
+      if (idx !== -1) {
+        items.splice(idx, 1);
+      }
+      return items;
+    });
+
+    return NextResponse.json({ success: true, message: 'Product deleted successfully.' });
+  } catch (error) {
+    console.error('Products DELETE Error:', error);
     return NextResponse.json(
       { success: false, error: 'Internal Server Error.' },
       { status: 500 }

@@ -112,23 +112,27 @@ function ProductCard({ p }) {
       });
     }
     localStorage.setItem('bkb_cart', JSON.stringify(cartItems));
+    if (p.status === 'out_of_stock' || p.outOfStock) return;
     setAdded(true);
     setTimeout(() => setAdded(false), 1800);
   };
 
+  const isOutOfStock = p.status === 'out_of_stock' || p.outOfStock;
+
   return (
     <Link href={`/shop/${p.id}`} style={{ textDecoration: 'none' }}>
       <div
-        style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', height: '100%' }}
+        style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', height: '100%', opacity: isOutOfStock ? 0.85 : 1 }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(27,107,58,0.13)'; }}
         onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
       >
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 170, background: p.bg, overflow: 'hidden' }}>
-          {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#B8860B', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>🏅 GI Tag</span>}
+          {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#B8860B', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>GI Tag</span>}
+          {isOutOfStock && <span style={{ position: 'absolute', top: 10, left: p.gi ? 72 : 10, background: '#C85A08', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>Out of Stock</span>}
           <button
             onClick={e => { e.preventDefault(); e.stopPropagation(); }}
-            style={{ position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E5E1DC', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}
-          >🤍</button>
+            style={{ position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E5E1DC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}
+          ><Heart size={14} color="#6B5C50" /></button>
           <img 
             src={p.imgSrc || `/images/products/prod_${p.id}.png`} 
             alt={p.name} 
@@ -137,7 +141,7 @@ function ProductCard({ p }) {
         </div>
         <div style={{ padding: '16px 16px 14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
-            <span style={{ fontSize: 11, color: '#7A7067' }}>📍 {p.dist}</span>
+            <span style={{ fontSize: 11, color: '#7A7067' }}>{p.dist}</span>
             <span style={{ fontSize: 11, color: '#B8860B', fontWeight: 700 }}>★ {p.rat} ({p.rev})</span>
           </div>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1410', lineHeight: 1.3, marginBottom: 3 }}>{p.name}</div>
@@ -147,12 +151,22 @@ function ProductCard({ p }) {
               <span style={{ fontSize: 19, fontWeight: 800, color: '#1A1410' }}>₹{p.price.toLocaleString()}</span>
               <span style={{ fontSize: 10, color: '#B0A598' }}> /{p.unit}</span>
             </div>
-            <button
-              onClick={handleAddToCart}
-              style={{ background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}
-            >
-              {added ? '✓ Added' : 'Add to Cart'}
-            </button>
+            {isOutOfStock ? (
+              <button
+                disabled
+                onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+                style={{ background: '#F5EEE6', color: '#8C7B6E', border: '1px solid #E8DDD4', borderRadius: 8, padding: '8px 12px', fontSize: 11, fontWeight: 700, cursor: 'not-allowed', whiteSpace: 'nowrap', fontFamily: 'inherit' }}
+              >
+                Out of Stock
+              </button>
+            ) : (
+              <button
+                onClick={handleAddToCart}
+                style={{ background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 8, padding: '8px 14px', fontSize: 12, fontWeight: 700, cursor: 'pointer', whiteSpace: 'nowrap', fontFamily: 'inherit' }}
+              >
+                {added ? '✓ Added' : 'Add to Cart'}
+              </button>
+            )}
           </div>
         </div>
       </div>

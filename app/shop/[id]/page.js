@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Star, Truck, ShieldCheck, RefreshCw, ShoppingCart, Check, ChevronLeft, ChevronRight, User } from 'lucide-react';
+import { Star, Truck, ShieldCheck, RefreshCw, ShoppingCart, Check, ChevronLeft, ChevronRight, User, AlertCircle } from 'lucide-react';
 
 const REVIEWS_SAMPLE = [
   { name: "Rajan Kumar", loc: "Patna", date: "Jan 12, 2026", rating: 5, comment: "Absolutely fresh and premium quality. The texture and aroma is authentic Bihari taste! Highly recommended." },
@@ -90,6 +90,7 @@ export default function ProductDetailPage() {
   }, [product]);
 
   const handleAddToCart = () => {
+    if (product?.status === 'out_of_stock' || product?.outOfStock) return;
     const existing = localStorage.getItem('bkb_cart');
     let cartItems = [];
     try {
@@ -402,19 +403,31 @@ export default function ProductDetailPage() {
             </span>
           </div>
 
+          {/* Out of Stock Notice */}
+          {(product.status === 'out_of_stock' || product.outOfStock) && (
+            <div style={{ background: '#FFF4EC', border: '1.5px solid #FFE8D4', borderRadius: 12, padding: '14px 18px', marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <AlertCircle size={20} color="#C85A08" style={{ flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 700, color: '#C85A08' }}>Currently Out of Stock</div>
+                <div style={{ fontSize: 12, color: '#6B5C50', marginTop: 2 }}>This seller has temporarily paused orders for this item. Please check back later.</div>
+              </div>
+            </div>
+          )}
+
           {/* Action buttons */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
             <button
               onClick={handleAddToCart}
+              disabled={product.status === 'out_of_stock' || product.outOfStock}
               style={{
                 padding: '16px',
                 borderRadius: 12,
                 fontSize: 15,
                 fontWeight: 700,
-                border: '2px solid #1B6B3A',
-                background: added ? '#1B6B3A' : '#E8F5EC',
-                color: added ? '#fff' : '#1B6B3A',
-                cursor: 'pointer',
+                border: (product.status === 'out_of_stock' || product.outOfStock) ? '1.5px solid #E8DDD4' : '2px solid #1B6B3A',
+                background: (product.status === 'out_of_stock' || product.outOfStock) ? '#F5EEE6' : (added ? '#1B6B3A' : '#E8F5EC'),
+                color: (product.status === 'out_of_stock' || product.outOfStock) ? '#8C7B6E' : (added ? '#fff' : '#1B6B3A'),
+                cursor: (product.status === 'out_of_stock' || product.outOfStock) ? 'not-allowed' : 'pointer',
                 fontFamily: 'inherit',
                 display: 'flex',
                 alignItems: 'center',
@@ -424,11 +437,12 @@ export default function ProductDetailPage() {
               }}
             >
               <ShoppingCart size={16} />
-              {added ? '✓ Added to Cart!' : 'Add to Cart'}
+              {(product.status === 'out_of_stock' || product.outOfStock) ? 'Out of Stock' : (added ? '✓ Added to Cart!' : 'Add to Cart')}
             </button>
-            <Link href="/cart" style={{ textDecoration: 'none' }}>
+            <Link href={(product.status === 'out_of_stock' || product.outOfStock) ? '#' : '/cart'} style={{ textDecoration: 'none', pointerEvents: (product.status === 'out_of_stock' || product.outOfStock) ? 'none' : 'auto' }}>
               <button
                 onClick={handleAddToCart}
+                disabled={product.status === 'out_of_stock' || product.outOfStock}
                 style={{
                   width: '100%',
                   padding: '16px',
@@ -436,14 +450,14 @@ export default function ProductDetailPage() {
                   fontSize: 15,
                   fontWeight: 700,
                   border: 'none',
-                  background: '#1B6B3A',
-                  color: '#fff',
-                  cursor: 'pointer',
+                  background: (product.status === 'out_of_stock' || product.outOfStock) ? '#E8DDD4' : '#1B6B3A',
+                  color: (product.status === 'out_of_stock' || product.outOfStock) ? '#8C7B6E' : '#fff',
+                  cursor: (product.status === 'out_of_stock' || product.outOfStock) ? 'not-allowed' : 'pointer',
                   fontFamily: 'inherit',
                   transition: 'background 0.2s'
                 }}
               >
-                Buy Now →
+                {(product.status === 'out_of_stock' || product.outOfStock) ? 'Unavailable' : 'Buy Now →'}
               </button>
             </Link>
           </div>
