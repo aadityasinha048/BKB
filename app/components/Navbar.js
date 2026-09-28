@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
@@ -81,6 +81,7 @@ export default function Navbar() {
     ...(userRole === 'seller' ? [{ href: '/dashboard', label: 'Seller Console' }] : []),
     ...(userRole === 'buyer' ? [{ href: '/profile', label: 'My Profile' }] : []),
     ...(userRole === null ? [{ href: '/login', label: 'Login' }] : []),
+    { href: '/mission', label: 'Our Mission' },
     { href: '/about', label: 'About' },
   ];
 
@@ -123,7 +124,7 @@ export default function Navbar() {
           />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: 16, fontWeight: 800, color: '#1B6B3A', lineHeight: 1.1, fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
-              बिहार का बाज़ार
+              à¤¬à¤¿à¤¹à¤¾à¤° à¤•à¤¾ à¤¬à¤¾à¤œà¤¼à¤¾à¤°
             </div>
             <div style={{ fontSize: 8, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7A7067', marginTop: 2 }}>
               Bihar Ka Bazaar
@@ -300,7 +301,7 @@ export default function Navbar() {
         </div>
       </nav>
 
-      {/* ── SEARCH OVERLAY ── */}
+      {/* â”€â”€ SEARCH OVERLAY â”€â”€ */}
       {searchOpen && (
         <div
           style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)', zIndex: 300, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', paddingTop: 80 }}
@@ -344,7 +345,7 @@ export default function Navbar() {
           </div>
         </div>
       )}
-      {/* ── MOBILE MENU DRAWER ── */}
+      {/* â”€â”€ MOBILE MENU DRAWER â”€â”€ */}
       {mobileOpen && (
         <div style={{
           position: 'fixed',
