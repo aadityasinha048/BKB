@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -6,9 +6,9 @@ import { CreditCard, ShoppingBag, ShieldCheck, Truck, ArrowLeft } from 'lucide-r
 import Link from 'next/link';
 
 const PAYMENT_METHODS = [
-  { id: 'upi', icon: '📱', label: 'UPI' },
-  { id: 'card', icon: '💳', label: 'Card' },
-  { id: 'cod', icon: '💵', label: 'Cash on Delivery' },
+  { id: 'upi', icon: 'ðŸ“±', label: 'UPI' },
+  { id: 'card', icon: 'ðŸ’³', label: 'Card' },
+  { id: 'cod', icon: 'ðŸ’µ', label: 'Cash on Delivery' },
 ];
 
 const INDIAN_STATES = [
@@ -29,6 +29,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const [payMethod, setPayMethod] = useState('upi');
   const [placing, setPlacing] = useState(false);
+  const [authChecked, setAuthChecked] = useState(false);
 
   // Cart & profile states
   const [cart, setCart] = useState([]);
@@ -45,6 +46,17 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // â”€â”€ AUTH GUARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Checkout requires login. Redirect unauthenticated users to login
+    // with a redirect param so they land back here after signing in.
+    const isLoggedIn = localStorage.getItem('bkb_user_logged_in') === 'true';
+    if (!isLoggedIn) {
+      router.replace('/login?redirect=/checkout');
+      return;
+    }
+    setAuthChecked(true);
+    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
     // Load cart
     const storedCart = localStorage.getItem('bkb_cart');
     if (storedCart) {
@@ -77,6 +89,19 @@ export default function CheckoutPage() {
       }
     }
   }, []);
+
+  // Show nothing while auth check redirects (avoids page flash)
+  if (!authChecked) {
+    return (
+      <div style={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#FFFCF8' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: 40, height: 40, border: '3px solid #E8DDD4', borderTopColor: '#C85A08', borderRadius: '50%', animation: 'spin 0.7s linear infinite', margin: '0 auto 12px' }} />
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <div style={{ fontSize: 13, color: '#8C7B6E' }}>Verifying your session...</div>
+        </div>
+      </div>
+    );
+  }
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
   const shipping = subtotal >= 500 ? 0 : 60;
@@ -119,16 +144,16 @@ export default function CheckoutPage() {
 
       <div style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1fr 400px', gap: 28, alignItems: 'start' }}>
         
-        {/* ── LEFT: FORMS ── */}
+        {/* â”€â”€ LEFT: FORMS â”€â”€ */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
           
           {error && (
             <div style={{ background: '#FDECEA', border: '1px solid rgba(211,47,47,0.2)', borderRadius: 10, padding: '12px 14px', color: '#D32F2F', fontSize: 13, fontWeight: 600 }}>
-              ⚠️ {error}
+              âš ï¸ {error}
             </div>
           )}
 
-          {/* Step 1 — Delivery Address */}
+          {/* Step 1 â€” Delivery Address */}
           <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, overflow: 'hidden' }}>
             <div style={{ padding: '20px 26px', borderBottom: '1px solid #E8DDD4', display: 'flex', alignItems: 'center', gap: 10 }}>
               <StepNumber n={1} />
@@ -226,7 +251,7 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Step 2 — Payment */}
+          {/* Step 2 â€” Payment */}
           <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, overflow: 'hidden' }}>
             <div style={{ padding: '20px 26px', borderBottom: '1px solid #E8DDD4', display: 'flex', alignItems: 'center', gap: 10 }}>
               <StepNumber n={2} />
@@ -284,7 +309,7 @@ export default function CheckoutPage() {
 
               {payMethod === 'cod' && (
                 <div style={{ background: '#FFF4EC', border: '1.5px solid #FFE8D4', borderRadius: 10, padding: 18, color: '#C85A08', fontSize: 13, fontWeight: 600 }}>
-                  📦 Extra delivery confirmation call will be triggered by Bihar Ka Bazaar to verify COD.
+                  ðŸ“¦ Extra delivery confirmation call will be triggered by Bihar Ka Bazaar to verify COD.
                 </div>
               )}
             </div>
@@ -296,11 +321,11 @@ export default function CheckoutPage() {
             disabled={placing || cart.length === 0}
             style={{ width: '100%', padding: 17, background: placing || cart.length === 0 ? '#8C7B6E' : '#C85A08', color: '#fff', border: 'none', borderRadius: 14, fontSize: 17, fontWeight: 800, cursor: placing || cart.length === 0 ? 'not-allowed' : 'pointer', fontFamily: 'inherit', transition: 'all 0.2s', letterSpacing: 0.3 }}
           >
-            {placing ? '⏳ Placing your order...' : '🎉 Place Order & Pay Securely'}
+            {placing ? 'â³ Placing your order...' : 'ðŸŽ‰ Place Order & Pay Securely'}
           </button>
         </div>
 
-        {/* ── RIGHT: ORDER SUMMARY ── */}
+        {/* â”€â”€ RIGHT: ORDER SUMMARY â”€â”€ */}
         <div style={{ position: 'sticky', top: 84 }}>
           <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 16, padding: 26 }}>
             <h3 style={{ fontSize: 17, fontWeight: 700, color: '#1A1410', marginBottom: 20 }}>Order Summary</h3>
@@ -314,10 +339,10 @@ export default function CheckoutPage() {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 13, fontWeight: 600, color: '#1A1410', lineHeight: 1.3 }}>{item.name}</div>
-                    <div style={{ fontSize: 11, color: '#8C7B6E' }}>Size: {item.unit} · Qty: {item.qty}</div>
+                    <div style={{ fontSize: 11, color: '#8C7B6E' }}>Size: {item.unit} Â· Qty: {item.qty}</div>
                     <div style={{ fontSize: 10, color: '#C85A08', fontWeight: 600 }}>Seller: {item.seller}</div>
                   </div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: '#C85A08' }}>₹{(item.price * item.qty).toLocaleString()}</div>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: '#C85A08' }}>â‚¹{(item.price * item.qty).toLocaleString()}</div>
                 </div>
               ))
             ) : (
@@ -329,9 +354,9 @@ export default function CheckoutPage() {
             {/* Price Breakdown */}
             <div style={{ marginBottom: 14 }}>
               {[
-                ["Subtotal", `₹${subtotal.toLocaleString()}`],
-                ["Delivery", shipping === 0 ? "FREE" : `₹${shipping}`],
-                ["Platform Fee", "₹0"],
+                ["Subtotal", `â‚¹${subtotal.toLocaleString()}`],
+                ["Delivery", shipping === 0 ? "FREE" : `â‚¹${shipping}`],
+                ["Platform Fee", "â‚¹0"],
               ].map(([label, value]) => (
                 <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, color: label === "Delivery" && shipping === 0 ? '#1A5C38' : '#4A3F35', marginBottom: 10, fontWeight: label === "Delivery" && shipping === 0 ? 700 : 400 }}>
                   <span>{label}</span>
@@ -342,18 +367,18 @@ export default function CheckoutPage() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 20, fontWeight: 800, color: '#1A1410', borderTop: '1px solid #E8DDD4', paddingTop: 14 }}>
               <span>Total Payable</span>
-              <span>₹{total.toLocaleString()}</span>
+              <span>â‚¹{total.toLocaleString()}</span>
             </div>
 
             {/* Direct payment badge */}
             <div style={{ marginTop: 16, background: '#EAF5F0', border: '1px solid rgba(26,92,56,0.2)', borderRadius: 10, padding: '12px 14px', fontSize: 12, color: '#1A5C38', fontWeight: 600, textAlign: 'center' }}>
-              ✅ Your payment goes directly to the Bihar seller
+              âœ… Your payment goes directly to the Bihar seller
             </div>
 
             {/* Delivery info */}
             <div style={{ marginTop: 14, background: '#FFF8F2', border: '1px solid #FFE8D4', borderRadius: 10, padding: '12px 14px' }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 6 }}>📦 Estimated Delivery</div>
-              <div style={{ fontSize: 13, color: '#C85A08', fontWeight: 700 }}>3 – 7 Business Days</div>
+              <div style={{ fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 6 }}>ðŸ“¦ Estimated Delivery</div>
+              <div style={{ fontSize: 13, color: '#C85A08', fontWeight: 700 }}>3 â€“ 7 Business Days</div>
               <div style={{ fontSize: 11, color: '#8C7B6E', marginTop: 2 }}>Tracking SMS will be sent after dispatch</div>
             </div>
           </div>

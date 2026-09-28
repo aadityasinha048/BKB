@@ -60,8 +60,11 @@ function LoginForm() {
     localStorage.setItem(`bkb_buyer_profile_${mobile.trim()}`, JSON.stringify(newProfile));
     localStorage.setItem('bkb_user_logged_in', 'true');
     localStorage.setItem('bkb_user_mobile', mobile.trim());
-    setSuccess('Signup complete! Redirecting to Profile...');
-    setTimeout(() => router.push('/profile'), 1500);
+    // Respect redirect param after signup too
+    const redirectTo = searchParams.get('redirect');
+    const safePath = redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/profile';
+    setSuccess('Signup complete! Redirecting...');
+    setTimeout(() => router.push(safePath), 1500);
   };
 
   // Countdown timer for OTP
@@ -172,8 +175,11 @@ function LoginForm() {
 
         localStorage.setItem('bkb_user_logged_in', 'true');
         localStorage.setItem('bkb_user_mobile', mobile.trim());
-        setSuccess('Login successful! Redirecting to Profile...');
-        setTimeout(() => router.push('/profile'), 1500);
+        // Respect redirect param — but only allow same-origin paths (must start with /)
+        const redirectTo = searchParams.get('redirect');
+        const safePath = redirectTo && redirectTo.startsWith('/') && !redirectTo.startsWith('//') ? redirectTo : '/profile';
+        setSuccess(`Login successful! Redirecting...`);
+        setTimeout(() => router.push(safePath), 1500);
       }
     } catch {
       setError('Network error. Please try again.');
