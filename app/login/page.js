@@ -7,6 +7,17 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { User, Shield, UserCheck, Phone, Key, ArrowRight, Leaf, Users, MapPin, Award, Truck, AlertTriangle, CheckCircle } from 'lucide-react';
 
+const PARTICLE_CONFIGS = [
+  { left: '15%', size: 18, duration: 8, delay: 0 },
+  { left: '32%', size: 14, duration: 10, delay: 1.5 },
+  { left: '48%', size: 20, duration: 12, delay: 3 },
+  { left: '65%', size: 16, duration: 14, delay: 4.5 },
+  { left: '22%', size: 22, duration: 16, delay: 6 },
+  { left: '78%', size: 12, duration: 18, delay: 7.5 },
+  { left: '55%', size: 17, duration: 20, delay: 9 },
+  { left: '88%', size: 15, duration: 22, delay: 10.5 },
+];
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -313,17 +324,17 @@ function LoginForm() {
         }} />
 
         {/* Floating leaf/grain particles */}
-        {[...Array(8)].map((_, i) => (
+        {PARTICLE_CONFIGS.map((p, i) => (
           <div
             key={i}
             style={{
               position: 'absolute',
-              left: `${10 + Math.random() * 80}%`,
+              left: p.left,
               bottom: 0,
-              width: [18, 14, 20, 16, 22, 12, 17, 15][i],
-              height: [18, 14, 20, 16, 22, 12, 17, 15][i],
-              animation: `floatUp ${8 + i * 2}s linear infinite`,
-              animationDelay: `${i * 1.5}s`,
+              width: p.size,
+              height: p.size,
+              animation: `floatUp ${p.duration}s linear infinite`,
+              animationDelay: `${p.delay}s`,
               opacity: 0,
               pointerEvents: 'none',
               zIndex: 2,
