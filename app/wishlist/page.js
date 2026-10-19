@@ -34,12 +34,12 @@ export default function WishlistPage() {
   return (
     <div style={{ background: '#FFFCF8', minHeight: '80vh' }}>
       {/* Header */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #E8DDD4', padding: '28px 60px' }}>
+      <div className="wishlist-header" style={{ background: '#fff', borderBottom: '1px solid #E8DDD4', padding: '28px 60px' }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 6 }}>Saved Items</div>
         <h1 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>My Wishlist</h1>
       </div>
 
-      <div style={{ padding: '36px 60px' }}>
+      <div className="wishlist-container" style={{ padding: '36px 60px' }}>
         {items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
             <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#F5EEE6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
@@ -56,7 +56,7 @@ export default function WishlistPage() {
         ) : (
           <>
             <p style={{ fontSize: 14, color: '#8C7B6E', marginBottom: 28 }}>{items.length} saved products</p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
+            <div className="wishlist-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
               {items.map(p => (
                 <div key={p.id} style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', display: 'flex', flexDirection: 'column', transition: 'all 0.25s' }}
                   onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(27,107,58,0.13)'; }}

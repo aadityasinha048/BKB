@@ -1611,3 +1611,109 @@ body, html {
   width: 100%;
   position: relative;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE VIEW SCREEN RATIO FIXES & CONTENT OVERFLOW PREVENTION
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Contact Page Mobile Alignment */
+  .contact-header {
+    padding: 20px 16px !important;
+  }
+  .contact-header h1 {
+    font-size: 26px !important;
+  }
+  .contact-container {
+    padding: 24px 14px !important;
+  }
+  .contact-grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+  .contact-form-box {
+    padding: 20px 16px !important;
+    border-radius: 14px !important;
+  }
+  .contact-form-row {
+    grid-template-columns: 1fr !important;
+    gap: 0 !important;
+  }
+
+  /* Wishlist Page Mobile Alignment */
+  .wishlist-header {
+    padding: 20px 16px !important;
+  }
+  .wishlist-header h1 {
+    font-size: 26px !important;
+  }
+  .wishlist-container {
+    padding: 20px 14px !important;
+  }
+  .wishlist-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Search Page Mobile Alignment */
+  .search-header {
+    padding: 20px 16px !important;
+  }
+  .search-header h1 {
+    font-size: 26px !important;
+  }
+  .search-container {
+    padding: 20px 14px !important;
+  }
+  .search-toolbar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 12px !important;
+  }
+  .search-toolbar select {
+    width: 100% !important;
+  }
+  .search-products-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Order Tracking Mobile Alignment */
+  .tracking-search-box {
+    padding: 18px 14px !important;
+  }
+  .tracking-search-box form > div {
+    flex-direction: column !important;
+  }
+  .tracking-search-box input {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+  .tracking-search-box button {
+    width: 100% !important;
+    justify-content: center !important;
+  }
+  .tracking-summary-card {
+    padding: 18px 14px !important;
+  }
+  .tracking-video-card {
+    padding: 18px 14px !important;
+  }
+  .tracking-video-preview-grid {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 12px !important;
+  }
+
+  /* Add Product Page Mobile Alignment */
+  .add-product-form-grid {
+    grid-template-columns: 1fr !important;
+    padding: 20px 14px !important;
+    gap: 20px !important;
+  }
+
+  /* Prevent any wide content from bleeding off mobile screens */
+  * {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}

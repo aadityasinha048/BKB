@@ -9,13 +9,13 @@ export default function ContactPage() {
   return (
     <div style={{ background: '#FFFCF8' }}>
       {/* Header */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #E8DDD4', padding: '28px 60px' }}>
+      <div className="contact-header" style={{ background: '#fff', borderBottom: '1px solid #E8DDD4', padding: '28px 60px' }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 6 }}>Get In Touch</div>
         <h1 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>Contact Us</h1>
       </div>
 
-      <div style={{ padding: '52px 60px' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, maxWidth: 1100, margin: '0 auto' }}>
+      <div className="contact-container" style={{ padding: '52px 60px' }}>
+        <div className="contact-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 48, maxWidth: 1100, margin: '0 auto' }}>
 
           {/* Left Info */}
           <div>
@@ -66,7 +66,7 @@ export default function ContactPage() {
           {/* Contact Form */}
           <div>
             {submitted ? (
-              <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 20, padding: '60px 40px', textAlign: 'center' }}>
+              <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 20, padding: '40px 24px', textAlign: 'center' }}>
                 <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
                   <CheckCircle size={64} color="#1A5C38" />
                 </div>
@@ -77,11 +77,11 @@ export default function ContactPage() {
                 </button>
               </div>
             ) : (
-              <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 20, padding: 36 }}>
+              <div className="contact-form-box" style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 20, padding: 36 }}>
                 <h3 style={{ fontSize: 22, color: '#1A1410', marginBottom: 6, fontFamily: "'Playfair Display', serif" }}>Send a Message</h3>
                 <p style={{ fontSize: 13, color: '#8C7B6E', marginBottom: 24 }}>Fill out the form and we'll get back to you shortly.</p>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 0 }}>
+                <div className="contact-form-row" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 0 }}>
                   {[['Full Name', 'text', 'Ram Kumar'], ['Phone Number', 'text', '+91 99999 00000']].map(([l, t, p]) => (
                     <div key={l} style={{ marginBottom: 14 }}>
                       <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 5 }}>{l}</label>

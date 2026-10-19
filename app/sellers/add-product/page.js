@@ -214,7 +214,7 @@ export default function AddProductPage() {
           <p style={{ fontSize: 15, color: '#8C7B6E' }}>Your product is now listed on Bihar Ka Bazaar. Redirecting to your dashboard...</p>
         </div>
       ) : (
-        <form onSubmit={handleSubmit} style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1fr 340px', gap: 28, alignItems: 'start' }}>
+        <form onSubmit={handleSubmit} className="add-product-form-grid" style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1fr 340px', gap: 28, alignItems: 'start' }}>
 
           {/* Form */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>

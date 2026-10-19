@@ -56,7 +56,7 @@ function SearchContent() {
   return (
     <div style={{ background: '#fff', minHeight: '80vh' }}>
       {/* Header */}
-      <div style={{ background: '#fff', borderBottom: '1px solid #E5E1DC', padding: '28px 60px' }}>
+      <div className="search-header" style={{ background: '#fff', borderBottom: '1px solid #E5E1DC', padding: '28px 60px' }}>
         <div style={{ fontSize: 13, color: '#7A7067', marginBottom: 6 }}>
           Search results for
         </div>
@@ -68,9 +68,9 @@ function SearchContent() {
         </div>
       </div>
 
-      <div style={{ padding: '32px 60px' }}>
+      <div className="search-container" style={{ padding: '32px 60px' }}>
         {/* Toolbar */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28 }}>
+        <div className="search-toolbar" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 28, flexWrap: 'wrap', gap: 12 }}>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {['All', 'GI Tag Only', 'Under ₹500', 'Under ₹1000'].map(f => (
               <button 
@@ -115,7 +115,7 @@ function SearchContent() {
             </button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
+          <div className="search-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
             {filtered.map(p => (
               <SearchProductCard key={p.id} p={p} />
             ))}

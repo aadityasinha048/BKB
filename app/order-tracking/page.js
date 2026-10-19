@@ -191,7 +191,7 @@ function OrderTrackingContent() {
 
       <div style={{ maxWidth: 960, margin: '-24px auto 0', padding: '0 20px' }}>
         {/* Search Input Box */}
-        <div style={{ background: '#fff', border: '1.5px solid #E2D9CF', borderRadius: 16, padding: '24px 28px', boxShadow: '0 8px 30px rgba(0,0,0,0.06)', marginBottom: 28 }}>
+        <div className="tracking-search-box" style={{ background: '#fff', border: '1.5px solid #E2D9CF', borderRadius: 16, padding: '24px 28px', boxShadow: '0 8px 30px rgba(0,0,0,0.06)', marginBottom: 28 }}>
           <form onSubmit={handleSearch}>
             <label style={{ display: 'block', fontSize: 13, fontWeight: 700, color: '#1E293B', marginBottom: 8 }}>
               Enter Order ID to Inspect Packaging & Track Status
@@ -257,7 +257,7 @@ function OrderTrackingContent() {
         {searched && order && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 24 }}>
             {/* Top Order Snapshot */}
-            <div style={{ background: '#fff', border: '1px solid #E2D9CF', borderRadius: 16, padding: '24px 28px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+            <div className="tracking-summary-card" style={{ background: '#fff', border: '1px solid #E2D9CF', borderRadius: 16, padding: '24px 28px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 16, borderBottom: '1px solid #F1EBE4', paddingBottom: 18, marginBottom: 20 }}>
                 <div>
                   <span style={{ fontSize: 11, fontWeight: 800, color: '#C25E00', letterSpacing: 1, textTransform: 'uppercase' }}>
@@ -308,7 +308,7 @@ function OrderTrackingContent() {
             </div>
 
             {/* Packaging Video Proof Section (CRITICAL GUARANTEE) */}
-            <div style={{
+            <div className="tracking-video-card" style={{
               background: 'linear-gradient(135deg, #FFF7ED 0%, #FFFBEB 100%)',
               border: '2px solid #FDBA74',
               borderRadius: 18,
@@ -354,7 +354,7 @@ function OrderTrackingContent() {
               </div>
 
               {/* Video Preview Snapshot Box */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 340px) 1fr', gap: 24, background: '#fff', border: '1px solid #FED7AA', borderRadius: 14, padding: 18 }}>
+              <div className="tracking-video-preview-grid" style={{ display: 'grid', gridTemplateColumns: 'minmax(280px, 340px) 1fr', gap: 24, background: '#fff', border: '1px solid #FED7AA', borderRadius: 14, padding: 18 }}>
                 <div
                   onClick={() => setIsVideoModalOpen(true)}
                   style={{
@@ -388,7 +388,7 @@ function OrderTrackingContent() {
                     BKB Certified Packaging Checklist:
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                    {(order.packagingVideo?.checklist || [
+                    {(Array.isArray(order.packagingVideo?.checklist) ? order.packagingVideo.checklist : [
                       'Original authentic artisan items verified inside box',
                       'Protective cushioning & foam buffers applied',
                       'Bihar Ka Bazaar security hologram tape applied',
