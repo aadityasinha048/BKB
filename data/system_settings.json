@@ -1,0 +1,19 @@
+[
+  {
+    "systemMode": "live",
+    "allowSellerRegistrations": true,
+    "allowOrders": true,
+    "codEnabled": true,
+    "upiDirectPay": true,
+    "platformCommissionPercent": 5,
+    "freeShippingThreshold": 500,
+    "deliveryCharge": 60,
+    "emergencyBanner": {
+      "enabled": false,
+      "message": ""
+    },
+    "lastHealthCheck": "2026-10-03T12:00:00.000Z",
+    "autoApproveSellers": false,
+    "requireKycBeforeListing": true
+  }
+]

@@ -191,10 +191,10 @@ export default function AdminPrelaunchPage() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#F5F0EB', fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#F8FAFC', fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>
             🚀 Pre-Launch Campaign
           </h1>
-          <p style={{ fontSize: 13, color: '#6B6B78' }}>
+          <p style={{ fontSize: 13, color: '#94A3B8' }}>
             {total} total subscribers · {subscribers.length} filtered
           </p>
         </div>
@@ -233,17 +233,17 @@ export default function AdminPrelaunchPage() {
         {/* Statistics info */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 16 }}>
           <div style={{
-            background: '#18181F', border: '1px solid #26262F', borderRadius: 16, padding: '22px 20px',
+            background: '#121822', border: '1px solid #1E2735', borderRadius: 16, padding: '22px 20px',
             display: 'flex', flexDirection: 'column', justifyContent: 'center'
           }}>
-            <div style={{ fontSize: 36, fontWeight: 800, color: '#F5F0EB', fontFamily: "'Playfair Display', serif" }}>{total}</div>
-            <div style={{ fontSize: 12, color: '#6B6B78', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Early Subscribers</div>
+            <div style={{ fontSize: 36, fontWeight: 800, color: '#F8FAFC', fontFamily: "'Playfair Display', serif" }}>{total}</div>
+            <div style={{ fontSize: 12, color: '#94A3B8', marginTop: 4, fontWeight: 600, textTransform: 'uppercase', letterSpacing: 0.5 }}>Early Subscribers</div>
           </div>
 
           <div style={{
-            background: '#18181F', border: '1px solid #26262F', borderRadius: 16, padding: '22px 20px',
+            background: '#121822', border: '1px solid #1E2735', borderRadius: 16, padding: '22px 20px',
           }}>
-            <div style={{ fontSize: 12, fontWeight: 700, color: '#6B6B78', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Signup Velocity</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Signup Velocity</div>
             <div style={{ display: 'flex', alignItems: 'flex-end', gap: 6, height: 45 }}>
               {trend.map((d, i) => {
                 const maxVal = Math.max(...trend.map(t => t.count), 1);
@@ -262,9 +262,9 @@ export default function AdminPrelaunchPage() {
 
         {/* Interests Heatmap */}
         <div style={{
-          background: '#18181F', border: '1px solid #26262F', borderRadius: 16, padding: '16px 20px',
+          background: '#121822', border: '1px solid #1E2735', borderRadius: 16, padding: '16px 20px',
         }}>
-          <div style={{ fontSize: 12, fontWeight: 700, color: '#6B6B78', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Interest Heatmap</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: '#94A3B8', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.5 }}>Interest Heatmap</div>
           {topInterests.length === 0 ? (
             <div style={{ fontSize: 12, color: '#3A3A45', fontStyle: 'italic' }}>No interest logs yet</div>
           ) : (
@@ -274,11 +274,11 @@ export default function AdminPrelaunchPage() {
                 const pct = (count / max) * 100;
                 return (
                   <div key={interest} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <span style={{ fontSize: 11, color: '#9B9BA8', minWidth: 120, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{interest}</span>
+                    <span style={{ fontSize: 11, color: '#94A3B8', minWidth: 120, textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>{interest}</span>
                     <div style={{ flex: 1, height: 5, background: '#26262F', borderRadius: 3, overflow: 'hidden' }}>
                       <div style={{ width: `${pct}%`, height: '100%', background: 'linear-gradient(90deg, #7C4DFF, #B388FF)', borderRadius: 3 }} />
                     </div>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#F5F0EB', minWidth: 16, textAlign: 'right' }}>{count}</span>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#F8FAFC', minWidth: 16, textAlign: 'right' }}>{count}</span>
                   </div>
                 );
               })}
@@ -296,7 +296,7 @@ export default function AdminPrelaunchPage() {
           gap: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
           animation: 'slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}>
-          <span style={{ fontSize: 13, color: '#F5F0EB', fontWeight: 700 }}>
+          <span style={{ fontSize: 13, color: '#F8FAFC', fontWeight: 700 }}>
             {selectedIds.length} Selected
           </span>
           <div style={{ width: 1, height: 20, background: '#26262F' }} />
@@ -306,7 +306,7 @@ export default function AdminPrelaunchPage() {
             Copy Emails
           </button>
           <button onClick={exportCSV}
-            style={{ padding: '8px 14px', background: 'rgba(200,90,8,0.15)', border: '1px solid #C85A08', borderRadius: 8, color: '#F09819', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+            style={{ padding: '8px 14px', background: 'rgba(200,90,8,0.15)', border: '1px solid #10B981', borderRadius: 8, color: '#F09819', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
           >
             Export CSV
           </button>
@@ -316,7 +316,7 @@ export default function AdminPrelaunchPage() {
             Remove
           </button>
           <button onClick={() => setSelectedIds([])}
-            style={{ background: 'none', border: 'none', color: '#6B6B78', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}
+            style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}
           >
             Clear
           </button>
@@ -331,18 +331,18 @@ export default function AdminPrelaunchPage() {
           placeholder="🔍  Search by name, email, phone, or city..."
           style={{
             width: '100%', maxWidth: 500, padding: '12px 18px',
-            background: '#18181F', border: '1.5px solid #26262F',
-            borderRadius: 12, fontSize: 13, color: '#F5F0EB',
+            background: '#121822', border: '1.5px solid #222E3E',
+            borderRadius: 12, fontSize: 13, color: '#F8FAFC',
             fontFamily: 'inherit', outline: 'none', transition: 'border-color 0.2s',
           }}
           onFocus={e => e.target.style.borderColor = '#7C4DFF'}
-          onBlur={e => e.target.style.borderColor = '#26262F'}
+          onBlur={e => e.target.style.borderColor = '#222E3E'}
         />
       </div>
 
       {/* Subscribers List Table */}
       <div style={{
-        background: '#18181F', border: '1px solid #26262F',
+        background: '#121822', border: '1px solid #1E2735',
         borderRadius: 16, overflow: 'hidden',
       }}>
         {/* Table Header */}
@@ -369,7 +369,7 @@ export default function AdminPrelaunchPage() {
           </div>
           {['Name', 'Email', 'Phone', 'City', 'Interests', ''].map(h => (
             <span key={h} style={{
-              fontSize: 10, fontWeight: 700, color: '#6B6B78',
+              fontSize: 10, fontWeight: 700, color: '#94A3B8',
               textTransform: 'uppercase', letterSpacing: 1.2,
             }}>{h}</span>
           ))}
@@ -378,13 +378,13 @@ export default function AdminPrelaunchPage() {
         {loading ? (
           <div style={{ padding: 60, textAlign: 'center' }}>
             <div style={{ fontSize: 28, marginBottom: 8, animation: 'pulse 1.5s infinite' }}>⏳</div>
-            <div style={{ fontSize: 13, color: '#6B6B78' }}>Loading subscribers...</div>
+            <div style={{ fontSize: 13, color: '#94A3B8' }}>Loading subscribers...</div>
           </div>
         ) : subscribers.length === 0 ? (
           <div style={{ padding: 60, textAlign: 'center' }}>
             <div style={{ fontSize: 36, marginBottom: 12 }}>🚀</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#9B9BA8', marginBottom: 4 }}>No pre-launch signups yet</div>
-            <div style={{ fontSize: 12, color: '#6B6B78' }}>Share the pre-launch page to start collecting subscribers</div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#94A3B8', marginBottom: 4 }}>No pre-launch signups yet</div>
+            <div style={{ fontSize: 12, color: '#94A3B8' }}>Share the pre-launch page to start collecting subscribers</div>
           </div>
         ) : (
           subscribers.map((sub, i) => {
@@ -413,12 +413,12 @@ export default function AdminPrelaunchPage() {
                   />
                 </div>
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 600, color: '#F5F0EB' }}>{sub.name}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: '#F8FAFC' }}>{sub.name}</div>
                   <div style={{ fontSize: 10, color: '#4A4A56', marginTop: 2 }}>{formatDate(sub.registeredAt)}</div>
                 </div>
-                <div style={{ fontSize: 12, color: '#9B9BA8' }}>{sub.email}</div>
-                <div style={{ fontSize: 12, color: '#9B9BA8' }}>{sub.phone || '—'}</div>
-                <div style={{ fontSize: 12, color: '#9B9BA8' }}>{sub.city || '—'}</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>{sub.email}</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>{sub.phone || '—'}</div>
+                <div style={{ fontSize: 12, color: '#94A3B8' }}>{sub.city || '—'}</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
                   {(sub.interests || []).slice(0, 3).map(int => (
                     <span key={int} style={{
@@ -427,13 +427,13 @@ export default function AdminPrelaunchPage() {
                     }}>{int}</span>
                   ))}
                   {(sub.interests || []).length > 3 && (
-                    <span style={{ fontSize: 10, color: '#6B6B78' }}>+{sub.interests.length - 3}</span>
+                    <span style={{ fontSize: 10, color: '#94A3B8' }}>+{sub.interests.length - 3}</span>
                   )}
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <button onClick={() => handleDelete(sub.id)}
                     style={{
-                      background: 'none', border: 'none', color: '#6B6B78',
+                      background: 'none', border: 'none', color: '#94A3B8',
                       cursor: 'pointer', fontSize: 14, padding: 4, transition: 'color 0.2s',
                     }}
                     onMouseEnter={e => e.target.style.color = '#EF5350'}

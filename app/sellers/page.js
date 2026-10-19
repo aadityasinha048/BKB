@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Tag, Truck, CreditCard, LayoutDashboard, Award, MessageSquare, Camera, Globe, Leaf, User, CheckCircle } from 'lucide-react';
+import { Tag, Truck, CreditCard, LayoutDashboard, Award, MessageSquare, Camera, Globe, Leaf, User, CheckCircle, ShieldCheck, ShieldAlert, FileText, Lock, Building, Check, X, AlertTriangle, AlertCircle } from 'lucide-react';
 
 const FEATURES = [
   { icon: Tag, title: "Free Registration", desc: "No charges to join. No monthly fees. List your products and start selling completely free.", color: '#1A5C38' },
@@ -54,6 +54,26 @@ const SELLER_TYPES = [
   "Individual Artisan",
   "Self-Help Group (SHG) / Co-operative",
   "Small Business / Proprietorship"
+];
+
+const BIHAR_BANKS = [
+  "Select Bank",
+  "State Bank of India",
+  "Punjab National Bank",
+  "Bank of Baroda",
+  "Dakshin Bihar Gramin Bank",
+  "Uttar Bihar Gramin Bank",
+  "Canara Bank",
+  "Union Bank of India",
+  "Central Bank of India",
+  "UCO Bank",
+  "Bank of India",
+  "Indian Bank",
+  "HDFC Bank",
+  "ICICI Bank",
+  "Axis Bank",
+  "Kotak Mahindra Bank",
+  "Other Bank"
 ];
 
 function FormInput({ label, placeholder, type = 'text', required = false, value, onChange, error }) {
@@ -174,19 +194,30 @@ export default function SellersPage() {
     monthlyCapacity: '',
     hasGst: 'No, I am exempt (Turnover below threshold)',
     gstNumber: '',
-    payoutMethod: 'upi',
+    gstTradeName: '',
+    gstDeclaration: false,
+    payoutMethod: 'bank',
     upiId: '',
     bankHolderName: '',
+    bankName: 'State Bank of India',
     bankAccountNumber: '',
+    confirmBankAccountNumber: '',
     bankIfsc: '',
+    bankBranch: '',
+    accountType: 'Savings',
     aadhaarNumber: '',
     photoSrc: '/images/farmers/farmer_1.png',
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [termsAccepted, setTermsAccepted] = useState(true);
   const [copiedId, setCopiedId] = useState(false);
+
+  // Agreement modal states
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [agreeAccurateDetails, setAgreeAccurateDetails] = useState(false);
+  const [agreeAntiScam, setAgreeAntiScam] = useState(false);
+  const [agreementSubmitting, setAgreementSubmitting] = useState(false);
 
   // OTP states
   const [sellerId, setSellerId] = useState('');
@@ -235,12 +266,19 @@ export default function SellersPage() {
           monthlyCapacity: seller.monthlyCapacity || '',
           hasGst: seller.hasGst || 'No, I am exempt (Turnover below threshold)',
           gstNumber: seller.gstNumber || '',
-          payoutMethod: seller.payoutMethod || 'upi',
+          gstTradeName: seller.gstTradeName || '',
+          gstDeclaration: !!seller.gstDeclaration,
+          payoutMethod: seller.payoutMethod || 'bank',
           upiId: seller.upiId || '',
           bankHolderName: seller.bankHolderName || '',
+          bankName: seller.bankName || 'State Bank of India',
           bankAccountNumber: seller.bankAccountNumber || '',
+          confirmBankAccountNumber: seller.bankAccountNumber || '',
           bankIfsc: seller.bankIfsc || '',
+          bankBranch: seller.bankBranch || '',
+          accountType: seller.accountType || 'Savings',
           aadhaarNumber: seller.aadhaarNumber || '',
+          photoSrc: seller.photoSrc || '/images/farmers/farmer_1.png',
         });
         
         setSellerId(seller.id);
@@ -411,40 +449,47 @@ export default function SellersPage() {
         } else if (!/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i.test(formData.gstNumber.trim())) {
           newErrors.gstNumber = "Please enter a valid 15-character GSTIN (e.g. 10AAAAA1111A1Z1)";
         }
+        if (!formData.gstTradeName.trim()) {
+          newErrors.gstTradeName = "Registered Business / Trade Name is required as per GST";
+        }
       }
     }
 
     if (currentStep === 4) {
-      if (formData.payoutMethod === "upi") {
-        if (!formData.upiId.trim()) {
-          newErrors.upiId = "UPI ID is required";
-        } else if (!/^[\w.-]+@[\w.-]+$/.test(formData.upiId.trim())) {
-          newErrors.upiId = "Please enter a valid UPI ID (e.g. mobile@upi)";
-        } else if (!upiVerified) {
-          newErrors.upiId = "Please click 'Verify' and successfully verify your UPI ID first.";
-        }
-      } else if (formData.payoutMethod === "bank") {
-        if (!formData.bankHolderName.trim()) {
-          newErrors.bankHolderName = "Account holder name is required";
-        }
-        if (!formData.bankAccountNumber.trim()) {
-          newErrors.bankAccountNumber = "Account number is required";
-        } else if (!/^\d{9,18}$/.test(formData.bankAccountNumber.trim())) {
-          newErrors.bankAccountNumber = "Please enter a valid account number (9–18 digits)";
-        }
-        if (!formData.bankIfsc.trim()) {
-          newErrors.bankIfsc = "IFSC code is required";
-        } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(formData.bankIfsc.toUpperCase().trim())) {
-          newErrors.bankIfsc = "Please enter a valid 11-digit IFSC code (e.g. SBIN0012345)";
-        }
+      if (!formData.bankHolderName.trim()) {
+        newErrors.bankHolderName = "Account holder name is required";
+      } else if (formData.bankHolderName.trim().length < 3) {
+        newErrors.bankHolderName = "Account holder name must be at least 3 characters";
+      }
+
+      if (!formData.bankName || formData.bankName === "Select Bank") {
+        newErrors.bankName = "Please select your bank";
+      }
+
+      if (!formData.bankAccountNumber.trim()) {
+        newErrors.bankAccountNumber = "Account number is required";
+      } else if (!/^\d{9,18}$/.test(formData.bankAccountNumber.trim())) {
+        newErrors.bankAccountNumber = "Please enter a valid account number (9–18 digits)";
+      }
+
+      if (!formData.confirmBankAccountNumber.trim()) {
+        newErrors.confirmBankAccountNumber = "Please confirm your account number";
+      } else if (formData.confirmBankAccountNumber.trim() !== formData.bankAccountNumber.trim()) {
+        newErrors.confirmBankAccountNumber = "Bank account numbers do not match";
+      }
+
+      if (!formData.bankIfsc.trim()) {
+        newErrors.bankIfsc = "IFSC code is required";
+      } else if (!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(formData.bankIfsc.toUpperCase().trim())) {
+        newErrors.bankIfsc = "Please enter a valid 11-digit IFSC code (e.g. SBIN0012345)";
+      }
+
+      if (formData.upiId.trim() && !/^[\w.-]+@[\w.-]+$/.test(formData.upiId.trim())) {
+        newErrors.upiId = "Please enter a valid UPI ID (e.g. mobile@upi)";
       }
 
       if (formData.aadhaarNumber.trim() && !/^\d{12}$/.test(formData.aadhaarNumber.trim())) {
         newErrors.aadhaarNumber = "Aadhaar number must be exactly 12 digits";
-      }
-
-      if (!termsAccepted) {
-        newErrors.terms = "You must accept the terms and conditions to proceed";
       }
     }
 
@@ -550,6 +595,8 @@ export default function SellersPage() {
         monthlyCapacity: formData.monthlyCapacity,
         hasGst: formData.hasGst,
         gstNumber: formData.hasGst === 'Yes, I have a GSTIN' ? formData.gstNumber : '',
+        gstTradeName: formData.hasGst === 'Yes, I have a GSTIN' ? formData.gstTradeName : '',
+        gstDeclaration: formData.gstDeclaration,
       };
     }
 
@@ -597,41 +644,63 @@ export default function SellersPage() {
     setTimeout(() => document.getElementById('register-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleOpenAgreementModal = (e) => {
+    if (e) e.preventDefault();
     if (validateStep(4)) {
-      setLoading(true);
+      setShowAgreementModal(true);
       setErrors({});
-      try {
-        const response = await fetch('/api/register-seller', {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            sellerId,
-            payoutMethod: formData.payoutMethod,
-            upiId: formData.payoutMethod === 'upi' ? formData.upiId : '',
-            bankHolderName: formData.payoutMethod === 'bank' ? formData.bankHolderName : '',
-            bankAccountNumber: formData.payoutMethod === 'bank' ? formData.bankAccountNumber : '',
-            bankIfsc: formData.payoutMethod === 'bank' ? formData.bankIfsc : '',
-            aadhaarNumber: formData.aadhaarNumber,
-          }),
-        });
+    }
+  };
 
-        const result = await response.json();
+  const handleFinalAgreementSubmit = async () => {
+    if (!agreeAccurateDetails || !agreeAntiScam) {
+      setErrors(prev => ({ ...prev, agreement: "Please check and agree to both declaration boxes to create your account." }));
+      return;
+    }
+    setLoading(true);
+    setAgreementSubmitting(true);
+    setErrors({});
+    try {
+      const response = await fetch('/api/register-seller', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sellerId,
+          payoutMethod: formData.payoutMethod,
+          upiId: formData.upiId.trim(),
+          bankHolderName: formData.bankHolderName.trim(),
+          bankName: formData.bankName,
+          bankAccountNumber: formData.bankAccountNumber.trim(),
+          bankIfsc: formData.bankIfsc.toUpperCase().trim(),
+          bankBranch: formData.bankBranch.trim(),
+          accountType: formData.accountType,
+          aadhaarNumber: formData.aadhaarNumber.trim(),
+          hasGst: formData.hasGst,
+          gstNumber: formData.hasGst === 'Yes, I have a GSTIN' ? formData.gstNumber.trim() : '',
+          gstTradeName: formData.hasGst === 'Yes, I have a GSTIN' ? formData.gstTradeName.trim() : '',
+          gstDeclaration: formData.gstDeclaration,
+          agreementAccepted: true,
+          agreementTimestamp: new Date().toISOString()
+        }),
+      });
 
-        if (result.success) {
-          setSubmitted(true);
-        } else {
-          setErrors({ submit: result.error || 'Failed to finalize registration. Please try again.' });
-        }
-      } catch (err) {
-        console.error('Final submit error:', err);
-        setErrors({ submit: 'Network error. Please try again.' });
-      } finally {
-        setLoading(false);
+      const result = await response.json();
+
+      if (result.success) {
+        setShowAgreementModal(false);
+        setSubmitted(true);
+        setTimeout(() => document.getElementById('register-section')?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      } else {
+        setErrors({ submit: result.error || 'Failed to finalize registration. Please try again.' });
       }
+    } catch (err) {
+      console.error('Final submit error:', err);
+      setErrors({ submit: 'Network error. Please try again.' });
+    } finally {
+      setLoading(false);
+      setAgreementSubmitting(false);
     }
   };
 
@@ -802,17 +871,26 @@ export default function SellersPage() {
         {/* Registration Form */}
         <div style={{ background: '#fff', borderRadius: 22, padding: 36, boxShadow: '0 8px 32px rgba(0,0,0,0.12)' }}>
           {submitted ? (
-            <div style={{ textAlign: 'center', padding: '32px 0' }}>
-              <div style={{ fontSize: 64, marginBottom: 16 }}>🎉</div>
-              <h3 style={{ fontSize: 24, color: '#1A5C38', marginBottom: 12, fontFamily: "'Playfair Display', serif" }}>Registration Submitted!</h3>
-              <p style={{ fontSize: 14, color: '#4A3F35', lineHeight: 1.7, marginBottom: 20 }}>
-                Dhanyavaad, <strong>{formData.fullName}</strong>! Our verification team will review your application for <strong>{formData.category}</strong> and contact you in <strong>{formData.language}</strong> at <strong>{formData.mobile}</strong> within 24 hours.
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
+              <div style={{ width: 68, height: 68, borderRadius: '50%', background: '#EAF5F0', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', border: '2px solid #1A5C38' }}>
+                <CheckCircle size={36} color="#1A5C38" />
+              </div>
+              <h3 style={{ fontSize: 24, color: '#1A5C38', marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>
+                Account Created & Agreement Signed!
+              </h3>
+              <p style={{ fontSize: 14, color: '#4A3F35', lineHeight: 1.7, marginBottom: 18, maxWidth: 460, margin: '0 auto 18px' }}>
+                Dhanyavaad, <strong>{formData.fullName}</strong>! Your seller merchant account is created and your Anti-Scam Merchant Agreement has been recorded on the Bihar Ka Bazaar registry.
               </p>
 
+              {/* Agreement Status Badge */}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#EAF5F0', border: '1px solid #A8E6C3', borderRadius: 20, padding: '6px 16px', marginBottom: 20, fontSize: 12, fontWeight: 700, color: '#1A5C38' }}>
+                <ShieldCheck size={16} color="#1A5C38" /> Official Merchant Agreement Signed & Active
+              </div>
+
               {/* Seller ID Display */}
-              <div style={{ background: '#EAF5F0', border: '2px solid #1A5C38', borderRadius: 12, padding: '16px 20px', marginBottom: 20, textAlign: 'center' }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: '#1A5C38', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Your Seller ID</div>
-                <div style={{ fontSize: 20, fontWeight: 800, color: '#1A1410', fontFamily: "'Playfair Display', serif", marginBottom: 10 }}>{sellerId}</div>
+              <div style={{ background: '#EAF5F0', border: '2px solid #1A5C38', borderRadius: 14, padding: '16px 20px', marginBottom: 20, textAlign: 'center' }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: '#1A5C38', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 6 }}>Your Permanent Seller ID</div>
+                <div style={{ fontSize: 22, fontWeight: 800, color: '#1A1410', fontFamily: "'Playfair Display', serif", marginBottom: 10 }}>{sellerId}</div>
                 <button
                   type="button"
                   onClick={() => {
@@ -833,19 +911,58 @@ export default function SellersPage() {
                     transition: 'all 0.2s'
                   }}
                 >
-                  {copiedId ? '✓ Copied!' : '📋 Copy Seller ID'}
+                  {copiedId ? '✓ Copied to Clipboard!' : '📋 Copy Seller ID'}
                 </button>
-                <div style={{ fontSize: 11, color: '#8C7B6E', marginTop: 8 }}>Save this ID — you can use it to resume or track your registration.</div>
+                <div style={{ fontSize: 11, color: '#8C7B6E', marginTop: 8 }}>Save this ID — you can use it to log in and list your products.</div>
               </div>
 
-              <div style={{ background: '#F5EEE6', borderRadius: 12, padding: '16px', fontSize: 13, color: '#4A3F35', textAlign: 'left', lineHeight: 1.6 }}>
-                <strong style={{ color: '#1A1410', display: 'block', marginBottom: 8 }}>Application Details Summary:</strong>
+              <div style={{ background: '#F5EEE6', borderRadius: 14, padding: '18px 20px', fontSize: 13, color: '#4A3F35', textAlign: 'left', lineHeight: 1.7, marginBottom: 24, border: '1px solid #E8DDD4' }}>
+                <strong style={{ color: '#1A1410', display: 'block', marginBottom: 8, fontSize: 14 }}>Verified Account & Settlement Profile:</strong>
                 <ul style={{ paddingLeft: 20, margin: 0 }}>
                   <li><strong>Seller Type:</strong> {formData.sellerType}</li>
                   <li><strong>Location:</strong> {formData.villageTown}, {formData.district} (PIN {formData.pinCode})</li>
-                  <li><strong>GSTIN Details:</strong> {formData.hasGst === 'Yes, I have a GSTIN' ? `Yes (${formData.gstNumber})` : 'Exempt'}</li>
-                  <li><strong>Payout Setup:</strong> {formData.payoutMethod === 'upi' ? `UPI (${formData.upiId})` : `Bank Transfer (Account ending in ${formData.bankAccountNumber.slice(-4)})`}</li>
+                  <li><strong>GST Status:</strong> {formData.hasGst === 'Yes, I have a GSTIN' ? `Registered (${formData.gstNumber} — ${formData.gstTradeName})` : 'Exempt Farmer / Artisan'}</li>
+                  <li><strong>Settlement Bank:</strong> {formData.bankName} (A/C ending in {formData.bankAccountNumber ? formData.bankAccountNumber.slice(-4) : '••••'}, IFSC: {formData.bankIfsc.toUpperCase()})</li>
+                  {formData.upiId && <li><strong>Instant UPI:</strong> {formData.upiId}</li>}
+                  <li><strong>Anti-Scam Covenants:</strong> Legally Accepted & Recorded</li>
                 </ul>
+              </div>
+
+              <div style={{ display: 'flex', gap: 12 }}>
+                <a
+                  href="/sellers/add-product"
+                  style={{
+                    flex: 1,
+                    textDecoration: 'none',
+                    padding: '13px',
+                    borderRadius: 10,
+                    fontSize: 14,
+                    fontWeight: 700,
+                    background: '#1A5C38',
+                    color: '#fff',
+                    textAlign: 'center',
+                    display: 'block'
+                  }}
+                >
+                  List Your First Product →
+                </a>
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  style={{
+                    padding: '13px 20px',
+                    borderRadius: 10,
+                    fontSize: 13,
+                    fontWeight: 700,
+                    background: '#fff',
+                    color: '#4A3F35',
+                    border: '1.5px solid #E8DDD4',
+                    cursor: 'pointer',
+                    fontFamily: 'inherit'
+                  }}
+                >
+                  Done
+                </button>
               </div>
             </div>
           ) : (
@@ -1198,10 +1315,10 @@ export default function SellersPage() {
                 </div>
               )}
 
-              {/* Step 3: Products & GSTIN Details */}
+              {/* Step 3: Products & GST Compliance Details */}
               {step === 3 && (
                 <div>
-                  <h3 style={{ fontSize: 18, color: '#1A1410', marginBottom: 16, fontFamily: "'Playfair Display', serif" }}>Product & GSTIN Details</h3>
+                  <h3 style={{ fontSize: 18, color: '#1A1410', marginBottom: 16, fontFamily: "'Playfair Display', serif" }}>Product & GST Compliance</h3>
                   <FormSelect
                     label="Product Category"
                     options={CATEGORIES}
@@ -1212,7 +1329,7 @@ export default function SellersPage() {
                   />
                   <FormTextarea
                     label="About Your Products"
-                    placeholder="Describe what items you sell, your experience, what makes them unique..."
+                    placeholder="Describe what items you produce or sell, your artisan heritage, what makes them special..."
                     value={formData.productDescription}
                     onChange={handleInputChange('productDescription')}
                     error={errors.productDescription}
@@ -1220,200 +1337,239 @@ export default function SellersPage() {
                   />
                   <FormInput
                     label="Estimated Monthly Supply Capacity"
-                    placeholder="e.g. 500 kg of makhana, 15 paintings"
+                    placeholder="e.g. 500 kg of makhana, 15 handloom sarees, 20 paintings"
                     value={formData.monthlyCapacity}
                     onChange={handleInputChange('monthlyCapacity')}
                     error={errors.monthlyCapacity}
                     required
                   />
-                  <FormSelect
-                    label="Do you have a GSTIN (GST Number)?"
-                    options={["No, I am exempt (Turnover below threshold)", "Yes, I have a GSTIN"]}
-                    value={formData.hasGst}
-                    onChange={handleInputChange('hasGst')}
-                    error={errors.hasGst}
-                    required
-                  />
-                  {formData.hasGst === "Yes, I have a GSTIN" && (
-                    <FormInput
-                      label="GSTIN Number"
-                      placeholder="e.g. 10AAAAA1111A1Z1"
-                      value={formData.gstNumber}
-                      onChange={handleInputChange('gstNumber')}
-                      error={errors.gstNumber}
+
+                  {/* Dedicated GST Compliance Section */}
+                  <div style={{ marginTop: 20, background: '#F8F5EF', border: '1.5px solid #E8DDD4', borderRadius: 14, padding: 18 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                      <ShieldCheck size={18} color="#1A5C38" />
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1410', letterSpacing: 0.3 }}>
+                        GST & Tax Compliance Section
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 11, color: '#73685E', marginBottom: 14, lineHeight: 1.5 }}>
+                      Required under Indian marketplace tax regulations (Section 9(5) & Section 52 of CGST Act).
+                    </p>
+
+                    <FormSelect
+                      label="Do you have a GSTIN (GST Number)?"
+                      options={["No, I am exempt (Turnover below threshold / Farmer)", "Yes, I have a GSTIN"]}
+                      value={formData.hasGst}
+                      onChange={handleInputChange('hasGst')}
+                      error={errors.hasGst}
                       required
                     />
-                  )}
+
+                    {formData.hasGst === "Yes, I have a GSTIN" ? (
+                      <div style={{ marginTop: 12 }}>
+                        <FormInput
+                          label="15-Digit GSTIN Number"
+                          placeholder="e.g. 10AAAAA1111A1Z1"
+                          value={formData.gstNumber}
+                          onChange={(e) => {
+                            const val = e.target.value.toUpperCase();
+                            setFormData(prev => ({ ...prev, gstNumber: val }));
+                            if (errors.gstNumber) setErrors(prev => ({ ...prev, gstNumber: null }));
+                          }}
+                          error={errors.gstNumber}
+                          required
+                        />
+                        <FormInput
+                          label="Registered Legal Entity / Trade Name (as on GST Certificate)"
+                          placeholder="e.g. Mithila Kala Handicrafts & Handloom"
+                          value={formData.gstTradeName}
+                          onChange={handleInputChange('gstTradeName')}
+                          error={errors.gstTradeName}
+                          required
+                        />
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#EAF5F0', border: '1px solid #A8E6C3', borderRadius: 8, padding: 10, marginTop: 6 }}>
+                          <CheckCircle size={15} color="#1A5C38" style={{ marginTop: 2, flexShrink: 0 }} />
+                          <span style={{ fontSize: 11, color: '#1A5C38', lineHeight: 1.4 }}>
+                            <strong>GST Invoicing Enabled:</strong> B2B and interstate sales will be invoiced with this GSTIN number for tax deduction and input credit.
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, background: '#EAF5F0', border: '1px solid rgba(26,92,56,0.2)', borderRadius: 8, padding: 10, marginTop: 10 }}>
+                        <CheckCircle size={15} color="#1A5C38" style={{ marginTop: 2, flexShrink: 0 }} />
+                        <span style={{ fontSize: 11, color: '#1A5C38', lineHeight: 1.45 }}>
+                          <strong>Turnover Exemption:</strong> Individual farmers and grassroots artisans with annual aggregate turnover below the statutory threshold (₹20 Lakhs) are exempt from mandatory GSTIN registration under Section 23 of CGST/SGST Act.
+                        </span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
 
-              {/* Step 4: Payout & Verification */}
+              {/* Step 4: Bank Details & Verification */}
               {step === 4 && (
                 <div>
-                  <h3 style={{ fontSize: 18, color: '#1A1410', marginBottom: 16, fontFamily: "'Playfair Display', serif" }}>Payout Setup & Verification</h3>
-                  
-                  {/* Payout Method Selector */}
-                  <div style={{ marginBottom: 16 }}>
-                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 8 }}>
-                      Preferred Payout Method *
-                    </label>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                      <div
-                        onClick={() => {
-                          setFormData(prev => ({ ...prev, payoutMethod: 'upi' }));
-                          setErrors(prev => ({ ...prev, upiId: null, bankHolderName: null, bankAccountNumber: null, bankIfsc: null }));
-                        }}
-                        style={{
-                          border: `1.5px solid ${formData.payoutMethod === 'upi' ? '#C85A08' : '#E8DDD4'}`,
-                          background: formData.payoutMethod === 'upi' ? '#FFF4EC' : '#fff',
-                          borderRadius: 10,
-                          padding: 12,
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          fontWeight: 700,
-                          fontSize: 13,
-                          color: formData.payoutMethod === 'upi' ? '#C85A08' : '#4A3F35',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        📱 UPI ID
+                  <h3 style={{ fontSize: 18, color: '#1A1410', marginBottom: 6, fontFamily: "'Playfair Display', serif" }}>
+                    Bank Account & Settlement Details
+                  </h3>
+                  <p style={{ fontSize: 12, color: '#73685E', marginBottom: 16, lineHeight: 1.5 }}>
+                    Sale proceeds will be settled directly to this bank account within 3–5 working days post-delivery. Ensure all details match your bank records.
+                  </p>
+
+                  {/* Dedicated Bank Details Card */}
+                  <div style={{ background: '#FAF7F2', border: '1.5px solid #E8DDD4', borderRadius: 14, padding: 18, marginBottom: 16 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <Building size={17} color="#1A5C38" />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: '#1A1410' }}>Bank Account Information</span>
                       </div>
-                      <div
-                        onClick={() => {
-                          setFormData(prev => ({ ...prev, payoutMethod: 'bank' }));
-                          setErrors(prev => ({ ...prev, upiId: null, bankHolderName: null, bankAccountNumber: null, bankIfsc: null }));
+                      <span style={{ fontSize: 10, background: '#EAF5F0', color: '#1A5C38', fontWeight: 800, padding: '3px 8px', borderRadius: 20 }}>
+                        Mandatory Payout Route
+                      </span>
+                    </div>
+
+                    <FormInput
+                      label="Account Holder Name (as printed on bank passbook / cheque)"
+                      placeholder="e.g. Ram Prasad"
+                      value={formData.bankHolderName}
+                      onChange={handleInputChange('bankHolderName')}
+                      error={errors.bankHolderName}
+                      required
+                    />
+
+                    <div className="bkb-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <FormSelect
+                        label="Bank Name"
+                        options={BIHAR_BANKS}
+                        value={formData.bankName}
+                        onChange={handleInputChange('bankName')}
+                        error={errors.bankName}
+                        required
+                      />
+                      <FormSelect
+                        label="Account Type"
+                        options={["Savings", "Current"]}
+                        value={formData.accountType}
+                        onChange={handleInputChange('accountType')}
+                        error={errors.accountType}
+                        required
+                      />
+                    </div>
+
+                    <div className="bkb-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <FormInput
+                        label="Bank Account Number"
+                        placeholder="e.g. 10023456789"
+                        value={formData.bankAccountNumber}
+                        onChange={handleInputChange('bankAccountNumber')}
+                        error={errors.bankAccountNumber}
+                        required
+                      />
+                      <FormInput
+                        label="Confirm Bank Account Number"
+                        placeholder="Re-enter bank account number"
+                        value={formData.confirmBankAccountNumber}
+                        onChange={handleInputChange('confirmBankAccountNumber')}
+                        error={errors.confirmBankAccountNumber}
+                        required
+                      />
+                    </div>
+
+                    <div className="bkb-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                      <FormInput
+                        label="Bank IFSC Code"
+                        placeholder="e.g. SBIN0001234"
+                        value={formData.bankIfsc}
+                        onChange={(e) => {
+                          const val = e.target.value.toUpperCase();
+                          setFormData(prev => ({ ...prev, bankIfsc: val }));
+                          if (errors.bankIfsc) setErrors(prev => ({ ...prev, bankIfsc: null }));
                         }}
-                        style={{
-                          border: `1.5px solid ${formData.payoutMethod === 'bank' ? '#C85A08' : '#E8DDD4'}`,
-                          background: formData.payoutMethod === 'bank' ? '#FFF4EC' : '#fff',
-                          borderRadius: 10,
-                          padding: 12,
-                          textAlign: 'center',
-                          cursor: 'pointer',
-                          fontWeight: 700,
-                          fontSize: 13,
-                          color: formData.payoutMethod === 'bank' ? '#C85A08' : '#4A3F35',
-                          transition: 'all 0.2s'
-                        }}
-                      >
-                        🏦 Bank Account
-                      </div>
+                        error={errors.bankIfsc}
+                        required
+                      />
+                      <FormInput
+                        label="Branch Name / District (Optional)"
+                        placeholder="e.g. Darbhanga Main Branch"
+                        value={formData.bankBranch}
+                        onChange={handleInputChange('bankBranch')}
+                        error={errors.bankBranch}
+                      />
                     </div>
                   </div>
 
-                  {formData.payoutMethod === 'upi' ? (
-                    <div style={{ marginBottom: 14 }}>
-                      <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 5 }}>
-                        UPI ID for Payments<span style={{ color: '#C85A08' }}> *</span>
-                      </label>
-                      <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, alignItems: 'end' }}>
-                        <input
-                          type="text"
-                          placeholder="e.g. mobile@upi, name@okaxis"
-                          value={formData.upiId}
-                          onChange={handleInputChange('upiId')}
-                          style={{
-                            width: '100%',
-                            padding: '11px 13px',
-                            border: `1.5px solid ${errors.upiId ? '#D32F2F' : '#E8DDD4'}`,
-                            borderRadius: 8,
-                            fontSize: 13,
-                            fontFamily: 'inherit',
-                            background: upiVerified ? '#EAF5F0' : '#FFFCF8',
-                            outline: 'none',
-                            color: '#1A1410',
-                            transition: 'border-color 0.2s',
-                            boxSizing: 'border-box'
-                          }}
-                        />
-                        <button
-                          type="button"
-                          onClick={handleVerifyUpi}
-                          disabled={upiVerifying || upiVerified || !formData.upiId.trim()}
-                          style={{
-                            padding: '12px 8px',
-                            borderRadius: 8,
-                            fontSize: 12,
-                            fontWeight: 700,
-                            background: (upiVerified || !formData.upiId.trim()) ? '#E8DDD4' : '#C85A08',
-                            color: upiVerified ? '#1A5C38' : (upiVerifying || !formData.upiId.trim() ? '#8C7B6E' : '#fff'),
-                            border: 'none',
-                            cursor: (upiVerifying || upiVerified || !formData.upiId.trim()) ? 'not-allowed' : 'pointer',
-                            fontFamily: 'inherit',
-                            transition: 'all 0.2s',
-                            height: '42px',
-                            whiteSpace: 'nowrap'
-                          }}
-                        >
-                          {upiVerifying ? 'Verifying...' : (upiVerified ? 'Verified ✓' : 'Verify')}
-                        </button>
-                      </div>
-                      {errors.upiId && <span style={{ display: 'block', fontSize: 11, color: '#D32F2F', marginTop: 4 }}>{errors.upiId}</span>}
-                      {upiVerified && upiVerifiedName && (
-                        <span style={{ display: 'block', fontSize: 12, color: '#1A5C38', marginTop: 6, fontWeight: 600 }}>
-                          ✓ Account Holder: {upiVerifiedName}
-                        </span>
-                      )}
-                    </div>
-                  ) : (
-                    <div>
-                      <FormInput
-                        label="Account Holder Name"
-                        placeholder="e.g. Ram Prasad"
-                        value={formData.bankHolderName}
-                        onChange={handleInputChange('bankHolderName')}
-                        error={errors.bankHolderName}
-                        required
+                  {/* Optional Instant UPI ID Card */}
+                  <div style={{ background: '#FFFDF9', border: '1px solid #E8DDD4', borderRadius: 12, padding: 14, marginBottom: 14 }}>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 700, color: '#4A3F35', marginBottom: 6 }}>
+                      Instant Micro-Payout UPI ID (Optional)
+                    </label>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 12, alignItems: 'end' }}>
+                      <input
+                        type="text"
+                        placeholder="e.g. mobile@upi, name@oksbi"
+                        value={formData.upiId}
+                        onChange={handleInputChange('upiId')}
+                        style={{
+                          width: '100%',
+                          padding: '11px 13px',
+                          border: `1.5px solid ${errors.upiId ? '#D32F2F' : '#E8DDD4'}`,
+                          borderRadius: 8,
+                          fontSize: 13,
+                          fontFamily: 'inherit',
+                          background: upiVerified ? '#EAF5F0' : '#FFFCF8',
+                          outline: 'none',
+                          color: '#1A1410',
+                          transition: 'border-color 0.2s',
+                          boxSizing: 'border-box'
+                        }}
                       />
-                      <div className="bkb-form-2col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                        <FormInput
-                          label="Bank Account Number"
-                          placeholder="e.g. 10023456789"
-                          value={formData.bankAccountNumber}
-                          onChange={handleInputChange('bankAccountNumber')}
-                          error={errors.bankAccountNumber}
-                          required
-                        />
-                        <FormInput
-                          label="IFSC Code"
-                          placeholder="e.g. SBIN0012345"
-                          value={formData.bankIfsc}
-                          onChange={handleInputChange('bankIfsc')}
-                          error={errors.bankIfsc}
-                          required
-                        />
-                      </div>
+                      <button
+                        type="button"
+                        onClick={handleVerifyUpi}
+                        disabled={upiVerifying || upiVerified || !formData.upiId.trim()}
+                        style={{
+                          padding: '12px 8px',
+                          borderRadius: 8,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          background: (upiVerified || !formData.upiId.trim()) ? '#E8DDD4' : '#C85A08',
+                          color: upiVerified ? '#1A5C38' : (upiVerifying || !formData.upiId.trim() ? '#8C7B6E' : '#fff'),
+                          border: 'none',
+                          cursor: (upiVerifying || upiVerified || !formData.upiId.trim()) ? 'not-allowed' : 'pointer',
+                          fontFamily: 'inherit',
+                          transition: 'all 0.2s',
+                          height: '42px',
+                          whiteSpace: 'nowrap'
+                        }}
+                      >
+                        {upiVerifying ? 'Verifying...' : (upiVerified ? 'Verified ✓' : 'Verify UPI')}
+                      </button>
                     </div>
-                  )}
+                    {errors.upiId && <span style={{ display: 'block', fontSize: 11, color: '#D32F2F', marginTop: 4 }}>{errors.upiId}</span>}
+                    {upiVerified && upiVerifiedName && (
+                      <span style={{ display: 'block', fontSize: 12, color: '#1A5C38', marginTop: 6, fontWeight: 600 }}>
+                        ✓ UPI Verified Holder: {upiVerifiedName}
+                      </span>
+                    )}
+                  </div>
 
                   <FormInput
-                    label="Aadhaar Card Number (Optional - for instant activation)"
+                    label="Aadhaar Card / Government KYC ID (Optional - for faster verification)"
                     placeholder="e.g. 123456789012"
                     value={formData.aadhaarNumber}
                     onChange={handleInputChange('aadhaarNumber')}
                     error={errors.aadhaarNumber}
                   />
-                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8, marginTop: 8, marginBottom: errors.terms ? 4 : 14 }}>
-                    <input
-                      type="checkbox"
-                      id="terms"
-                      checked={termsAccepted}
-                      onChange={(e) => {
-                        setTermsAccepted(e.target.checked);
-                        if (errors.terms) setErrors(prev => ({ ...prev, terms: null }));
-                      }}
-                      style={{ marginTop: 3, cursor: 'pointer' }}
-                    />
-                    <label htmlFor="terms" style={{ fontSize: 11, color: '#8C7B6E', lineHeight: 1.4, cursor: 'pointer' }}>
-                      I agree to the Bihar Ka Bazaar seller terms and verify that the information supplied above is accurate.
-                    </label>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 10, fontSize: 11, color: '#8C7B6E' }}>
+                    <Lock size={12} color="#1A5C38" />
+                    <span>Bank credentials are encrypted and stored in compliance with RBI guidelines.</span>
                   </div>
-                  {errors.terms && <span style={{ display: 'block', fontSize: 11, color: '#D32F2F', marginBottom: 14 }}>{errors.terms}</span>}
                 </div>
               )}
 
               {errors.submit && (
-                <div style={{ background: '#FFEBEE', border: '1px solid #FFCDD2', borderRadius: 8, padding: 12, color: '#C62828', fontSize: 13, marginBottom: 16, textAlign: 'center', fontWeight: 600 }}>
+                <div style={{ background: '#FFEBEE', border: '1px solid #FFCDD2', borderRadius: 8, padding: 12, color: '#C62828', fontSize: 13, marginTop: 14, marginBottom: 14, textAlign: 'center', fontWeight: 600 }}>
                   ⚠️ {errors.submit}
                 </div>
               )}
@@ -1493,8 +1649,8 @@ export default function SellersPage() {
                   </button>
                 ) : (
                   <button
-                    type="submit"
-                    onClick={handleSubmit}
+                    type="button"
+                    onClick={handleOpenAgreementModal}
                     disabled={loading}
                     style={{
                       flex: 2,
@@ -1507,12 +1663,18 @@ export default function SellersPage() {
                       border: 'none',
                       cursor: loading ? 'not-allowed' : 'pointer',
                       fontFamily: 'inherit',
-                      transition: 'all 0.2s'
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      boxShadow: '0 4px 14px rgba(26,92,56,0.3)'
                     }}
                     onMouseEnter={e => !loading && (e.target.style.background = '#124328')}
                     onMouseLeave={e => !loading && (e.target.style.background = '#1A5C38')}
                   >
-                    {loading ? 'Submitting...' : 'Submit Registration'}
+                    <ShieldCheck size={18} />
+                    {loading ? 'Validating...' : 'Review Agreement & Create Account →'}
                   </button>
                 )}
               </div>
@@ -1520,6 +1682,242 @@ export default function SellersPage() {
                 Or register via call: <strong style={{ color: '#1A1410' }}>+91 612-XXX-XXXX</strong>
               </div>
             </form>
+          )}
+
+          {/* ── SELLER MERCHANT TERMS & ANTI-SCAM AGREEMENT POPUP MODAL ── */}
+          {showAgreementModal && (
+            <div
+              style={{
+                position: 'fixed',
+                inset: 0,
+                zIndex: 99999,
+                backgroundColor: 'rgba(10, 25, 16, 0.82)',
+                backdropFilter: 'blur(8px)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                padding: '16px',
+                overflowY: 'auto'
+              }}
+              onClick={() => setShowAgreementModal(false)}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                style={{
+                  background: '#FFFFFF',
+                  borderRadius: 20,
+                  maxWidth: 740,
+                  width: '100%',
+                  maxHeight: '92vh',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  boxShadow: '0 25px 60px rgba(0,0,0,0.35)',
+                  border: '2px solid #1A5C38',
+                  overflow: 'hidden'
+                }}
+              >
+                {/* Modal Header */}
+                <div style={{ background: 'linear-gradient(135deg, #1A5C38 0%, #124328 100%)', padding: '20px 26px', color: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                    <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1.5px solid rgba(255,255,255,0.3)', flexShrink: 0 }}>
+                      <ShieldCheck size={24} color="#A8E6C3" />
+                    </div>
+                    <div>
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'rgba(168,230,195,0.2)', padding: '2px 8px', borderRadius: 4, fontSize: 10, fontWeight: 800, letterSpacing: 1.5, textTransform: 'uppercase', color: '#A8E6C3', marginBottom: 4 }}>
+                        Official Merchant Undertaking
+                      </div>
+                      <h2 style={{ fontSize: 20, color: '#fff', margin: 0, fontFamily: "'Playfair Display', serif" }}>
+                        Seller Merchant Agreement & Anti-Scam Code
+                      </h2>
+                      <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', marginTop: 2 }}>
+                        Binding Legal Covenants Between Merchant and Bihar Ka Bazaar
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowAgreementModal(false)}
+                    style={{ background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff' }}
+                  >
+                    <X size={18} />
+                  </button>
+                </div>
+
+                {/* Explanatory Banner: Mutual Benefit */}
+                <div style={{ padding: '14px 26px', background: '#F0FAF3', borderBottom: '1px solid #D0EBDA' }}>
+                  <div style={{ fontSize: 12, fontWeight: 700, color: '#1A5C38', marginBottom: 6, display: 'flex', alignItems: 'center', gap: 6 }}>
+                    <Lock size={14} color="#1A5C38" /> Why this agreement protects both of us:
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, fontSize: 12, color: '#4A3F35', lineHeight: 1.45 }}>
+                    <div style={{ background: '#fff', padding: '9px 12px', borderRadius: 8, border: '1px solid #D0EBDA' }}>
+                      <strong style={{ color: '#1A5C38', display: 'block', marginBottom: 2 }}>Beneficial for You (Seller):</strong>
+                      Guaranteed 3–5 day bank payouts, fair 5% platform fee, zero listing fee, and pan-India reach.
+                    </div>
+                    <div style={{ background: '#fff', padding: '9px 12px', borderRadius: 8, border: '1px solid #D0EBDA' }}>
+                      <strong style={{ color: '#C85A08', display: 'block', marginBottom: 2 }}>Protective for Us & Buyers:</strong>
+                      100% authentic Bihar goods, zero counterfeit tolerance, and strict legal recourse against any scam or fraud.
+                    </div>
+                  </div>
+                </div>
+
+                {/* Scrollable Terms Content */}
+                <div style={{ padding: '20px 26px', overflowY: 'auto', flex: 1, fontSize: 12, color: '#3D3730', lineHeight: 1.6, background: '#FFFCF8' }}>
+                  <div style={{ background: '#fff', border: '1.5px solid #E8DDD4', borderRadius: 12, padding: 18, marginBottom: 16 }}>
+                    
+                    <div style={{ marginBottom: 14 }}>
+                      <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A5C38', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        1. 100% Authenticity & Bihar Origin Guarantee
+                      </h4>
+                      <p style={{ margin: 0, fontSize: 12, color: '#595047' }}>
+                        The Merchant legally warrants that all items listed — including GI-tagged heritage products such as Mithila Makhana, Bhagalpuri Silk, Shahi Litchi, Katarni Rice, Madhubani Art, and Silao Khaja — are 100% genuine, authentic, unadulterated, and sourced directly from Bihar. Synthetic, machine-made imitations, or out-of-state substitutes are strictly prohibited.
+                      </p>
+                    </div>
+
+                    <div style={{ marginBottom: 14 }}>
+                      <h4 style={{ fontSize: 13, fontWeight: 800, color: '#C53030', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        2. Strict Anti-Scam & Zero-Tolerance Fraud Policy
+                      </h4>
+                      <p style={{ margin: 0, fontSize: 12, color: '#595047' }}>
+                        Any attempt to defraud buyers or Bihar Ka Bazaar — including dispatching empty boxes, sending wrong or broken items, shipping counterfeit goods, fabricating courier tracking details, or soliciting offline payments outside the platform — will result in <strong>immediate permanent account termination and blacklist</strong>.
+                      </p>
+                    </div>
+
+                    <div style={{ marginBottom: 14 }}>
+                      <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A5C38', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        3. Payout Forfeiture, Escrow Freezing & Bank Recovery
+                      </h4>
+                      <p style={{ margin: 0, fontSize: 12, color: '#595047' }}>
+                        In the event of a confirmed scam, fake order fulfillment, or malicious misrepresentation:
+                        <br />
+                        • Bihar Ka Bazaar reserves the irrevocable right to freeze and forfeit all accumulated wallet balances and pending payouts.
+                        <br />
+                        • The platform is legally authorized to reverse or recover the full order value, shipping costs, and an administrative dispute penalty directly from the merchant's registered bank account ({formData.bankName} - Account ending in {formData.bankAccountNumber ? formData.bankAccountNumber.slice(-4) : '••••'}).
+                      </p>
+                    </div>
+
+                    <div style={{ marginBottom: 14 }}>
+                      <h4 style={{ fontSize: 13, fontWeight: 800, color: '#C53030', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        4. Criminal Liability & Cyber Police Escalation
+                      </h4>
+                      <p style={{ margin: 0, fontSize: 12, color: '#595047' }}>
+                        Intentional scams, empty-box deliveries, or identity theft will be immediately escalated to the Cyber Crime Police Cell and law enforcement under the Information Technology Act 2000, Consumer Protection (E-Commerce) Rules 2020, and the Bharatiya Nyaya Sanhita (BNS) for criminal breach of trust, cheating, and forgery.
+                      </p>
+                    </div>
+
+                    <div style={{ marginBottom: 14 }}>
+                      <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A5C38', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        5. 48-Hour Dispatch & Tamper-Evident Packaging
+                      </h4>
+                      <p style={{ margin: 0, fontSize: 12, color: '#595047' }}>
+                        The Merchant agrees to securely pack orders in accordance with food-grade / tamper-evident packaging standards and hand them over to designated courier partners within 48 hours of order confirmation.
+                      </p>
+                    </div>
+
+                    <div>
+                      <h4 style={{ fontSize: 13, fontWeight: 800, color: '#1A5C38', marginBottom: 4, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                        6. Affirmation of Bank & Tax Information
+                      </h4>
+                      <p style={{ margin: 0, fontSize: 12, color: '#595047' }}>
+                        The Merchant affirms that the Bank Account ({formData.bankName} - A/C ending in {formData.bankAccountNumber ? formData.bankAccountNumber.slice(-4) : '••••'}) and GSTIN ({formData.hasGst === 'Yes, I have a GSTIN' ? formData.gstNumber : 'Exempt Farmer / Artisan declaration'}) belong strictly to the registered individual/entity and correspond to official government KYC documents.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Mandatory Declarations (Tick Boxes) */}
+                  <div style={{ background: '#FFF5EC', border: '1.5px solid #FFD0B0', borderRadius: 12, padding: 16 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: '#C85A08', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>
+                      Mandatory Declarations (Please Tick Both to Complete Registration)
+                    </div>
+
+                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: 12 }}>
+                      <input
+                        type="checkbox"
+                        checked={agreeAccurateDetails}
+                        onChange={e => {
+                          setAgreeAccurateDetails(e.target.checked);
+                          if (errors.agreement) setErrors(prev => ({ ...prev, agreement: null }));
+                        }}
+                        style={{ marginTop: 2, width: 18, height: 18, accentColor: '#1A5C38', cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: 12, color: '#1A1410', lineHeight: 1.5, fontWeight: 600 }}>
+                        I solemnly affirm that all business, GST, and bank account details provided belong to me and are 100% accurate, genuine, and verified.
+                      </span>
+                    </label>
+
+                    <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={agreeAntiScam}
+                        onChange={e => {
+                          setAgreeAntiScam(e.target.checked);
+                          if (errors.agreement) setErrors(prev => ({ ...prev, agreement: null }));
+                        }}
+                        style={{ marginTop: 2, width: 18, height: 18, accentColor: '#1A5C38', cursor: 'pointer' }}
+                      />
+                      <span style={{ fontSize: 12, color: '#1A1410', lineHeight: 1.5, fontWeight: 600 }}>
+                        I agree to the Anti-Scam & Zero Tolerance Policy. I understand that fraudulent listings, counterfeit items, or fake dispatches will result in immediate account termination, payout forfeiture, and criminal prosecution under Indian law.
+                      </span>
+                    </label>
+                  </div>
+
+                  {errors.agreement && (
+                    <div style={{ marginTop: 12, background: '#FFEBEE', border: '1px solid #FFCDD2', borderRadius: 8, padding: 10, color: '#C62828', fontSize: 12, fontWeight: 600 }}>
+                      ⚠️ {errors.agreement}
+                    </div>
+                  )}
+                </div>
+
+                {/* Modal Actions */}
+                <div style={{ padding: '16px 26px', background: '#fff', borderTop: '1px solid #E8DDD4', display: 'flex', gap: 12, alignItems: 'center' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShowAgreementModal(false)}
+                    disabled={agreementSubmitting}
+                    style={{
+                      flex: 1,
+                      padding: 13,
+                      borderRadius: 10,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      background: '#fff',
+                      color: '#4A3F35',
+                      border: '1.5px solid #E8DDD4',
+                      cursor: agreementSubmitting ? 'not-allowed' : 'pointer',
+                      fontFamily: 'inherit'
+                    }}
+                  >
+                    Review / Edit Details
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleFinalAgreementSubmit}
+                    disabled={!agreeAccurateDetails || !agreeAntiScam || agreementSubmitting}
+                    style={{
+                      flex: 2,
+                      padding: 13,
+                      borderRadius: 10,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      background: (!agreeAccurateDetails || !agreeAntiScam || agreementSubmitting) ? '#C2B8AE' : '#1A5C38',
+                      color: '#fff',
+                      border: 'none',
+                      cursor: (!agreeAccurateDetails || !agreeAntiScam || agreementSubmitting) ? 'not-allowed' : 'pointer',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.2s',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      boxShadow: (agreeAccurateDetails && agreeAntiScam && !agreementSubmitting) ? '0 4px 14px rgba(26,92,56,0.35)' : 'none'
+                    }}
+                  >
+                    <ShieldCheck size={18} />
+                    {agreementSubmitting ? 'Signing Agreement & Creating Account...' : 'I Accept All Terms & Create Seller Account →'}
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>

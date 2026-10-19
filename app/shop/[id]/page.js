@@ -3,14 +3,32 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Star, Truck, ShieldCheck, RefreshCw, ShoppingCart, Check, ChevronLeft, ChevronRight, User, AlertCircle } from 'lucide-react';
+import { Star, Truck, ShieldCheck, RefreshCw, ShoppingCart, Check, ChevronLeft, ChevronRight, User, AlertCircle, Share2, Copy, CheckCheck, FileText, UserCheck } from 'lucide-react';
 
-const REVIEWS_SAMPLE = [
-  { name: "Rajan Kumar", loc: "Patna", date: "Jan 12, 2026", rating: 5, comment: "Absolutely fresh and premium quality. The texture and aroma is authentic Bihari taste! Highly recommended." },
-  { name: "Preeti Sharma", loc: "Muzaffarpur", date: "Jan 08, 2026", rating: 5, comment: "Very fast delivery, packaging was robust. Will purchase again from this farmer." },
-  { name: "Amit Singh", loc: "Delhi", date: "Dec 28, 2025", rating: 4, comment: "Excellent taste and very clean makhana. Standard packaging. 4 stars!" },
-  { name: "Suresh Gupta", loc: "Patna", date: "Dec 20, 2025", rating: 5, comment: "Genuine GI-tagged quality. Direct from Darbhanga artisans, support local." }
+const DEFAULT_REVIEWS = [
+  {
+    name: 'Priyanshu Verma',
+    loc: 'Patna, Bihar',
+    rating: 5,
+    date: '3 days ago',
+    comment: 'Exceptional authentic quality directly from the local producer. Packaging was pristine and delivered right on time.'
+  },
+  {
+    name: 'Ananya Roy',
+    loc: 'Kolkata, WB',
+    rating: 5,
+    date: '1 week ago',
+    comment: 'True to its GI roots and heritage craft! You can immediately sense the natural authenticity compared to commercial products.'
+  },
+  {
+    name: 'Rajiv Ranjan Singh',
+    loc: 'Muzaffarpur, Bihar',
+    rating: 4,
+    date: '2 weeks ago',
+    comment: 'Genuine product backed by direct artisan sourcing. Very happy to support rural creators of Bihar.'
+  }
 ];
+
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -33,6 +51,8 @@ export default function ProductDetailPage() {
   const [alsoBuySelected, setAlsoBuySelected] = useState([true, true]);
 
   const [sellerProfile, setSellerProfile] = useState(null);
+  const [showShare, setShowShare] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     setSelectedVariantIndex(0);
@@ -65,7 +85,7 @@ export default function ProductDetailPage() {
       const data = await res.json();
       if (data.success) {
         setProductsList(data.products);
-        const item = data.products.find(p => p.id === parseInt(params.id));
+        const item = data.products.find(p => String(p.id) === String(params.id));
         setProduct(item || null);
       }
     } catch (err) {
@@ -133,7 +153,9 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <div style={{ textAlign: 'center', padding: '80px 60px' }}>
-        <div style={{ fontSize: 64, marginBottom: 16 }}>😕</div>
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
+          <AlertCircle size={52} color="#C85A08" />
+        </div>
         <h2 style={{ fontSize: 28, color: '#1A1410', marginBottom: 12, fontFamily: "'Playfair Display', serif" }}>Product not found</h2>
         <Link href="/shop">
           <button style={{ padding: '12px 24px', background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 10, fontSize: 14, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
@@ -143,6 +165,10 @@ export default function ProductDetailPage() {
       </div>
     );
   }
+
+  const displayReviews = (Array.isArray(product?.reviews) && product.reviews.length > 0)
+    ? product.reviews
+    : DEFAULT_REVIEWS;
 
   // Variants setup
   const productVariants = product.variants && product.variants.length > 0
@@ -158,18 +184,18 @@ export default function ProductDetailPage() {
 
   // Other sellers offering similar products
   const otherSellers = productsList.filter(p => {
-    if (p.id === product.id) return false;
-    const currentKeywords = product.name.toLowerCase().split(' ');
-    const otherKeywords = p.name.toLowerCase().split(' ');
+    if (String(p.id) === String(product.id)) return false;
+    const currentKeywords = (product.name || '').toLowerCase().split(' ');
+    const otherKeywords = (p.name || '').toLowerCase().split(' ');
     const common = currentKeywords.filter(k => k.length > 3 && otherKeywords.includes(k));
     return p.cat === product.cat && common.length > 0;
   });
 
   // Related products
-  const related = productsList.filter(p => p.cat === product.cat && p.id !== product.id).slice(0, 3);
+  const related = productsList.filter(p => p.cat === product.cat && String(p.id) !== String(product.id)).slice(0, 3);
 
   // Bundle suggestions for frequently bought together (excluding current product)
-  const bundleItems = productsList.filter(p => p.id !== product.id).slice(0, 2);
+  const bundleItems = productsList.filter(p => String(p.id) !== String(product.id)).slice(0, 2);
 
   // Calculate bundle total price
   let bundleTotal = currentVariant.price * qty;
@@ -245,14 +271,14 @@ export default function ProductDetailPage() {
       </div>
 
       {/* ── MAIN DETAIL CONTAINER ── */}
-      <div style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 48, alignItems: 'start' }}>
+      <div className="product-detail-grid" style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1.1fr 1fr', gap: 48, alignItems: 'start' }}>
         
         {/* LEFT COLUMN: Image Carousel Slider */}
         <div>
           <div style={{ position: 'relative', background: product.bg, border: '1.5px solid #E8DDD4', borderRadius: 24, overflow: 'hidden', height: 440, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             {product.gi && (
-              <div style={{ position: 'absolute', top: 18, left: 18, background: '#9A720A', color: '#fff', fontSize: 11, fontWeight: 800, padding: '6px 12px', borderRadius: 8, zIndex: 1 }}>
-                🏅 GI Tag Certified
+              <div style={{ position: 'absolute', top: 18, left: 18, background: '#1E3A2B', color: '#F3EBD8', border: '1px solid rgba(212,175,55,0.4)', fontSize: 10, fontWeight: 700, padding: '5px 12px', borderRadius: 6, zIndex: 1, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                GI Certified Origin
               </div>
             )}
 
@@ -328,7 +354,7 @@ export default function ProductDetailPage() {
               {sellerProfile?.photoSrc ? (
                 <img src={sellerProfile.photoSrc} alt={product.seller} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                <div style={{ fontSize: 20 }}>👨‍🌾</div>
+                <User size={22} color="#1B6B3A" />
               )}
             </div>
             <div>
@@ -415,7 +441,7 @@ export default function ProductDetailPage() {
           )}
 
           {/* Action buttons */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 24 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 16 }}>
             <button
               onClick={handleAddToCart}
               disabled={product.status === 'out_of_stock' || product.outOfStock}
@@ -460,6 +486,64 @@ export default function ProductDetailPage() {
                 {(product.status === 'out_of_stock' || product.outOfStock) ? 'Unavailable' : 'Buy Now →'}
               </button>
             </Link>
+          </div>
+
+          {/* Share this product */}
+          <div style={{ marginBottom: 20, position: 'relative' }}>
+            <button
+              onClick={() => {
+                const url = `${window.location.origin}/shop/${product.id}`;
+                const text = `Check out ${product.name} by ${product.seller} — ₹${currentVariant.price}/${currentVariant.weight} on Bihar Ka Bazaar!`;
+                if (navigator.share) {
+                  navigator.share({ title: product.name, text, url }).catch(() => {});
+                } else {
+                  setShowShare(s => !s);
+                }
+              }}
+              style={{ width: '100%', padding: '12px 16px', border: '1.5px solid #E5E1DC', borderRadius: 12, background: '#FAFAFA', color: '#3D3730', fontFamily: 'inherit', fontSize: 14, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, transition: 'all 0.2s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#F0FAF3'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = '#FAFAFA'; }}
+            >
+              <Share2 size={16} color="#1B6B3A" />
+              Share this Product
+            </button>
+
+            {/* Share Dropdown */}
+            {showShare && (
+              <div style={{ position: 'absolute', top: '110%', left: 0, right: 0, background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 14, padding: '10px 0', zIndex: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.14)' }}>
+                <div style={{ fontSize: 10, fontWeight: 800, color: '#7A7067', padding: '0 16px 10px', borderBottom: '1px solid #F2F0ED', textTransform: 'uppercase', letterSpacing: 1 }}>Share via</div>
+                {[
+                  {
+                    name: 'WhatsApp',
+                    fn: () => window.open(`https://wa.me/?text=${encodeURIComponent(`Check out ${product.name} — ₹${currentVariant.price}/${currentVariant.weight}! ${window.location.origin}/shop/${product.id}`)}`, '_blank')
+                  },
+                  {
+                    name: 'Email',
+                    fn: () => window.open(`mailto:?subject=${encodeURIComponent(product.name)}&body=${encodeURIComponent(`Check out this product on Bihar Ka Bazaar:
+${product.name} — ₹${currentVariant.price}/${currentVariant.weight}
+${window.location.origin}/shop/${product.id}`)}`)
+                  },
+                  {
+                    name: 'SMS / Message',
+                    fn: () => window.open(`sms:?body=${encodeURIComponent(`Check out ${product.name} — ₹${currentVariant.price}/${currentVariant.weight}: ${window.location.origin}/shop/${product.id}`)}`)
+                  },
+                  {
+                    name: copied ? 'Link Copied' : 'Copy Link',
+                    fn: () => { navigator.clipboard.writeText(`${window.location.origin}/shop/${product.id}`); setCopied(true); setTimeout(() => { setCopied(false); setShowShare(false); }, 1500); }
+                  },
+                ].map(opt => (
+                  <div
+                    key={opt.name}
+                    onClick={opt.fn}
+                    style={{ padding: '11px 18px', fontSize: 13, fontWeight: 600, color: '#1A1410', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'background 0.15s' }}
+                    onMouseEnter={e => e.currentTarget.style.background = '#F0FAF3'}
+                    onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                  >
+                    <span>{opt.name}</span>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Trust badges row */}
@@ -512,7 +596,7 @@ export default function ProductDetailPage() {
 
       {/* ── BUNDLE PROMOTION ("Also Buy") SECTION ── */}
       {bundleItems.length > 0 && (
-        <div style={{ margin: '0 60px 48px', padding: 24, background: '#fff', border: '1px solid #E5E1DC', borderRadius: 20 }}>
+        <div className="product-detail-section product-bundle-section" style={{ margin: '0 60px 48px', padding: 24, background: '#fff', border: '1px solid #E5E1DC', borderRadius: 20 }}>
           <h3 style={{ fontSize: 18, fontWeight: 800, color: '#1A1410', fontFamily: "'Playfair Display', serif", marginBottom: 18 }}>🛍️ Frequently Bought Together ("Also Buy")</h3>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 24 }}>
             
@@ -585,16 +669,17 @@ export default function ProductDetailPage() {
       )}
 
       {/* ── DETAIL SPECIFICATION TABS ── */}
-      <div style={{ margin: '0 60px 48px', background: '#fff', border: '1px solid #E5E1DC', borderRadius: 20, overflow: 'hidden' }}>
+      <div className="product-detail-section product-tabs-section" style={{ margin: '0 60px 48px', background: '#fff', border: '1px solid #E5E1DC', borderRadius: 20, overflow: 'hidden' }}>
         
         {/* Navigation Tabs */}
         <div style={{ display: 'flex', background: '#F8F6F3', borderBottom: '1px solid #E5E1DC' }}>
           {[
-            { id: 'Specs', label: '📄 Specifications' },
-            { id: 'Biography', label: '🌱 Seller Biography' },
-            { id: 'Reviews', label: `⭐ Reviews & Ratings (${REVIEWS_SAMPLE.length})` }
+            { id: 'Specs', label: 'Specifications', Icon: FileText },
+            { id: 'Biography', label: 'Seller Biography', Icon: UserCheck },
+            { id: 'Reviews', label: `Reviews & Ratings (${displayReviews.length})`, Icon: Star }
           ].map(tab => {
             const active = activeTab === tab.id;
+            const TabIcon = tab.Icon;
             return (
               <button
                 key={tab.id}
@@ -609,9 +694,13 @@ export default function ProductDetailPage() {
                   cursor: 'pointer',
                   borderRight: '1px solid #E5E1DC',
                   fontFamily: 'inherit',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
                 }}
               >
+                <TabIcon size={15} color={active ? '#1B6B3A' : '#7A7067'} />
                 {tab.label}
               </button>
             );
@@ -650,7 +739,9 @@ export default function ProductDetailPage() {
                 {sellerProfile?.photoSrc ? (
                   <img src={sellerProfile.photoSrc} alt={product.seller} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
-                  <div style={{ fontSize: 44 }}>👨‍🌾</div>
+                  <div style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#E8F5EC' }}>
+                    <User size={44} color="#1B6B3A" />
+                  </div>
                 )}
               </div>
               <div>
@@ -666,7 +757,7 @@ export default function ProductDetailPage() {
           {activeTab === 'Reviews' && (
             <div>
               {/* Ratings Summary Card */}
-              <div style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 40, borderBottom: '1px solid #E5E1DC', paddingBottom: 28, marginBottom: 28 }}>
+              <div className="product-detail-ratings-grid" style={{ display: 'grid', gridTemplateColumns: '220px 1fr', gap: 40, borderBottom: '1px solid #E5E1DC', paddingBottom: 28, marginBottom: 28 }}>
                 <div style={{ textAlign: 'center', background: '#FFFCF8', border: '1px solid #E5E1DC', borderRadius: 12, padding: 20 }}>
                    <div style={{ fontSize: 44, fontWeight: 900, color: '#1A1410' }}>{product.rat}</div>
                   <div style={{ display: 'flex', justifyContent: 'center', gap: 2, margin: '8px 0' }}>
@@ -699,7 +790,7 @@ export default function ProductDetailPage() {
 
               {/* Customer Reviews List */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-                {REVIEWS_SAMPLE.map((rev, idx) => (
+                {displayReviews.map((rev, idx) => (
                   <div key={idx} style={{ background: '#FFFCF8', border: '1px solid #E5E1DC', borderRadius: 12, padding: 18 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -727,10 +818,10 @@ export default function ProductDetailPage() {
 
       {/* ── RELATED PRODUCTS ── */}
       {related.length > 0 && (
-        <div style={{ padding: '48px 60px 0', background: '#FFF9F2', borderTop: '1px solid #E5E1DC' }}>
+        <div className="product-related-container" style={{ padding: '48px 60px 0', background: '#FFF9F2', borderTop: '1px solid #E5E1DC' }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 8 }}>Discover More</div>
           <h2 style={{ fontSize: 28, color: '#1A1410', marginBottom: 28, fontFamily: "'Playfair Display', serif" }}>Related Products</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
+          <div className="product-related-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
             {related.map(p => (
               <Link key={p.id} href={`/shop/${p.id}`} style={{ textDecoration: 'none' }}>
                 <div style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', transition: 'all 0.25s' }}

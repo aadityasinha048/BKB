@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Leaf, Info, Award, Heart, ShoppingBag } from 'lucide-react';
+import { Leaf, Info, Award, Heart, ShoppingBag, Share2, Search } from 'lucide-react';
 
 const CATEGORIES = ["All", "Food & Agri", "Handicrafts", "Textiles", "Sweets", "Fruits"];
 
@@ -80,8 +80,23 @@ const CATEGORY_BANNERS = {
   }
 };
 
+function shareProduct(p, e) {
+  e.preventDefault();
+  e.stopPropagation();
+  const url = `${window.location.origin}/shop/${p.id}`;
+  const text = `Check out ${p.name} by ${p.seller} — ₹${p.price}/${p.unit} on Bihar Ka Bazaar!`;
+  if (navigator.share) {
+    navigator.share({ title: p.name, text, url }).catch(() => {});
+  } else {
+    // Fallback: open a small share menu
+    const whatsapp = `https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`;
+    window.open(whatsapp, '_blank');
+  }
+}
+
 function ProductCard({ p }) {
   const [added, setAdded] = useState(false);
+  const [showShare, setShowShare] = useState(false);
 
   const handleAddToCart = (e) => {
     e.preventDefault();
@@ -119,37 +134,86 @@ function ProductCard({ p }) {
 
   const isOutOfStock = p.status === 'out_of_stock' || p.outOfStock;
 
+  const handleShare = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = `${window.location.origin}/shop/${p.id}`;
+    const text = `Check out ${p.name} by ${p.seller} — ₹${p.price}/${p.unit} on Bihar Ka Bazaar!`;
+    if (navigator.share) {
+      navigator.share({ title: p.name, text, url }).catch(() => {});
+    } else {
+      setShowShare(s => !s);
+    }
+  };
+
   return (
     <Link href={`/shop/${p.id}`} style={{ textDecoration: 'none' }}>
       <div
-        style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', height: '100%', opacity: isOutOfStock ? 0.85 : 1 }}
+        style={{ background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 16, overflow: 'hidden', cursor: 'pointer', display: 'flex', flexDirection: 'column', transition: 'all 0.25s', height: '100%', opacity: isOutOfStock ? 0.85 : 1, position: 'relative' }}
         onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 8px 32px rgba(27,107,58,0.13)'; }}
         onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
       >
         <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 170, background: p.bg, overflow: 'hidden' }}>
           {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#B8860B', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>GI Tag</span>}
           {isOutOfStock && <span style={{ position: 'absolute', top: 10, left: p.gi ? 72 : 10, background: '#C85A08', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>Out of Stock</span>}
-          <button
-            onClick={e => { e.preventDefault(); e.stopPropagation(); }}
-            style={{ position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E5E1DC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}
-          ><Heart size={14} color="#6B5C50" /></button>
+          {/* Heart + Share buttons */}
+          <div style={{ position: 'absolute', top: 10, right: 10, display: 'flex', gap: 6, zIndex: 2 }}>
+            <button
+              onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+              style={{ width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E5E1DC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            ><Heart size={14} color="#6B5C50" /></button>
+            <button
+              onClick={handleShare}
+              title="Share product"
+              style={{ width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E5E1DC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            ><Share2 size={13} color="#1B6B3A" /></button>
+          </div>
           <img 
             src={p.imgSrc || `/images/products/prod_${p.id}.png`} 
             alt={p.name} 
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
           />
         </div>
+
+        {/* Fallback share popover */}
+        {showShare && (
+          <div
+            onClick={e => { e.preventDefault(); e.stopPropagation(); }}
+            style={{ position: 'absolute', top: 54, right: 10, background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 12, padding: '10px 0', zIndex: 10, boxShadow: '0 8px 28px rgba(0,0,0,0.14)', minWidth: 180 }}
+          >
+            <div style={{ fontSize: 10, fontWeight: 800, color: '#7A7067', padding: '0 14px 8px', borderBottom: '1px solid #F2F0ED', textTransform: 'uppercase', letterSpacing: 1 }}>Share via</div>
+            {[
+              { label: 'WhatsApp', fn: () => window.open(`https://wa.me/?text=${encodeURIComponent(`Check out ${p.name} — ₹${p.price}/${p.unit}! ${window.location.origin}/shop/${p.id}`)}`, '_blank') },
+              { label: 'Email', fn: () => window.open(`mailto:?subject=${encodeURIComponent(p.name)}&body=${encodeURIComponent(`Check out this product: ${window.location.origin}/shop/${p.id}`)}`) },
+              { label: 'Copy Link', fn: () => { navigator.clipboard.writeText(`${window.location.origin}/shop/${p.id}`); setShowShare(false); } },
+              { label: 'SMS', fn: () => window.open(`sms:?body=${encodeURIComponent(`Check out ${p.name} — ₹${p.price}/${p.unit}: ${window.location.origin}/shop/${p.id}`)}`) },
+            ].map(opt => (
+              <div
+                key={opt.label}
+                onClick={e => { e.preventDefault(); e.stopPropagation(); opt.fn(); }}
+                style={{ padding: '9px 16px', fontSize: 12, fontWeight: 600, color: '#1A1410', cursor: 'pointer', transition: 'background 0.15s' }}
+                onMouseEnter={e => e.currentTarget.style.background = '#F0FAF3'}
+                onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+              >{opt.label}</div>
+            ))}
+          </div>
+        )}
+
         <div style={{ padding: '16px 16px 14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
             <span style={{ fontSize: 11, color: '#7A7067' }}>{p.dist}</span>
             <span style={{ fontSize: 11, color: '#B8860B', fontWeight: 700 }}>★ {p.rat} ({p.rev})</span>
           </div>
           <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1410', lineHeight: 1.3, marginBottom: 3 }}>{p.name}</div>
-          <div style={{ fontSize: 11, color: '#7A7067', marginBottom: 12 }}>by {p.seller}</div>
+          <div style={{ fontSize: 11, color: '#7A7067', marginBottom: 10 }}>by {p.seller}</div>
+          {/* Unit/Quantity pill — clearly visible */}
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#F0FAF3', border: '1px solid #C8E6D2', borderRadius: 20, padding: '3px 10px', marginBottom: 10, alignSelf: 'flex-start' }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: '#1B6B3A', letterSpacing: '0.04em' }}>Unit: {p.unit}</span>
+          </div>
           <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 6 }}>
             <div>
               <span style={{ fontSize: 19, fontWeight: 800, color: '#1A1410' }}>₹{p.price.toLocaleString()}</span>
-              <span style={{ fontSize: 10, color: '#B0A598' }}> /{p.unit}</span>
+              <span style={{ fontSize: 11, color: '#7A7067', fontWeight: 600 }}> /{p.unit}</span>
             </div>
             {isOutOfStock ? (
               <button
@@ -180,6 +244,11 @@ export default function ShopPage() {
   const [sort, setSort] = useState('Featured');
   const [productsList, setProductsList] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [unitFilter, setUnitFilter] = useState('All');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [appliedMin, setAppliedMin] = useState('');
+  const [appliedMax, setAppliedMax] = useState('');
 
   useEffect(() => {
     fetchProducts();
@@ -188,20 +257,74 @@ export default function ShopPage() {
   const fetchProducts = async () => {
     try {
       const res = await fetch('/api/products');
-      const data = await res.json();
-      if (data.success) {
-        setProductsList(data.products);
+      if (res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.products)) {
+            setProductsList(data.products);
+          }
+        }
       }
     } catch (err) {
-      console.error('Error fetching products:', err);
+      console.warn('Error fetching products:', err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  const isCategoryMatch = (productCat, selectedCat) => {
+    if (selectedCat === 'All') return true;
+    if (!productCat) return false;
+    if (productCat === selectedCat) return true;
+    const p = productCat.toLowerCase();
+    const s = selectedCat.toLowerCase();
+    if (s.includes('food') && (p.includes('food') || p.includes('agri'))) return true;
+    if (s.includes('handicraft') && (p.includes('handicraft') || p.includes('art'))) return true;
+    if (s.includes('textile') && (p.includes('textile') || p.includes('silk'))) return true;
+    if (s.includes('sweet') && (p.includes('sweet') || p.includes('snack'))) return true;
+    if (s.includes('fruit') && p.includes('fruit')) return true;
+    return p.includes(s) || s.includes(p);
+  };
+
+  const getCatCount = (cat) => {
+    if (cat === 'All') return productsList.length;
+    return productsList.filter(p => isCategoryMatch(p.cat, cat)).length;
+  };
+
+  // Derive unique units from product list for filter
+  const unitOptions = ['All', ...Array.from(new Set((productsList || []).map(p => {
+    const u = (p.unit || '').toLowerCase();
+    if (u.includes('kg')) return 'kg';
+    if (u.includes('g') && !u.includes('kg')) return 'g';
+    if (u.includes('pc') || u.includes('piece') || u.includes('pcs')) return 'piece';
+    if (u.includes('l') && !u.includes('ml')) return 'litre';
+    if (u.includes('ml')) return 'ml';
+    if (u.includes('dozen')) return 'dozen';
+    return u;
+  }))).filter(Boolean)];
+
   const filtered = productsList
-    .filter(p => activeCat === 'All' || p.cat === activeCat)
-    .filter(p => !giOnly || p.gi);
+    .filter(p => isCategoryMatch(p.cat, activeCat))
+    .filter(p => !giOnly || p.gi)
+    .filter(p => {
+      if (unitFilter === 'All') return true;
+      const u = (p.unit || '').toLowerCase();
+      if (unitFilter === 'kg') return u.includes('kg');
+      if (unitFilter === 'g') return u.includes('g') && !u.includes('kg');
+      if (unitFilter === 'piece') return u.includes('pc') || u.includes('piece') || u.includes('pcs');
+      if (unitFilter === 'litre') return u.includes('l') && !u.includes('ml');
+      if (unitFilter === 'ml') return u.includes('ml');
+      if (unitFilter === 'dozen') return u.includes('dozen');
+      return u === unitFilter;
+    })
+    .filter(p => {
+      const min = parseFloat(appliedMin);
+      const max = parseFloat(appliedMax);
+      if (!isNaN(min) && p.price < min) return false;
+      if (!isNaN(max) && p.price > max) return false;
+      return true;
+    });
 
   const sorted = [...filtered].sort((a, b) => {
     if (sort === 'Price: Low to High') return a.price - b.price;
@@ -227,8 +350,23 @@ export default function ShopPage() {
             >
               <span style={{ fontSize: 13, fontWeight: 500 }}>{cat === 'All' ? 'All Products' : cat}</span>
               <span style={{ fontSize: 10, background: activeCat === cat ? 'rgba(27,107,58,0.13)' : '#F2F0ED', color: activeCat === cat ? '#1B6B3A' : '#7A7067', padding: '2px 7px', borderRadius: 20 }}>
-                {CATEGORY_COUNTS[cat]}
+                {getCatCount(cat) || CATEGORY_COUNTS[cat]}
               </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Unit / Quantity Filter */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7A7067', marginBottom: 12 }}>Filter by Unit</div>
+          {unitOptions.map(unit => (
+            <div
+              key={unit}
+              onClick={() => setUnitFilter(unit)}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '7px 10px', borderRadius: 8, cursor: 'pointer', marginBottom: 2, background: unitFilter === unit ? '#E8F5EC' : 'transparent', color: unitFilter === unit ? '#1B6B3A' : '#3D3730', transition: 'all 0.18s', fontSize: 13, fontWeight: 500 }}
+            >
+              <span>{unit === 'All' ? 'All Units' : unit === 'kg' ? 'Kilogram (kg)' : unit === 'g' ? 'Gram (g)' : unit === 'piece' ? 'Per Piece' : unit === 'litre' ? 'Litre (L)' : unit === 'ml' ? 'Millilitre (ml)' : unit === 'dozen' ? 'Dozen' : unit}</span>
+              {unitFilter === unit && <span style={{ fontSize: 12, color: '#1B6B3A', fontWeight: 800 }}>✓</span>}
             </div>
           ))}
         </div>
@@ -248,12 +386,35 @@ export default function ShopPage() {
         <div style={{ marginBottom: 28 }}>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', color: '#7A7067', marginBottom: 12 }}>Price Range</div>
           <div style={{ display: 'flex', gap: 7, marginBottom: 9 }}>
-            <input placeholder="Min ₹" style={{ flex: 1, padding: '8px 10px', border: '1.5px solid #E5E1DC', borderRadius: 8, fontSize: 12, fontFamily: 'inherit', outline: 'none', background: '#FAFAFA' }} />
-            <input placeholder="Max ₹" style={{ flex: 1, padding: '8px 10px', border: '1.5px solid #E5E1DC', borderRadius: 8, fontSize: 12, fontFamily: 'inherit', outline: 'none', background: '#FAFAFA' }} />
+            <input
+              placeholder="Min ₹"
+              value={minPrice}
+              onChange={e => setMinPrice(e.target.value)}
+              type="number"
+              style={{ flex: 1, padding: '8px 10px', border: '1.5px solid #E5E1DC', borderRadius: 8, fontSize: 12, fontFamily: 'inherit', outline: 'none', background: '#FAFAFA' }}
+            />
+            <input
+              placeholder="Max ₹"
+              value={maxPrice}
+              onChange={e => setMaxPrice(e.target.value)}
+              type="number"
+              style={{ flex: 1, padding: '8px 10px', border: '1.5px solid #E5E1DC', borderRadius: 8, fontSize: 12, fontFamily: 'inherit', outline: 'none', background: '#FAFAFA' }}
+            />
           </div>
-          <button style={{ width: '100%', padding: 8, background: '#E8F5EC', color: '#1B6B3A', border: '1px solid #D0EBDA', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+          <button
+            onClick={() => { setAppliedMin(minPrice); setAppliedMax(maxPrice); }}
+            style={{ width: '100%', padding: 8, background: '#E8F5EC', color: '#1B6B3A', border: '1px solid #D0EBDA', borderRadius: 8, fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit', marginBottom: (appliedMin || appliedMax) ? 6 : 0 }}
+          >
             Apply Filter
           </button>
+          {(appliedMin || appliedMax) && (
+            <button
+              onClick={() => { setMinPrice(''); setMaxPrice(''); setAppliedMin(''); setAppliedMax(''); }}
+              style={{ width: '100%', padding: 7, background: 'transparent', color: '#C85A08', border: '1px solid #FFD0B0', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+            >
+              Clear Price Filter ✕
+            </button>
+          )}
         </div>
 
         {/* Certification */}
@@ -269,7 +430,33 @@ export default function ShopPage() {
       </aside>
 
       {/* ── MAIN CONTENT ── */}
-      <div style={{ padding: '28px 36px' }}>
+      <div className="shop-main-content" style={{ padding: '28px 36px' }}>
+
+        {/* Mobile Horizontal Category Pills */}
+        <div className="shop-mobile-categories" style={{ display: 'none', gap: 8, overflowX: 'auto', paddingBottom: 12, marginBottom: 16, scrollbarWidth: 'none', WebkitOverflowScrolling: 'touch' }}>
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              onClick={() => setActiveCat(cat)}
+              style={{
+                flexShrink: 0,
+                padding: '7px 14px',
+                borderRadius: 24,
+                fontSize: 12,
+                fontWeight: 700,
+                border: activeCat === cat ? '1.5px solid #1B6B3A' : '1.5px solid #E5E1DC',
+                background: activeCat === cat ? '#1B6B3A' : '#FFFFFF',
+                color: activeCat === cat ? '#FFFFFF' : '#4A3F35',
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                transition: 'all 0.2s',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {cat === 'All' ? '🌾 All' : cat}
+            </button>
+          ))}
+        </div>
 
         {/* Dynamic Educational Banner */}
         {(() => {
@@ -279,7 +466,7 @@ export default function ShopPage() {
           return (
             <div
               key={activeCat}
-              className="hero-text-animate"
+              className="shop-hero-banner hero-text-animate"
               style={{
                 background: banner.bgColor,
                 borderRadius: 20,
@@ -324,7 +511,7 @@ export default function ShopPage() {
               </div>
 
               {/* Right column: Image with zoom hover effect */}
-              <div style={{ display: 'flex', justifyContent: 'center', zIndex: 1 }}>
+              <div className="shop-hero-banner-img" style={{ display: 'flex', justifyContent: 'center', zIndex: 1 }}>
                 <div style={{ width: 200, height: 200, borderRadius: '50%', overflow: 'hidden', border: `4px solid ${activeCat === 'All' ? 'rgba(255,255,255,0.15)' : '#ffffff'}`, boxShadow: '0 8px 24px rgba(0,0,0,0.12)' }}>
                   <img
                     className="hero-img-zoom"
@@ -363,13 +550,15 @@ export default function ShopPage() {
           </div>
         ) : sorted.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <div style={{ fontSize: 56, marginBottom: 16 }}>🔍</div>
+            <div style={{ width: 56, height: 56, borderRadius: '50%', background: '#F5EEE6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <Search size={26} color="#8C7B6E" />
+            </div>
             <h3 style={{ fontSize: 22, color: '#1A1410', marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>No products found</h3>
             <p style={{ fontSize: 14, color: '#8C7B6E' }}>Try adjusting your filters</p>
           </div>
         ) : (
           <div className="shop-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 20 }}>
-            {sorted.map(p => <ProductCard key={p.id} p={p} />)}
+            {sorted.map((p, idx) => <ProductCard key={`shop-prod-${p.id || idx}-${idx}`} p={p} />)}
           </div>
         )}
       </div>

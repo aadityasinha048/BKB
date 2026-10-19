@@ -1,18 +1,18 @@
 import './globals.css';
-import { Playfair_Display, Outfit, Noto_Sans_Devanagari } from 'next/font/google';
+import { DM_Serif_Display, Plus_Jakarta_Sans, Noto_Sans_Devanagari } from 'next/font/google';
 import LayoutShell from './components/LayoutShell';
 
-const playfair = Playfair_Display({
+const dmSerif = DM_Serif_Display({
   subsets: ['latin'],
-  weight: ['700', '800'],
+  weight: ['400'],
   style: ['normal', 'italic'],
   variable: '--font-playfair',
   display: 'swap',
 });
 
-const outfit = Outfit({
+const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-outfit',
   display: 'swap',
 });
@@ -32,7 +32,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${outfit.variable} ${devanagari.variable}`}>
+    <html lang="en" className={`${dmSerif.variable} ${plusJakarta.variable} ${devanagari.variable}`}>
       <body>
         <LayoutShell>{children}</LayoutShell>
       </body>

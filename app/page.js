@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { Award, Users, ShieldCheck, Truck, Zap, CheckCircle, CreditCard, Headphones, Leaf, Heart, ShoppingBag, MapPin } from 'lucide-react';
+import { Award, Users, ShieldCheck, Truck, Zap, CheckCircle, CreditCard, Headphones, Leaf, Heart, ShoppingBag, MapPin, Maximize2, X, ArrowRight } from 'lucide-react';
 
 const categories = [
   { label: "Food & Agri", imgSrc: "/images/categories/food_agri.png", count: 84 },
@@ -90,8 +90,8 @@ function ProductCard({ p }) {
         {/* Image */}
         <div style={{ position: 'relative', height: 190, background: '#F8F6F3', overflow: 'hidden' }}>
           {p.gi && (
-            <span style={{ position: 'absolute', top: 10, left: 10, background: '#B8860B', color: '#fff', fontSize: 9, fontWeight: 800, padding: '4px 10px', borderRadius: 6, zIndex: 1, letterSpacing: '0.3px' }}>
-              🏅 GI TAG
+            <span style={{ position: 'absolute', top: 10, left: 10, background: '#1E3A2B', color: '#F3EBD8', border: '1px solid rgba(212,175,55,0.4)', fontSize: 9, fontWeight: 700, padding: '3px 9px', borderRadius: 4, zIndex: 1, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              GI Certified
             </span>
           )}
           <img 
@@ -106,8 +106,8 @@ function ProductCard({ p }) {
         {/* Body */}
         <div style={{ padding: '16px 18px 18px', flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
-            <span style={{ fontSize: 11, color: '#7A7067' }}>📍 {p.dist}</span>
-            <span style={{ fontSize: 11, color: '#B8860B', fontWeight: 700 }}>★ {p.rat} ({p.rev})</span>
+            <span style={{ fontSize: 11, color: '#7A7067', fontWeight: 500 }}>{p.dist}, Bihar</span>
+            <span style={{ fontSize: 11, color: '#9C721D', fontWeight: 700 }}>★ {p.rat} ({p.rev})</span>
           </div>
           <div style={{ fontSize: 15, fontWeight: 700, color: '#1A1410', lineHeight: 1.3, marginBottom: 4 }}>{p.name}</div>
           <div style={{ fontSize: 11, color: '#7A7067', marginBottom: 14 }}>by {p.seller}</div>
@@ -139,16 +139,29 @@ function ProductCard({ p }) {
 export default function HomePage() {
   const [bestsellers, setBestsellers] = useState([]);
   const [heroSlide, setHeroSlide] = useState(0);
+  const [journeyModal, setJourneyModal] = useState(false);
 
   const fetchBestsellers = useCallback(async () => {
     try {
-      const res = await fetch('/api/products?limit=4');
-      const data = await res.json();
-      if (data.success) {
-        setBestsellers(data.products.slice(0, 4));
+      const res = await fetch('/api/products?limit=8');
+      if (res.ok) {
+        const contentType = res.headers.get('content-type') || '';
+        if (contentType.includes('application/json')) {
+          const data = await res.json();
+          if (data.success && Array.isArray(data.products)) {
+            // Deduplicate products by id to guarantee unique keys
+            const uniqueMap = new Map();
+            data.products.forEach(p => {
+              if (p && p.id && !uniqueMap.has(String(p.id))) {
+                uniqueMap.set(String(p.id), p);
+              }
+            });
+            setBestsellers(Array.from(uniqueMap.values()).slice(0, 4));
+          }
+        }
       }
     } catch (err) {
-      console.error('Error loading bestsellers:', err);
+      console.warn('Error loading bestsellers:', err.message);
     }
   }, []);
 
@@ -447,11 +460,11 @@ export default function HomePage() {
           </div>
 
           {/* Right — hero product image */}
-          <div style={{
+          <div className="home-hero-image-wrap" style={{
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             padding: '60px 72px 60px 0', position: 'relative', zIndex: 1,
           }}>
-            <div style={{
+            <div className="home-hero-circle" style={{
               width: 420, height: 420, borderRadius: '50%',
               background: 'rgba(255,255,255,0.7)',
               boxShadow: '0 20px 60px rgba(0,0,0,0.08)',
@@ -464,13 +477,13 @@ export default function HomePage() {
                 src={currentSlide.img}
                 alt={currentSlide.title}
                 style={{
-                  width: '105%', height: '105%', objectFit: 'cover',
+                  width: '100%', height: '100%', objectFit: 'cover',
                   transition: 'all 0.6s ease',
                 }}
               />
             </div>
             {/* Floating badges */}
-            <div className="float" style={{
+            <div className="float hero-badge-float-1" style={{
               position: 'absolute', top: 80, right: 80,
               background: '#fff', borderRadius: 14, padding: '12px 16px',
               boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
@@ -484,7 +497,7 @@ export default function HomePage() {
                 <div style={{ fontSize: 10, color: '#7A7067' }}>7 Products</div>
               </div>
             </div>
-            <div className="float" style={{
+            <div className="float hero-badge-float-2" style={{
               position: 'absolute', bottom: 100, left: 20,
               background: '#fff', borderRadius: 14, padding: '12px 16px',
               boxShadow: '0 4px 20px rgba(0,0,0,0.08)',
@@ -584,6 +597,339 @@ export default function HomePage() {
         </div>
       </div>
 
+      {/* ── FROM FARMER TO CUSTOMER JOURNEY ── */}
+      <section className="home-journey-section" style={{
+        padding: '72px 60px',
+        background: 'linear-gradient(180deg, #FFFFFF 0%, #F5FAF6 40%, #FAF8F5 100%)',
+        position: 'relative',
+        zIndex: 1,
+        borderTop: '1px solid rgba(27, 107, 58, 0.08)',
+        borderBottom: '1px solid rgba(27, 107, 58, 0.08)',
+      }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+          {/* Header */}
+          <div style={{ textAlign: 'center', maxWidth: 760, margin: '0 auto 36px' }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              background: '#E8F5EC',
+              color: '#1B6B3A',
+              padding: '6px 16px',
+              borderRadius: 30,
+              fontSize: 12,
+              fontWeight: 800,
+              letterSpacing: 1.5,
+              textTransform: 'uppercase',
+              marginBottom: 14,
+              border: '1px solid rgba(27, 107, 58, 0.2)'
+            }}>
+              <Leaf size={14} color="#1B6B3A" />
+              100% Direct From Source
+            </div>
+            <h2 style={{
+              fontSize: 34,
+              color: '#1A1410',
+              fontFamily: "'Playfair Display', serif",
+              lineHeight: 1.25,
+              marginBottom: 12,
+            }}>
+              From Farmer to Customer: The Bihar Ka Bazaar Journey
+            </h2>
+            <p style={{
+              fontSize: 15,
+              color: '#635B54',
+              lineHeight: 1.7,
+              maxWidth: 680,
+              margin: '0 auto'
+            }}>
+              Every harvest, handloom weave, and delicacy travels directly from verified Bihar producers straight to your doorstep — zero unnecessary middlemen, fair farmer earnings, and authentic farm-fresh quality.
+            </p>
+          </div>
+
+          {/* Interactive Infographic Banner Card */}
+          <div
+            onClick={() => setJourneyModal(true)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setJourneyModal(true); }}
+            style={{
+              background: '#FFFFFF',
+              borderRadius: 20,
+              padding: '16px',
+              border: '1.5px solid rgba(27, 107, 58, 0.16)',
+              boxShadow: '0 12px 36px rgba(27, 107, 58, 0.08)',
+              cursor: 'zoom-in',
+              position: 'relative',
+              overflow: 'hidden',
+              transition: 'all 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+            className="journey-banner-card"
+          >
+            {/* Top bar inside card */}
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              padding: '4px 12px 12px 12px',
+              borderBottom: '1px dashed #E2E8F0',
+              marginBottom: 12,
+            }}>
+              <span style={{ fontSize: 12, fontWeight: 700, color: '#1B6B3A', display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#22c55e', display: 'inline-block' }} />
+                Interactive Supply Chain Visualizer
+              </span>
+              <span style={{
+                fontSize: 12,
+                color: '#64748B',
+                background: '#F1F5F9',
+                padding: '4px 10px',
+                borderRadius: 20,
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 5,
+                fontWeight: 600,
+              }}>
+                <Maximize2 size={13} /> Click to expand
+              </span>
+            </div>
+
+            {/* Banner image */}
+            <div style={{
+              position: 'relative',
+              borderRadius: 14,
+              overflow: 'hidden',
+              background: '#F8FAF8',
+              lineHeight: 0
+            }}>
+              <img
+                src="/images/banners/farmer_to_customer_journey.jpg"
+                alt="From Farmer to Customer: The Bihar Ka Bazaar Journey"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  display: 'block',
+                  transition: 'transform 0.4s ease',
+                }}
+                className="journey-banner-img"
+              />
+            </div>
+
+            <div style={{
+              paddingTop: 12,
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: 12,
+              fontSize: 12,
+              color: '#71717A',
+              paddingLeft: 6,
+              paddingRight: 6
+            }}>
+              <span>biharkabazaar.com • Authentic Rural Supply Chain</span>
+              <span style={{ color: '#1B6B3A', fontWeight: 600 }}>Tap to view high-resolution details ↗</span>
+            </div>
+          </div>
+
+          {/* 4 Narrative Step Breakdown Cards matching the banner */}
+          <div className="home-journey-steps" style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: 18,
+            marginTop: 28,
+          }}>
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: 16,
+              padding: '22px 20px',
+              border: '1px solid #E6EFE9',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+              position: 'relative',
+            }}>
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                background: '#E8F5EC',
+                color: '#1B6B3A',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: 14,
+                marginBottom: 14,
+              }}>
+                01
+              </div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1A1410', marginBottom: 6 }}>
+                We Grow with Love
+              </h3>
+              <p style={{ fontSize: 13, color: '#635B54', lineHeight: 1.6, margin: 0 }}>
+                Crops and artisanal goods are cultivated with traditional, time-honoured methods across Bihar's fertile lands.
+              </p>
+            </div>
+
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: 16,
+              padding: '22px 20px',
+              border: '1px solid #E6EFE9',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+              position: 'relative',
+            }}>
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                background: '#FFF3E8',
+                color: '#E87B24',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: 14,
+                marginBottom: 14,
+              }}>
+                02
+              </div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1A1410', marginBottom: 6 }}>
+                Harvest & Packing
+              </h3>
+              <p style={{ fontSize: 13, color: '#635B54', lineHeight: 1.6, margin: 0 }}>
+                Freshly harvested and safely packed into clean, tamper-evident BKB boxes right at the source clusters.
+              </p>
+            </div>
+
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: 16,
+              padding: '22px 20px',
+              border: '1px solid #E6EFE9',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+              position: 'relative',
+            }}>
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                background: '#EBF3FE',
+                color: '#2563EB',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: 14,
+                marginBottom: 14,
+              }}>
+                03
+              </div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1A1410', marginBottom: 6 }}>
+                Your Order Travels
+              </h3>
+              <p style={{ fontSize: 13, color: '#635B54', lineHeight: 1.6, margin: 0 }}>
+                Dispatched via temperature-monitored courier networks ensuring pristine freshness and real-time tracking.
+              </p>
+            </div>
+
+            <div style={{
+              background: '#FFFFFF',
+              borderRadius: 16,
+              padding: '22px 20px',
+              border: '1px solid #E6EFE9',
+              boxShadow: '0 4px 16px rgba(0,0,0,0.03)',
+              position: 'relative',
+            }}>
+              <div style={{
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                background: '#FEF8E0',
+                color: '#B45309',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800,
+                fontSize: 14,
+                marginBottom: 14,
+              }}>
+                04
+              </div>
+              <h3 style={{ fontSize: 16, fontWeight: 700, color: '#1A1410', marginBottom: 6 }}>
+                A Happy Customer
+              </h3>
+              <p style={{ fontSize: 13, color: '#635B54', lineHeight: 1.6, margin: 0 }}>
+                You enjoy genuine farm-to-table flavour, while local farmers receive fair, direct compensation for their toil.
+              </p>
+            </div>
+          </div>
+
+          {/* Impact Stats + CTAs strip */}
+          <div style={{
+            marginTop: 26,
+            background: 'linear-gradient(135deg, #1B6B3A 0%, #14522C 100%)',
+            borderRadius: 16,
+            padding: '20px 28px',
+            color: '#FFFFFF',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 20,
+          }} className="home-journey-cta-bar">
+            <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600 }}>
+                <Users size={16} color="#A8E6C3" /> Local Farmers Supported
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600 }}>
+                <Leaf size={16} color="#A8E6C3" /> 100% Fresh & Authentic
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600 }}>
+                <Truck size={16} color="#A8E6C3" /> Safe Pan-India Delivery
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <Link href="/shop">
+                <button style={{
+                  background: '#FFFFFF',
+                  color: '#1B6B3A',
+                  border: 'none',
+                  padding: '10px 22px',
+                  borderRadius: 10,
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  transition: 'all 0.2s',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+                }}>
+                  Shop Farm Fresh <ArrowRight size={14} />
+                </button>
+              </Link>
+              <Link href="/mission">
+                <button style={{
+                  background: 'rgba(255,255,255,0.15)',
+                  color: '#FFFFFF',
+                  border: '1px solid rgba(255,255,255,0.3)',
+                  padding: '10px 18px',
+                  borderRadius: 10,
+                  fontWeight: 600,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  backdropFilter: 'blur(6px)',
+                  transition: 'all 0.2s',
+                }}>
+                  Our Mission
+                </button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── FEATURED PRODUCTS ── */}
       <div style={{ padding: '64px 60px', background: 'linear-gradient(180deg, #FFFFFF 0%, #F5FAF6 30%, #FAF8F5 100%)', position: 'relative', zIndex: 1 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: 36 }}>
@@ -601,14 +947,30 @@ export default function HomePage() {
             </button>
           </Link>
         </div>
-        <div className="home-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
-          {bestsellers.map(p => <ProductCard key={p.id} p={p} />)}
-        </div>
+        {bestsellers.length === 0 ? (
+          <div style={{ textAlign: 'center', padding: '48px 20px', background: '#FFFFFF', borderRadius: 16, border: '1px dashed #D0C8B8' }}>
+            <p style={{ fontSize: 16, color: '#1A1410', fontWeight: 600, marginBottom: 6, fontFamily: "'Playfair Display', serif" }}>Fresh Harvests & Products Coming Soon</p>
+            <p style={{ fontSize: 13, color: '#7A7067', maxWidth: 440, margin: '0 auto 18px', lineHeight: 1.6 }}>
+              Our verified Bihar farmers and artisans are preparing newly listed harvests and crafts.
+            </p>
+            <Link href="/sellers">
+              <button style={{ padding: '10px 22px', background: '#1B6B3A', color: '#fff', border: 'none', borderRadius: 10, fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}>
+                Join as a Bihar Seller →
+              </button>
+            </Link>
+          </div>
+        ) : (
+          <div className="home-products-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 22 }}>
+            {bestsellers.map((p, idx) => (
+              <ProductCard key={`bestseller-${p.id || idx}-${idx}`} p={p} />
+            ))}
+          </div>
+        )}
       </div>
 
       {/* ── GI TAG SECTION ── */}
       <div style={{ background: 'linear-gradient(135deg, #F0FAF3 0%, #FEF8E0 50%, #F0FAF3 100%)', borderTop: '1px solid #D0EBDA', borderBottom: '1px solid #D0EBDA', padding: '64px 60px', position: 'relative' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 52, alignItems: 'center', maxWidth: 940, margin: '0 auto' }}>
+        <div className="home-gi-grid" style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 52, alignItems: 'center', maxWidth: 940, margin: '0 auto' }}>
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, textAlign: 'center' }}>
             <div style={{
               width: 110,
@@ -808,6 +1170,148 @@ export default function HomePage() {
           ))}
         </div>
       </div>
+
+      {/* ── EXPANDED JOURNEY INFOGRAPHIC MODAL ── */}
+      {journeyModal && (
+        <div
+          onClick={() => setJourneyModal(false)}
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            backgroundColor: 'rgba(0, 0, 0, 0.82)',
+            backdropFilter: 'blur(8px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: 20,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              position: 'relative',
+              maxWidth: 1100,
+              width: '100%',
+              background: '#FFFFFF',
+              borderRadius: 20,
+              overflow: 'hidden',
+              boxShadow: '0 25px 60px -12px rgba(0, 0, 0, 0.6)',
+              maxHeight: '92vh',
+              display: 'flex',
+              flexDirection: 'column',
+              animation: 'fadeInUp 0.25s ease-out'
+            }}
+          >
+            {/* Modal Header */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '16px 24px',
+              borderBottom: '1px solid #E2E8F0',
+              background: '#F8FAF8',
+            }}>
+              <div>
+                <h4 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: '#1B6B3A' }}>
+                  From Farmer to Customer: The Bihar Ka Bazaar Journey
+                </h4>
+                <p style={{ margin: 0, fontSize: 12, color: '#64748B', marginTop: 2 }}>
+                  Direct farm cultivation • Hand harvest & packing • Pan-India transit • Happy customer delivery
+                </p>
+              </div>
+              <button
+                onClick={() => setJourneyModal(false)}
+                style={{
+                  background: '#F1F5F9',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 36,
+                  height: 36,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: '#475569',
+                  transition: 'background 0.2s',
+                }}
+                title="Close"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Image Body with scroll */}
+            <div style={{
+              padding: '24px 20px',
+              overflow: 'auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: '#FBFDFB',
+            }}>
+              <img
+                src="/images/banners/farmer_to_customer_journey.jpg"
+                alt="The Bihar Ka Bazaar Journey: From Farmer to Customer"
+                style={{
+                  maxWidth: '100%',
+                  height: 'auto',
+                  borderRadius: 12,
+                  boxShadow: '0 6px 24px rgba(0,0,0,0.08)',
+                }}
+              />
+            </div>
+
+            {/* Modal Footer */}
+            <div style={{
+              padding: '14px 24px',
+              background: '#FFFFFF',
+              borderTop: '1px solid #E2E8F0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexWrap: 'wrap',
+              gap: 12,
+              fontSize: 13,
+            }}>
+              <span style={{ color: '#475569', display: 'flex', alignItems: 'center', gap: 6 }}>
+                🌱 Supporting rural Bihar farmers & artisans directly with full traceability.
+              </span>
+              <div style={{ display: 'flex', gap: 10 }}>
+                <Link href="/shop" onClick={() => setJourneyModal(false)}>
+                  <button style={{
+                    background: '#1B6B3A',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '8px 20px',
+                    borderRadius: 8,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: 'pointer'
+                  }}>
+                    Shop Fresh Produce
+                  </button>
+                </Link>
+                <button
+                  onClick={() => setJourneyModal(false)}
+                  style={{
+                    background: '#E2E8F0',
+                    color: '#334155',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: 8,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    cursor: 'pointer'
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );

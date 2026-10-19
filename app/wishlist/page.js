@@ -1,32 +1,50 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-
-const WISHLIST_ITEMS = [
-  { id: 1, name: "Premium Makhana (Fox Nuts)", seller: "Ram Prasad", dist: "Darbhanga", price: 480, unit: "500g", em: "🌰", gi: true, rat: "4.8", bg: "#FFF8E8" },
-  { id: 2, name: "Madhubani Painting — Fish Motif", seller: "Sunita Devi", dist: "Madhubani", price: 1200, unit: "piece", em: "🎨", gi: true, rat: "5.0", bg: "#FFF0F5" },
-  { id: 7, name: "Jardalu Mango", seller: "Ramesh Yadav", dist: "Bhagalpur", price: 420, unit: "1kg", em: "🥭", gi: true, rat: "4.9", bg: "#FFF8E8" },
-  { id: 3, name: "Bhagalpuri Silk Saree", seller: "Md. Arshad", dist: "Bhagalpur", price: 3800, unit: "piece", em: "🧣", gi: true, rat: "4.9", bg: "#F0F4FF" },
-];
+import { Heart, Trash2 } from 'lucide-react';
 
 export default function WishlistPage() {
-  const [items, setItems] = useState(WISHLIST_ITEMS);
+  const [items, setItems] = useState([]);
 
-  const remove = (id) => setItems(i => i.filter(x => x.id !== id));
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('bkb_wishlist');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setItems(parsed);
+        }
+      }
+    } catch {
+      setItems([]);
+    }
+  }, []);
+
+  const remove = (id) => {
+    setItems(current => {
+      const updated = current.filter(x => x.id !== id);
+      try {
+        localStorage.setItem('bkb_wishlist', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
+  };
 
   return (
     <div style={{ background: '#FFFCF8', minHeight: '80vh' }}>
       {/* Header */}
       <div style={{ background: '#fff', borderBottom: '1px solid #E8DDD4', padding: '28px 60px' }}>
-        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 6 }}>Saved Items</div>
-        <h1 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>My Wishlist ❤️</h1>
+        <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 6 }}>Saved Items</div>
+        <h1 style={{ fontSize: 34, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>My Wishlist</h1>
       </div>
 
       <div style={{ padding: '36px 60px' }}>
         {items.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '80px 0' }}>
-            <div style={{ fontSize: 64, marginBottom: 16 }}>🤍</div>
+            <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#F5EEE6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+              <Heart size={28} color="#8C7B6E" />
+            </div>
             <h2 style={{ fontSize: 26, color: '#1A1410', marginBottom: 10, fontFamily: "'Playfair Display', serif" }}>Your wishlist is empty</h2>
             <p style={{ fontSize: 15, color: '#8C7B6E', marginBottom: 24 }}>Save products you love and come back to them anytime.</p>
             <Link href="/shop">
@@ -45,8 +63,10 @@ export default function WishlistPage() {
                   onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
                 >
                   <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 170, background: p.bg, overflow: 'hidden' }}>
-                    {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#B8860B', color: '#fff', fontSize: 9, fontWeight: 800, padding: '3px 8px', borderRadius: 5, zIndex: 1 }}>🏅 GI Tag</span>}
-                    <button onClick={() => remove(p.id)} style={{ position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E5E1DC', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>❤️</button>
+                    {p.gi && <span style={{ position: 'absolute', top: 10, left: 10, background: '#1E3A2B', color: '#F3EBD8', border: '1px solid rgba(212,175,55,0.4)', fontSize: 9, fontWeight: 700, padding: '3px 8px', borderRadius: 4, zIndex: 1, letterSpacing: '0.06em', textTransform: 'uppercase' }}>GI Certified</span>}
+                    <button onClick={() => remove(p.id)} title="Remove from wishlist" style={{ position: 'absolute', top: 10, right: 10, width: 32, height: 32, borderRadius: '50%', background: '#fff', border: '1px solid #E5E1DC', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1 }}>
+                      <Trash2 size={14} color="#8C7B6E" />
+                    </button>
                     <img 
                       src={p.imgSrc || `/images/products/prod_${p.id}.png`} 
                       alt={p.name} 
@@ -54,7 +74,7 @@ export default function WishlistPage() {
                     />
                   </div>
                   <div style={{ padding: '15px 16px 14px', flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ fontSize: 11, color: '#8C7B6E', marginBottom: 4 }}>📍 {p.dist} &nbsp;·&nbsp; ★ {p.rat}</div>
+                    <div style={{ fontSize: 11, color: '#8C7B6E', marginBottom: 4 }}>{p.dist}, Bihar &nbsp;·&nbsp; ★ {p.rat}</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#1A1410', lineHeight: 1.3, marginBottom: 3 }}>{p.name}</div>
                     <div style={{ fontSize: 11, color: '#8C7B6E', marginBottom: 14 }}>by {p.seller}</div>
                     <div style={{ marginTop: 'auto' }}>

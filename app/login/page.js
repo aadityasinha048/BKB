@@ -251,7 +251,7 @@ function LoginForm() {
   };
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', position: 'relative', overflow: 'hidden' }}>
+    <div className="login-page-container" style={{ minHeight: '100vh', display: 'flex', position: 'relative', overflow: 'hidden' }}>
 
       {/* ── CSS Animations ── */}
       <style>{`
@@ -293,7 +293,7 @@ function LoginForm() {
       {/* ════════════════════════════════════════════ */}
       {/* LEFT PANEL — Farm Imagery                   */}
       {/* ════════════════════════════════════════════ */}
-      <div style={{
+      <div className="login-left-panel" style={{
         flex: '0 0 50%',
         position: 'relative',
         background: '#0D3B1E',
@@ -411,7 +411,7 @@ function LoginForm() {
       {/* ════════════════════════════════════════════ */}
       {/* RIGHT PANEL — Login Form                    */}
       {/* ════════════════════════════════════════════ */}
-      <div style={{
+      <div className="login-right-panel" style={{
         flex: '0 0 50%',
         display: 'flex',
         alignItems: 'center',

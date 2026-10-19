@@ -15,11 +15,11 @@ const CHECKLIST_ITEMS = [
 
 function StatusBadge({ status }) {
   const styles = {
-    'Completed': { bg: 'rgba(26,92,56,0.12)', color: '#4CAF50', dot: '#4CAF50' },
-    'Account Created': { bg: 'rgba(200,90,8,0.12)', color: '#F09819', dot: '#F09819' },
-    'Approved': { bg: 'rgba(26,92,56,0.15)', color: '#2E7D32', dot: '#2E7D32' },
-    'Rejected': { bg: 'rgba(211,47,47,0.12)', color: '#EF5350', dot: '#EF5350' },
-    'Flagged': { bg: 'rgba(249,168,37,0.12)', color: '#F9A825', dot: '#F9A825' },
+    'Completed': { bg: 'rgba(16,185,129,0.12)', color: '#34D399', dot: '#10B981' },
+    'Account Created': { bg: 'rgba(245,158,11,0.12)', color: '#FBBF24', dot: '#F59E0B' },
+    'Approved': { bg: 'rgba(16,185,129,0.15)', color: '#34D399', dot: '#10B981' },
+    'Rejected': { bg: 'rgba(239,68,68,0.12)', color: '#F87171', dot: '#EF4444' },
+    'Flagged': { bg: 'rgba(245,158,11,0.12)', color: '#FBBF24', dot: '#F59E0B' },
   };
   const s = styles[status] || styles['Account Created'];
   return (
@@ -372,35 +372,35 @@ export default function AdminSellersPage() {
           backdropFilter: 'blur(4px)',
         }} onClick={() => { setNotesModal(null); setNoteText(''); }}>
           <div style={{
-            background: '#18181F', border: '1px solid #26262F',
+            background: '#121822', border: '1px solid #1E2735',
             borderRadius: 18, padding: 28, width: 440,
             boxShadow: '0 20px 60px rgba(0,0,0,0.5)',
           }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F5F0EB', marginBottom: 16 }}>📝 Update Notes</h3>
+            <h3 style={{ fontSize: 16, fontWeight: 700, color: '#F8FAFC', marginBottom: 16 }}>📝 Update Notes</h3>
             <textarea
               value={noteText}
               onChange={e => setNoteText(e.target.value)}
               placeholder="Add internal notes about verification status..."
               rows={4}
               style={{
-                width: '100%', padding: '12px 14px', background: '#0F0F12',
-                border: '1.5px solid #26262F', borderRadius: 10, fontSize: 13,
-                color: '#F5F0EB', fontFamily: 'inherit', outline: 'none',
+                width: '100%', padding: '12px 14px', background: '#0B0F14',
+                border: '1.5px solid #222E3E', borderRadius: 10, fontSize: 13,
+                color: '#F8FAFC', fontFamily: 'inherit', outline: 'none',
                 resize: 'vertical', lineHeight: 1.6,
               }}
-              onFocus={e => e.target.style.borderColor = '#C85A08'}
-              onBlur={e => e.target.style.borderColor = '#26262F'}
+              onFocus={e => e.target.style.borderColor = '#10B981'}
+              onBlur={e => e.target.style.borderColor = '#222E3E'}
             />
             <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
               <button onClick={() => { setNotesModal(null); setNoteText(''); }}
                 style={{
-                  padding: '9px 18px', background: 'none', border: '1px solid #26262F',
-                  borderRadius: 8, color: '#9B9BA8', fontSize: 13, fontWeight: 600,
+                  padding: '9px 18px', background: 'none', border: '1px solid #1E2735',
+                  borderRadius: 8, color: '#94A3B8', fontSize: 13, fontWeight: 600,
                   cursor: 'pointer', fontFamily: 'inherit',
                 }}>Cancel</button>
               <button onClick={handleSaveNotes}
                 style={{
-                  padding: '9px 18px', background: 'linear-gradient(135deg, #C85A08, #E87A28)',
+                  padding: '9px 18px', background: 'linear-gradient(135deg, #10B981 0%, #059669 100%)',
                   border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 700,
                   cursor: 'pointer', fontFamily: 'inherit',
                 }}>Save Notes</button>
@@ -412,10 +412,10 @@ export default function AdminSellersPage() {
       {/* Title */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#F5F0EB', fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 800, color: '#F8FAFC', fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>
             Seller Management
           </h1>
-          <p style={{ fontSize: 13, color: '#6B6B78' }}>
+          <p style={{ fontSize: 13, color: '#94A3B8' }}>
             {stats.total || 0} total sellers · {sellers.length} shown
           </p>
         </div>
@@ -436,21 +436,21 @@ export default function AdminSellersPage() {
 
       {/* Interactive Filters Panel */}
       <div style={{
-        background: '#18181F', border: '1px solid #26262F',
+        background: '#121822', border: '1px solid #1E2735',
         borderRadius: 16, padding: '18px 20px', marginBottom: 20,
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
         gap: 16,
       }}>
         {/* District Filter */}
         <div>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#6B6B78', textTransform: 'uppercase', marginBottom: 6, letterSpacing: 0.5 }}>District</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 6, letterSpacing: 0.5 }}>District</label>
           <select
             value={districtFilter}
             onChange={e => setDistrictFilter(e.target.value)}
             style={{
-              width: '100%', padding: '10px 12px', background: '#0F0F12',
-              border: '1.5px solid #26262F', borderRadius: 8, fontSize: 13,
-              color: '#F5F0EB', fontFamily: 'inherit', outline: 'none', cursor: 'pointer',
+              width: '100%', padding: '10px 12px', background: '#0B0F14',
+              border: '1.5px solid #222E3E', borderRadius: 8, fontSize: 13,
+              color: '#F8FAFC', fontFamily: 'inherit', outline: 'none', cursor: 'pointer',
             }}
           >
             <option value="">All Districts</option>
@@ -460,14 +460,14 @@ export default function AdminSellersPage() {
 
         {/* Category Filter */}
         <div>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#6B6B78', textTransform: 'uppercase', marginBottom: 6, letterSpacing: 0.5 }}>Category</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 6, letterSpacing: 0.5 }}>Category</label>
           <select
             value={categoryFilter}
             onChange={e => setCategoryFilter(e.target.value)}
             style={{
-              width: '100%', padding: '10px 12px', background: '#0F0F12',
-              border: '1.5px solid #26262F', borderRadius: 8, fontSize: 13,
-              color: '#F5F0EB', fontFamily: 'inherit', outline: 'none', cursor: 'pointer',
+              width: '100%', padding: '10px 12px', background: '#0B0F14',
+              border: '1.5px solid #222E3E', borderRadius: 8, fontSize: 13,
+              color: '#F8FAFC', fontFamily: 'inherit', outline: 'none', cursor: 'pointer',
             }}
           >
             <option value="">All Categories</option>
@@ -477,18 +477,18 @@ export default function AdminSellersPage() {
 
         {/* Quick Search */}
         <div style={{ gridColumn: 'span 1' }}>
-          <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#6B6B78', textTransform: 'uppercase', marginBottom: 6, letterSpacing: 0.5 }}>Search Query</label>
+          <label style={{ display: 'block', fontSize: 10, fontWeight: 700, color: '#94A3B8', textTransform: 'uppercase', marginBottom: 6, letterSpacing: 0.5 }}>Search Query</label>
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="Name, phone, business, etc..."
             style={{
-              width: '100%', padding: '10px 12px', background: '#0F0F12',
-              border: '1.5px solid #26262F', borderRadius: 8, fontSize: 13,
-              color: '#F5F0EB', fontFamily: 'inherit', outline: 'none',
+              width: '100%', padding: '10px 12px', background: '#0B0F14',
+              border: '1.5px solid #222E3E', borderRadius: 8, fontSize: 13,
+              color: '#F8FAFC', fontFamily: 'inherit', outline: 'none',
             }}
-            onFocus={e => e.target.style.borderColor = '#C85A08'}
-            onBlur={e => e.target.style.borderColor = '#26262F'}
+            onFocus={e => e.target.style.borderColor = '#10B981'}
+            onBlur={e => e.target.style.borderColor = '#222E3E'}
           />
         </div>
       </div>
@@ -509,7 +509,7 @@ export default function AdminSellersPage() {
                 cursor: 'pointer', fontFamily: 'inherit', transition: 'all 0.2s',
               }}
               onMouseEnter={e => { if (!isActive) e.currentTarget.style.borderColor = '#3A3A45'; }}
-              onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderColor = '#26262F'; }}
+              onMouseLeave={e => { if (!isActive) e.currentTarget.style.borderColor = '#222E3E'; }}
             >
               {s} {count !== undefined ? `(${count})` : ''}
             </button>
@@ -521,12 +521,12 @@ export default function AdminSellersPage() {
       {selectedIds.length > 0 && (
         <div style={{
           position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
-          zIndex: 80, background: '#181824', border: '1.5px solid #C85A08',
+          zIndex: 80, background: '#181824', border: '1.5px solid #10B981',
           borderRadius: 16, padding: '12px 24px', display: 'flex', alignItems: 'center',
           gap: 16, boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
           animation: 'slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         }}>
-          <span style={{ fontSize: 13, color: '#F5F0EB', fontWeight: 700 }}>
+          <span style={{ fontSize: 13, color: '#F8FAFC', fontWeight: 700 }}>
             {selectedIds.length} Sellers Selected
           </span>
           <div style={{ width: 1, height: 20, background: '#26262F' }} />
@@ -547,7 +547,7 @@ export default function AdminSellersPage() {
           </button>
           <button
             onClick={() => exportCSV(sellers.filter(s => selectedIds.includes(s.id)))}
-            style={{ padding: '8px 14px', background: 'rgba(200,90,8,0.15)', border: '1px solid #C85A08', borderRadius: 8, color: '#F09819', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
+            style={{ padding: '8px 14px', background: 'rgba(200,90,8,0.15)', border: '1px solid #10B981', borderRadius: 8, color: '#F09819', fontSize: 12, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit' }}
           >
             Export Selected
           </button>
@@ -560,7 +560,7 @@ export default function AdminSellersPage() {
           </button>
           <button
             onClick={() => setSelectedIds([])}
-            style={{ background: 'none', border: 'none', color: '#6B6B78', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}
+            style={{ background: 'none', border: 'none', color: '#94A3B8', fontSize: 12, cursor: 'pointer', fontWeight: 600 }}
           >
             Clear selection
           </button>
@@ -569,7 +569,7 @@ export default function AdminSellersPage() {
 
       {/* Sellers Grid / Table */}
       <div style={{
-        background: '#18181F', border: '1px solid #26262F',
+        background: '#121822', border: '1px solid #1E2735',
         borderRadius: 16, overflow: 'hidden',
       }}>
         {/* Table Header */}
@@ -597,7 +597,7 @@ export default function AdminSellersPage() {
           </div>
           {['Seller', 'Contact', 'District', 'Category', 'Status', ''].map(h => (
             <span key={h} style={{
-              fontSize: 10, fontWeight: 700, color: '#6B6B78',
+              fontSize: 10, fontWeight: 700, color: '#94A3B8',
               textTransform: 'uppercase', letterSpacing: 1.2,
             }}>{h}</span>
           ))}
@@ -607,12 +607,12 @@ export default function AdminSellersPage() {
         {loading ? (
           <div style={{ padding: 60, textAlign: 'center' }}>
             <div style={{ fontSize: 28, marginBottom: 8, animation: 'pulse 1.5s infinite' }}>⏳</div>
-            <div style={{ fontSize: 13, color: '#6B6B78' }}>Loading sellers database...</div>
+            <div style={{ fontSize: 13, color: '#94A3B8' }}>Loading sellers database...</div>
           </div>
         ) : sellers.length === 0 ? (
           <div style={{ padding: 60, textAlign: 'center' }}>
             <div style={{ fontSize: 28, marginBottom: 8 }}>📭</div>
-            <div style={{ fontSize: 13, color: '#6B6B78' }}>No sellers found matching filters.</div>
+            <div style={{ fontSize: 13, color: '#94A3B8' }}>No sellers found matching filters.</div>
           </div>
         ) : (
           sellers.map((seller, i) => {
@@ -647,17 +647,17 @@ export default function AdminSellersPage() {
                     />
                   </div>
                   <div>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: '#F5F0EB' }}>{seller.fullName}</div>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: '#F8FAFC' }}>{seller.fullName}</div>
                     <div style={{ fontSize: 10, color: '#4A4A56', marginTop: 2, fontFamily: 'monospace' }}>{seller.id}</div>
                   </div>
                   <div>
-                    <div style={{ fontSize: 12, color: '#9B9BA8' }}>{seller.mobile}</div>
-                    <div style={{ fontSize: 11, color: '#6B6B78', marginTop: 1 }}>{seller.email || '—'}</div>
+                    <div style={{ fontSize: 12, color: '#94A3B8' }}>{seller.mobile}</div>
+                    <div style={{ fontSize: 11, color: '#94A3B8', marginTop: 1 }}>{seller.email || '—'}</div>
                   </div>
-                  <div style={{ fontSize: 12, color: '#9B9BA8' }}>{seller.district || '—'}</div>
-                  <div style={{ fontSize: 12, color: '#9B9BA8' }}>{seller.category || '—'}</div>
+                  <div style={{ fontSize: 12, color: '#94A3B8' }}>{seller.district || '—'}</div>
+                  <div style={{ fontSize: 12, color: '#94A3B8' }}>{seller.category || '—'}</div>
                   <StatusBadge status={seller.status} />
-                  <div style={{ textAlign: 'right', fontSize: 14, color: '#6B6B78' }}>
+                  <div style={{ textAlign: 'right', fontSize: 14, color: '#94A3B8' }}>
                     {isExpanded ? '▲' : '▼'}
                   </div>
                 </div>
@@ -673,7 +673,7 @@ export default function AdminSellersPage() {
                     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr 1fr', gap: 24 }}>
                       {/* Personal */}
                       <div>
-                        <h4 style={{ fontSize: 11, fontWeight: 700, color: '#C85A08', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Personal Info</h4>
+                        <h4 style={{ fontSize: 11, fontWeight: 700, color: '#10B981', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 12 }}>Personal Info</h4>
                         {[
                           ['Name', seller.fullName],
                           ['Mobile', seller.mobile],
@@ -683,8 +683,8 @@ export default function AdminSellersPage() {
                           ['Business', seller.businessName],
                         ].map(([label, val]) => (
                           <div key={label} style={{ marginBottom: 8 }}>
-                            <div style={{ fontSize: 10, color: '#6B6B78', fontWeight: 600, marginBottom: 2 }}>{label}</div>
-                            <div style={{ fontSize: 13, color: '#F5F0EB' }}>{val || '—'}</div>
+                            <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 600, marginBottom: 2 }}>{label}</div>
+                            <div style={{ fontSize: 13, color: '#F8FAFC' }}>{val || '—'}</div>
                           </div>
                         ))}
                       </div>
@@ -702,8 +702,8 @@ export default function AdminSellersPage() {
                           ['Monthly Capacity', seller.monthlyCapacity],
                         ].map(([label, val]) => (
                           <div key={label} style={{ marginBottom: 8 }}>
-                            <div style={{ fontSize: 10, color: '#6B6B78', fontWeight: 600, marginBottom: 2 }}>{label}</div>
-                            <div style={{ fontSize: 13, color: '#F5F0EB' }}>{val || '—'}</div>
+                            <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 600, marginBottom: 2 }}>{label}</div>
+                            <div style={{ fontSize: 13, color: '#F8FAFC' }}>{val || '—'}</div>
                           </div>
                         ))}
                       </div>
@@ -721,14 +721,14 @@ export default function AdminSellersPage() {
                           ['Admin Notes', seller.adminNotes],
                         ].map(([label, val]) => (
                           <div key={label} style={{ marginBottom: 8 }}>
-                            <div style={{ fontSize: 10, color: '#6B6B78', fontWeight: 600, marginBottom: 2 }}>{label}</div>
-                            <div style={{ fontSize: 13, color: '#F5F0EB' }}>{val || '—'}</div>
+                            <div style={{ fontSize: 10, color: '#94A3B8', fontWeight: 600, marginBottom: 2 }}>{label}</div>
+                            <div style={{ fontSize: 13, color: '#F8FAFC' }}>{val || '—'}</div>
                           </div>
                         ))}
                       </div>
 
                       {/* Verification Checklist persistence column */}
-                      <div style={{ background: '#0F0F12', padding: 16, borderRadius: 12, border: '1px solid #26262F' }}>
+                      <div style={{ background: '#0B0F14', padding: 16, borderRadius: 12, border: '1px solid #1E2735' }}>
                         <h4 style={{ fontSize: 11, fontWeight: 700, color: '#F09819', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 14 }}>
                           Audit Checklist
                         </h4>
@@ -750,7 +750,7 @@ export default function AdminSellersPage() {
                             );
                           })}
                         </div>
-                        <div style={{ marginTop: 14, fontSize: 10, color: '#6B6B78', fontStyle: 'italic', borderTop: '1px solid #1E1E26', paddingTop: 10 }}>
+                        <div style={{ marginTop: 14, fontSize: 10, color: '#94A3B8', fontStyle: 'italic', borderTop: '1px solid #1E1E26', paddingTop: 10 }}>
                           Checkmarks auto-save to database in real-time.
                         </div>
                       </div>

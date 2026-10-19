@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Share2, ShoppingBag } from 'lucide-react';
 
 
 
@@ -9,6 +10,8 @@ export default function CartPage() {
   const [cart, setCart] = useState([]);
   const [promo, setPromo] = useState('');
   const [promoApplied, setPromoApplied] = useState(false);
+  const [showShareCart, setShowShareCart] = useState(false);
+  const [cartLinkCopied, setCartLinkCopied] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('bkb_cart');
@@ -54,18 +57,20 @@ export default function CartPage() {
     <div style={{ background: '#fff', minHeight: '80vh' }}>
 
       {/* Header */}
-      <div style={{ padding: '32px 60px 0', background: '#fff', borderBottom: '1px solid #E5E1DC' }}>
+      <div className="cart-header-container" style={{ padding: '32px 60px 0', background: '#fff', borderBottom: '1px solid #E5E1DC' }}>
         <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#1B6B3A', marginBottom: 6 }}>Shopping</div>
         <h1 style={{ fontSize: 36, color: '#1A1410', fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>Your Cart</h1>
       </div>
 
-      <div style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1fr 380px', gap: 28, alignItems: 'start' }}>
+      <div className="cart-layout-grid" style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1fr 380px', gap: 28, alignItems: 'start' }}>
 
         {/* ── CART ITEMS ── */}
         <div>
           {cart.length === 0 ? (
             <div style={{ background: '#fff', border: '1px solid #E5E1DC', borderRadius: 16, padding: '64px', textAlign: 'center' }}>
-              <div style={{ fontSize: 64, marginBottom: 16 }}>🛒</div>
+              <div style={{ width: 64, height: 64, borderRadius: '50%', background: '#F5EEE6', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 18px' }}>
+                <ShoppingBag size={28} color="#8C7B6E" />
+              </div>
               <h3 style={{ fontSize: 24, color: '#1A1410', marginBottom: 8, fontFamily: "'Playfair Display', serif" }}>Your cart is empty</h3>
               <p style={{ fontSize: 14, color: '#7A7067', marginBottom: 24 }}>Explore Bihar's finest products and add them to your cart.</p>
               <Link href="/shop">
@@ -116,9 +121,14 @@ export default function CartPage() {
                         onMouseLeave={e => e.target.style.color = '#1A1410'}
                       >{item.name}</div>
                     </Link>
-                    <div style={{ fontSize: 12, color: '#7A7067', marginBottom: 12 }}>
+                    <div style={{ fontSize: 12, color: '#7A7067', marginBottom: 8 }}>
                       by {item.seller} · {item.dist}, Bihar
                     </div>
+                    {item.unit && (
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 4, background: '#F0FAF3', border: '1px solid #C8E6D2', borderRadius: 20, padding: '2px 9px', marginBottom: 10, alignSelf: 'flex-start' }}>
+                        <span style={{ fontSize: 10, fontWeight: 700, color: '#1B6B3A' }}>📦 per {item.unit}</span>
+                      </div>
+                    )}
 
                     {/* Qty + Price Row */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
@@ -230,6 +240,74 @@ export default function CartPage() {
                 Proceed to Checkout →
               </button>
             </Link>
+
+            {/* Share Cart */}
+            <div style={{ position: 'relative', marginTop: 14 }}>
+              <button
+                onClick={() => {
+                  const cartText = cart.map(item => `• ${item.name} x${item.qty} — ₹${(item.price * item.qty).toLocaleString()}`).join('\n');
+                  const shareText = `My Bihar Ka Bazaar Cart (₹${total.toLocaleString()} total):\n${cartText}\n\nShop here: ${window.location.origin}/shop`;
+                  if (navigator.share) {
+                    navigator.share({ title: 'My Bihar Ka Bazaar Cart', text: shareText, url: window.location.origin + '/shop' }).catch(() => {});
+                  } else {
+                    setShowShareCart(s => !s);
+                  }
+                }}
+                style={{ width: '100%', padding: '11px 14px', border: '1.5px solid #E5E1DC', borderRadius: 10, background: '#FAFAFA', color: '#3D3730', fontFamily: 'inherit', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, transition: 'all 0.2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#1B6B3A'; e.currentTarget.style.background = '#F0FAF3'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#E5E1DC'; e.currentTarget.style.background = '#FAFAFA'; }}
+                disabled={cart.length === 0}
+              >
+                <Share2 size={14} color="#1B6B3A" />
+                Share Cart
+              </button>
+
+              {showShareCart && (
+                <div style={{ position: 'absolute', bottom: '110%', left: 0, right: 0, background: '#fff', border: '1.5px solid #E5E1DC', borderRadius: 12, padding: '10px 0', zIndex: 20, boxShadow: '0 12px 40px rgba(0,0,0,0.14)' }}>
+                  <div style={{ fontSize: 10, fontWeight: 800, color: '#7A7067', padding: '0 14px 8px', borderBottom: '1px solid #F2F0ED', textTransform: 'uppercase', letterSpacing: 1 }}>Share Cart via</div>
+                  {[
+                    {
+                      label: 'WhatsApp',
+                      fn: () => {
+                        const itemsList = cart.map(item => `• ${item.name} x${item.qty} — ₹${(item.price * item.qty).toLocaleString()}`).join('\n');
+                        const text = `My Bihar Ka Bazaar Cart (₹${total.toLocaleString()} total):\n${itemsList}\n\nShop here: ${window.location.origin}/shop`;
+                        window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+                      }
+                    },
+                    {
+                      label: 'Email',
+                      fn: () => {
+                        const itemsList = cart.map(item => `• ${item.name} x${item.qty} — ₹${(item.price * item.qty).toLocaleString()}`).join('\n');
+                        const body = `My cart (total ₹${total.toLocaleString()}):\n${itemsList}\n\nShop now: ${window.location.origin}/shop`;
+                        window.open(`mailto:?subject=${encodeURIComponent('My Bihar Ka Bazaar Cart')}&body=${encodeURIComponent(body)}`);
+                      }
+                    },
+                    {
+                      label: 'SMS',
+                      fn: () => {
+                        const itemsList = cart.map(i => `${i.name} x${i.qty}`).join(', ');
+                        const body = `My Bihar Ka Bazaar Cart (₹${total.toLocaleString()}): ${itemsList} — ${window.location.origin}/shop`;
+                        window.open(`sms:?body=${encodeURIComponent(body)}`);
+                      }
+                    },
+                    {
+                      label: cartLinkCopied ? 'Link Copied' : 'Copy Shop Link',
+                      fn: () => { navigator.clipboard.writeText(window.location.origin + '/shop'); setCartLinkCopied(true); setTimeout(() => { setCartLinkCopied(false); setShowShareCart(false); }, 1500); }
+                    },
+                  ].map(opt => (
+                    <div
+                      key={opt.label}
+                      onClick={opt.fn}
+                      style={{ padding: '10px 16px', fontSize: 12, fontWeight: 600, color: '#1A1410', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10, transition: 'background 0.15s' }}
+                      onMouseEnter={e => e.currentTarget.style.background = '#F0FAF3'}
+                      onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
+                    >
+                      {opt.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Trust */}
             <div style={{ textAlign: 'center', marginTop: 14, fontSize: 12, color: '#C0B0A0' }}>

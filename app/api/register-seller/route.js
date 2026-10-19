@@ -60,12 +60,19 @@ const PATCH_FIELDS = new Set([
   'monthlyCapacity',
   'hasGst',
   'gstNumber',
+  'gstTradeName',
+  'gstDeclaration',
   'payoutMethod',
   'upiId',
   'bankHolderName',
   'bankAccountNumber',
   'bankIfsc',
+  'bankName',
+  'bankBranch',
+  'accountType',
   'aadhaarNumber',
+  'agreementAccepted',
+  'agreementTimestamp',
 ]);
 
 // GET - Retrieves a seller account by ID to resume registration progress
@@ -185,12 +192,19 @@ export async function POST(request) {
       monthlyCapacity: '',
       hasGst: '',
       gstNumber: '',
-      payoutMethod: '',
+      gstTradeName: '',
+      gstDeclaration: false,
+      payoutMethod: 'bank',
       upiId: '',
       bankHolderName: '',
       bankAccountNumber: '',
       bankIfsc: '',
+      bankName: '',
+      bankBranch: '',
+      accountType: 'Savings',
       aadhaarNumber: '',
+      agreementAccepted: false,
+      agreementTimestamp: null,
     };
 
     await insertOne('sellers', newSeller);
@@ -255,7 +269,9 @@ export async function PATCH(request) {
     const sanitizedUpdates = {};
     for (const [key, value] of Object.entries(updates)) {
       if (!PATCH_FIELDS.has(key)) continue;
-      if (key === 'productDescription' || key === 'streetAddress') {
+      if (key === 'agreementAccepted' || key === 'gstDeclaration') {
+        sanitizedUpdates[key] = Boolean(value);
+      } else if (key === 'productDescription' || key === 'streetAddress') {
         sanitizedUpdates[key] = cleanText(value);
       } else {
         sanitizedUpdates[key] = cleanString(value, 255);
@@ -285,17 +301,22 @@ export async function PATCH(request) {
 
     // Determine status based on which fields are being updated
     let statusUpdate;
-    const hasPayoutData = sanitizedUpdates.payoutMethod && (
-      (sanitizedUpdates.payoutMethod === 'upi' && sanitizedUpdates.upiId) ||
-      (sanitizedUpdates.payoutMethod === 'bank' && sanitizedUpdates.bankAccountNumber && sanitizedUpdates.bankIfsc && sanitizedUpdates.bankHolderName)
-    );
-
-    if (hasPayoutData) {
+    if (sanitizedUpdates.agreementAccepted) {
+      sanitizedUpdates.agreementTimestamp = new Date().toISOString();
       statusUpdate = 'Completed';
-    } else if (sanitizedUpdates.category || sanitizedUpdates.productDescription) {
-      statusUpdate = 'Products Added';
-    } else if (sanitizedUpdates.sellerType || sanitizedUpdates.district) {
-      statusUpdate = 'Details Added';
+    } else {
+      const hasPayoutData = sanitizedUpdates.payoutMethod && (
+        (sanitizedUpdates.payoutMethod === 'upi' && sanitizedUpdates.upiId) ||
+        (sanitizedUpdates.payoutMethod === 'bank' && sanitizedUpdates.bankAccountNumber && sanitizedUpdates.bankIfsc && sanitizedUpdates.bankHolderName)
+      );
+
+      if (hasPayoutData) {
+        statusUpdate = 'Completed';
+      } else if (sanitizedUpdates.category || sanitizedUpdates.productDescription) {
+        statusUpdate = 'Products Added';
+      } else if (sanitizedUpdates.sellerType || sanitizedUpdates.district) {
+        statusUpdate = 'Details Added';
+      }
     }
 
     const updatedFields = { ...sanitizedUpdates, lastUpdatedAt: new Date().toISOString() };

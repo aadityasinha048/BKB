@@ -1,0 +1,68 @@
+[
+  {
+    "id": "PO-1727978400000",
+    "orderId": "SELLER-PAYOUT",
+    "amount": 2176,
+    "method": "UPI TRANSFER",
+    "status": "success",
+    "sellerId": "BKB-SEL-TEST",
+    "sellerName": "Mithila Heritage Handlooms & Farms",
+    "destination": "UPI: radharaman@oksbi",
+    "utrNumber": "UTR20261003889104",
+    "note": "Net settlement for delivered order BKB-ORD-902411 (Gross: ₹2,290 - 5% Platform Fee: ₹114 = Net: ₹2,176)",
+    "createdAt": "2026-10-03T18:00:00.000Z"
+  },
+  {
+    "id": "PO-1727724600000",
+    "orderId": "SELLER-PAYOUT",
+    "amount": 1758,
+    "method": "UPI TRANSFER",
+    "status": "success",
+    "sellerId": "BKB-SEL-TEST",
+    "sellerName": "Mithila Heritage Handlooms & Farms",
+    "destination": "UPI: radharaman@oksbi",
+    "utrNumber": "UTR20260930771290",
+    "note": "Net settlement for delivered order BKB-ORD-881293 (Gross: ₹1,850 - 5% Platform Fee: ₹92 = Net: ₹1,758)",
+    "createdAt": "2026-09-30T19:30:00.000Z"
+  },
+  {
+    "id": "TXN-902411",
+    "orderId": "BKB-ORD-902411",
+    "amount": 2290,
+    "method": "UPI",
+    "status": "success",
+    "customerName": "Amitabh Narayan",
+    "customerPhone": "9835012345",
+    "createdAt": "2026-10-01T09:15:00.000Z"
+  },
+  {
+    "id": "TXN-881293",
+    "orderId": "BKB-ORD-881293",
+    "amount": 1850,
+    "method": "UPI",
+    "status": "success",
+    "customerName": "Sunita Kumari",
+    "customerPhone": "9431098765",
+    "createdAt": "2026-09-27T18:20:00.000Z"
+  },
+  {
+    "id": "TXN-945021",
+    "orderId": "BKB-ORD-945021",
+    "amount": 1360,
+    "method": "UPI",
+    "status": "success",
+    "customerName": "Amitabh Narayan",
+    "customerPhone": "9835012345",
+    "createdAt": "2026-10-03T21:40:00.000Z"
+  },
+  {
+    "id": "TXN-973059",
+    "orderId": "BKB-ORD-973059",
+    "amount": 1260,
+    "method": "UPI",
+    "status": "success",
+    "customerName": "Pooja Mishra",
+    "customerPhone": "9871122334",
+    "createdAt": "2026-10-05T09:45:00.000Z"
+  }
+]

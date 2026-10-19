@@ -107,7 +107,7 @@ export default function CheckoutPage() {
   const shipping = subtotal >= 500 ? 0 : 60;
   const total = subtotal + shipping;
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     if (!fullName.trim() || !phone.trim() || !addressLine1.trim() || !city.trim() || !pincode.trim()) {
       setError('Please fill in all required delivery fields.');
@@ -120,19 +120,63 @@ export default function CheckoutPage() {
 
     setError('');
     setPlacing(true);
-    const orderId = `BKB-${Math.floor(100000 + Math.random() * 900000)}`;
-    setTimeout(() => {
+
+    try {
+      let savedLat = null;
+      let savedLng = null;
+      const storedProfile = localStorage.getItem(`bkb_buyer_profile_${phone}`);
+      if (storedProfile) {
+        try {
+          const p = JSON.parse(storedProfile);
+          savedLat = p.lat || null;
+          savedLng = p.lng || null;
+        } catch {}
+      }
+
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          buyerName: fullName.trim(),
+          buyerPhone: phone.trim(),
+          buyerEmail: email.trim(),
+          shippingAddress: {
+            addressLine1: addressLine1.trim(),
+            addressLine2: addressLine2.trim(),
+            city: city.trim(),
+            state: stateName,
+            pincode: pincode.trim(),
+            lat: savedLat,
+            lng: savedLng,
+          },
+          items: cart,
+          paymentMethod: payMethod,
+          upiId: upiId.trim(),
+          subtotal,
+          shipping,
+          total,
+        })
+      });
+
+      const data = await res.json();
+      const generatedOrderId = data.orderId || `BKB-${Math.floor(100000 + Math.random() * 900000)}`;
+
       // Clear Cart after successful order placement
       localStorage.removeItem('bkb_cart');
-      router.push(`/order-success?orderId=${encodeURIComponent(orderId)}`);
-    }, 1800);
+      router.push(`/order-success?orderId=${encodeURIComponent(generatedOrderId)}`);
+    } catch (err) {
+      console.error('Order error:', err);
+      const fallbackOrderId = `BKB-${Math.floor(100000 + Math.random() * 900000)}`;
+      localStorage.removeItem('bkb_cart');
+      router.push(`/order-success?orderId=${encodeURIComponent(fallbackOrderId)}`);
+    }
   };
 
   return (
     <div style={{ background: '#FFFCF8', minHeight: '80vh' }}>
       
       {/* Header */}
-      <div style={{ padding: '32px 60px 24px', background: '#fff', borderBottom: '1px solid #E8DDD4', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div className="checkout-header-container" style={{ padding: '32px 60px 24px', background: '#fff', borderBottom: '1px solid #E8DDD4', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div>
           <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 3, textTransform: 'uppercase', color: '#C85A08', marginBottom: 6 }}>Almost There</div>
           <h1 style={{ fontSize: 36, color: '#1A1410', fontFamily: "'Playfair Display', serif" }}>Checkout</h1>
@@ -142,7 +186,7 @@ export default function CheckoutPage() {
         </Link>
       </div>
 
-      <div style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1fr 400px', gap: 28, alignItems: 'start' }}>
+      <div className="checkout-layout-grid" style={{ padding: '36px 60px', display: 'grid', gridTemplateColumns: '1fr 400px', gap: 28, alignItems: 'start' }}>
         
         {/* LEFT: FORMS */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -161,7 +205,7 @@ export default function CheckoutPage() {
               <h2 style={{ fontSize: 17, fontWeight: 700, color: '#1A1410' }}>Delivery Address</h2>
             </div>
             <div style={{ padding: 26 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
+              <div className="checkout-grid-2" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 14 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#4A3F35', marginBottom: 5 }}>Full Name *</label>
                   <input
@@ -217,7 +261,7 @@ export default function CheckoutPage() {
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+              <div className="checkout-grid-3" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
                 <div>
                   <label style={{ display: 'block', fontSize: 11, fontWeight: 700, color: '#4A3F35', marginBottom: 5 }}>City / Town *</label>
                   <input

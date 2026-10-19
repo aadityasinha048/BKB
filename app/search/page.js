@@ -33,10 +33,10 @@ function SearchContent() {
   };
 
   const results = productsList.filter(p =>
-    p.name.toLowerCase().includes(query.toLowerCase()) ||
-    p.dist.toLowerCase().includes(query.toLowerCase()) ||
-    p.cat.toLowerCase().includes(query.toLowerCase()) ||
-    p.seller.toLowerCase().includes(query.toLowerCase())
+    (p.name || '').toLowerCase().includes(query.toLowerCase()) ||
+    (p.dist || '').toLowerCase().includes(query.toLowerCase()) ||
+    (p.cat || '').toLowerCase().includes(query.toLowerCase()) ||
+    (p.seller || '').toLowerCase().includes(query.toLowerCase())
   );
 
   const sorted = [...results].sort((a, b) => {
